@@ -76,7 +76,6 @@
     border-radius:6px;padding:5px 6px;font-family:'Inter',sans-serif;font-size:11.5px;}
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
-  /* Novos estilos para a visão geral em famílias */
   .family{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
   .family > summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;
     justify-content:space-between;background:var(--surface);}
@@ -238,34 +237,11 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
 let DATA = [];
 let activeTab = 'geral';
 
-function saveLocal(){
-  try { localStorage.setItem('deman_data_v1', JSON.stringify(DATA)); } catch(e){}
-}
-function loadLocal(){
-  try {
-    const d = JSON.parse(localStorage.getItem('deman_data_v1'));
-    if (Array.isArray(d) && d.length) {
-      DATA = d.map(r => {
-        const oldStage = r.stage;
-        if (oldStage === 'aprovada') r.stage = 'aprovada';
-        else if (oldStage === 'concluida' || oldStage === 'execucao') r.stage = 'finalizada';
-        else if (oldStage === 'cancelada') r.stage = 'cancelada';
-        else r.stage = 'pendente';
-        if (!r.orcamentos) r.orcamentos = 0;
-        if (!r.tabela) r.tabela = false;
-        if (!r.justificativa) r.justificativa = false;
-        return r;
-      });
-    }
-  } catch(e){}
-}
-
 function processCsvText(csvText){
   const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
   if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
   const rows = parsed.data || [];
   DATA = mapRowsToData(rows);
-  saveLocal();
   render();
 }
 
@@ -308,15 +284,13 @@ async function fetchCsv(url){
 
 async function loadData(){
   const errorArea = document.getElementById('errorArea');
-  loadLocal();
-  if (DATA.length) render();
+  let loadedFromSheet = false;
 
-  let proxyWorked = false;
   try {
     const csvText = await fetchCsv(DIRECT_SHEET_CSV_URL);
     processCsvText(csvText);
     errorArea.style.display = 'none';
-    proxyWorked = true;
+    loadedFromSheet = true;
   } catch (e1) {
     console.warn('Falha na URL direta, tentando proxies...', e1);
     const proxies = [
@@ -329,17 +303,19 @@ async function loadData(){
         const csvText = await fetchCsv(p + encodeURIComponent(DIRECT_SHEET_CSV_URL));
         processCsvText(csvText);
         errorArea.style.display = 'none';
-        proxyWorked = true;
+        loadedFromSheet = true;
         break;
       } catch (e2) {
         console.warn(`Proxy falhou (${p}):`, e2);
       }
     }
-    if (!proxyWorked) {
-      console.error('Falha ao carregar a planilha (direto e proxies).');
-      renderStats();
-      errorArea.style.display = 'block';
-    }
+  }
+
+  if (!loadedFromSheet) {
+    console.error('Falha ao carregar a planilha (direto e proxies).');
+    DATA = [];
+    renderStats();
+    errorArea.style.display = 'block';
   }
 }
 
@@ -466,6 +442,7 @@ function renderKanban(categoryKey){
     sel.addEventListener('change', async (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
       if(!rec) return;
+      const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
       if (newStage !== 'pendente') {
@@ -473,11 +450,12 @@ function renderKanban(categoryKey){
         rec.tabela = false;
         rec.justificativa = false;
       }
-      saveLocal();
       render();
       const ok = await updateSheet(rec.os, newStage);
       if (!ok) {
-        alert('O status foi alterado localmente, mas falhou ao atualizar a planilha. Verifique a URL do Apps Script.');
+        rec.stage = oldStage;
+        alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.');
+        render();
       }
     });
   });
@@ -503,7 +481,6 @@ function pillFor(rec){
   return `<span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}${extra} · OS ${escapeHtml(rec.os)}</span>`;
 }
 
-// Nova renderGeral com agrupamento por famílias e seletores de status
 function renderGeral(){
   const q = document.getElementById('search').value.trim().toLowerCase();
   const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)))
@@ -515,7 +492,6 @@ function renderGeral(){
     return;
   }
 
-  // Agrupa por família (prefixo antes do hífen)
   const familyOf = (v) => v.split('-')[0].toUpperCase();
   const families = {};
   allVehicles.forEach(v => {
@@ -563,11 +539,11 @@ function renderGeral(){
 
   document.getElementById('content').innerHTML = html;
 
-  // Aplica listeners aos selects da visão geral
   document.querySelectorAll('.stage-select').forEach(sel=>{
     sel.addEventListener('change', async (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
       if(!rec) return;
+      const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
       if (newStage !== 'pendente') {
@@ -575,11 +551,12 @@ function renderGeral(){
         rec.tabela = false;
         rec.justificativa = false;
       }
-      saveLocal();
       render();
       const ok = await updateSheet(rec.os, newStage);
       if (!ok) {
-        alert('O status foi alterado localmente, mas falhou ao atualizar a planilha. Verifique a URL do Apps Script.');
+        rec.stage = oldStage;
+        alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.');
+        render();
       }
     });
   });
@@ -652,9 +629,6 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
     newRecord.justificativa = false;
   }
   DATA.push(newRecord);
-  saveLocal();
-  document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
-  document.getElementById('addForm').classList.remove('open');
   render();
 
   const ok = await createOSInSheet({
@@ -669,8 +643,14 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   });
 
   if (!ok) {
-    alert('A OS foi adicionada localmente, mas falhou ao enviar para a planilha. Verifique a URL do Apps Script.');
+    const idx = DATA.indexOf(newRecord);
+    if (idx > -1) DATA.splice(idx, 1);
+    alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.');
   }
+
+  document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
+  document.getElementById('addForm').classList.remove('open');
+  render();
 });
 
 document.getElementById('csvFileInput').addEventListener('change', (e) => {
