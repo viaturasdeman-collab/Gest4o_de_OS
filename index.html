@@ -170,6 +170,17 @@ const STAGES = [
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
+// Normaliza viatura: ABT 21 -> ABT-21, Abt-21 -> ABT-21, etc.
+function normalizeViatura(v){
+  return v.trim()
+    .toUpperCase()
+    .replace(/\s+/g, ' ')                    // múltiplos espaços -> um espaço
+    .replace(/\s*-\s*/g, '-')                // "ABT - 21" -> "ABT-21"
+    .replace(/\s+(?=\d)/g, '-');             // "ABT 21" -> "ABT-21"
+    // Se não houver hífen e tiver número, converte "ABT21" para "ABT-21"? opcional
+    // .replace(/^([A-Z]+)(\d+)$/, '$1-$2')
+}
+
 function normalizeStr(str){
   return String(str || '')
     .normalize('NFD')
@@ -207,7 +218,6 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   const combined = r + ' ' + n;
   let orcamentos = 0;
 
-  // Prioridade 1: usa a coluna QNT diretamente, se houver número
   if (qntRaw && String(qntRaw).trim() !== '') {
     const parsed = parseInt(qntRaw, 10);
     if (!isNaN(parsed) && parsed > 0) {
@@ -215,12 +225,10 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
     }
   }
 
-  // Prioridade 2: se não achou número, mas "orçada" indica sim
   if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y' || /or/i.test(o))) {
     orcamentos = 1;
   }
 
-  // Prioridade 3: tenta detectar padrões no texto do status/nota
   if (orcamentos === 0) {
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
     if (match) {
@@ -267,7 +275,7 @@ function mapRowsToData(rows){
 
     return {
       id: 'sheet-' + i,
-      v: (viatura || '').toString().trim(),
+      v: normalizeViatura(viatura), // normaliza a viatura
       os: (osField || '').toString().trim(),
       category: categoriaLabel,
       catKey: catKey,
@@ -430,7 +438,12 @@ function renderTabs(){
   });
 }
 
-function matchesSearch(v, q){ return !q || (v && v.toLowerCase().includes(q.toLowerCase())); }
+function matchesSearch(v, q){ 
+  if (!q) return true;
+  const vNorm = normalizeViatura(v);
+  const qNorm = normalizeViatura(q);
+  return vNorm.includes(qNorm);
+}
 
 function renderKanban(categoryKey){
   const q = document.getElementById('search').value.trim();
@@ -625,7 +638,7 @@ document.getElementById('af-cancel').addEventListener('click', ()=>{
   document.getElementById('addForm').classList.remove('open');
 });
 document.getElementById('af-save').addEventListener('click', async ()=>{
-  const v = document.getElementById('af-v').value.trim().toUpperCase();
+  const v = normalizeViatura(document.getElementById('af-v').value); // normaliza
   const os = document.getElementById('af-os').value.trim();
   const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
   const catKey = slugify(catLabel);
@@ -633,7 +646,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   const note = document.getElementById('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
 
-  const duplicate = DATA.some(r => r.v.toUpperCase() === v && r.catKey === catKey);
+  const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
   if(duplicate){
     alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`);
     return;
