@@ -170,15 +170,12 @@ const STAGES = [
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
-// Normaliza viatura: ABT 21 -> ABT-21, Abt-21 -> ABT-21, etc.
 function normalizeViatura(v){
   return v.trim()
     .toUpperCase()
-    .replace(/\s+/g, ' ')                    // múltiplos espaços -> um espaço
-    .replace(/\s*-\s*/g, '-')                // "ABT - 21" -> "ABT-21"
-    .replace(/\s+(?=\d)/g, '-');             // "ABT 21" -> "ABT-21"
-    // Se não houver hífen e tiver número, converte "ABT21" para "ABT-21"? opcional
-    // .replace(/^([A-Z]+)(\d+)$/, '$1-$2')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*-\s*/g, '-')
+    .replace(/\s+(?=\d)/g, '-');
 }
 
 function normalizeStr(str){
@@ -275,7 +272,7 @@ function mapRowsToData(rows){
 
     return {
       id: 'sheet-' + i,
-      v: normalizeViatura(viatura), // normaliza a viatura
+      v: normalizeViatura(viatura),
       os: (osField || '').toString().trim(),
       category: categoriaLabel,
       catKey: catKey,
@@ -638,7 +635,7 @@ document.getElementById('af-cancel').addEventListener('click', ()=>{
   document.getElementById('addForm').classList.remove('open');
 });
 document.getElementById('af-save').addEventListener('click', async ()=>{
-  const v = normalizeViatura(document.getElementById('af-v').value); // normaliza
+  const v = normalizeViatura(document.getElementById('af-v').value);
   const os = document.getElementById('af-os').value.trim();
   const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
   const catKey = slugify(catLabel);
@@ -695,7 +692,17 @@ document.getElementById('csvFileInput').addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
-loadData();
+// ==============================================
+// ATUALIZAÇÃO AUTOMÁTICA (POLLING)
+// ==============================================
+loadData(); // primeira carga
+
+// Atualiza automaticamente a cada 60 segundos
+setInterval(() => {
+  // Evita sobrescrever se o usuário estiver com um seletor aberto
+  if (document.activeElement && document.activeElement.tagName === 'SELECT') return;
+  loadData();
+}, 30000); // 60.000 ms = 1 minuto
 </script>
 </body>
 </html>
