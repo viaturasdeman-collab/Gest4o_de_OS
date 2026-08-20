@@ -99,6 +99,7 @@
   .os-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);}
   select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
     border-radius:6px;padding:3px 5px;font-family:'Inter',sans-serif;font-size:10.5px;max-width:140px;}
+  .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;}
   .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:160px;}
 
   .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
@@ -206,6 +207,7 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   const combined = r + ' ' + n;
   let orcamentos = 0;
 
+  // Prioridade 1: usa a coluna QNT diretamente, se houver número
   if (qntRaw && String(qntRaw).trim() !== '') {
     const parsed = parseInt(qntRaw, 10);
     if (!isNaN(parsed) && parsed > 0) {
@@ -213,10 +215,12 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
     }
   }
 
+  // Prioridade 2: se não achou número, mas "orçada" indica sim
   if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y' || /or/i.test(o))) {
     orcamentos = 1;
   }
 
+  // Prioridade 3: tenta detectar padrões no texto do status/nota
   if (orcamentos === 0) {
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
     if (match) {
@@ -256,7 +260,7 @@ function mapRowsToData(rows){
     const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
     const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
     const orcadaRaw = findField(row, ['orçada', 'orcada']) || row['orçada'] || row['Orçada'] || '';
-    const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd','Qnt']) || row['qnt'] || '';
+    const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd', 'quant']) || row['qnt'] || '';
 
     const stage = parseStage(status);
     const details = (stage === 'pendente') ? extractPendenteDetails(status, note, orcadaRaw, qntRaw) : { orcamentos: 0, tabela: false, justificativa: false };
@@ -428,30 +432,33 @@ function renderTabs(){
 
 function matchesSearch(v, q){ return !q || (v && v.toLowerCase().includes(q.toLowerCase())); }
 
-function pendDetailsHtml(r){
-  if (r.stage !== 'pendente') return '';
-  const badges = [];
-  if (r.orcamentos > 0) badges.push(`<span class="badge">Orçada (${r.orcamentos})</span>`);
-  if (r.tabela) badges.push(`<span class="badge">Tabela</span>`);
-  if (r.justificativa) badges.push(`<span class="badge">Justificativa</span>`);
-  if (badges.length === 0) badges.push(`<span class="badge">Sem detalhes</span>`);
-  return `<div class="pend-details">${badges.join('')}</div>`;
-}
-
 function renderKanban(categoryKey){
   const q = document.getElementById('search').value.trim();
   const cols = STAGES.map(st=>{
     const items = DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
-    const cards = items.length ? items.map(r=>`
-      <div class="card" style="--stage-color:${st.color}">
-        <div class="v">${escapeHtml(r.v)}</div>
-        <div class="os">OS Nº ${escapeHtml(r.os)}</div>
-        ${pendDetailsHtml(r)}
-        ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
-        <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select" aria-label="Alterar estágio">
-          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
-        </select>
-      </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
+    const cards = items.length ? items.map(r=>{
+      const st = stageInfo(r.stage);
+      const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
+      const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+      return `
+        <div class="card" style="--stage-color:${st.color}">
+          <div class="v">${escapeHtml(r.v)}</div>
+          <div class="os">OS Nº ${escapeHtml(r.os)}</div>
+          <div class="pend-details">
+            ${r.stage === 'pendente' ? `
+              <span class="badge">Orçada: ${orcada}</span>
+              ${qnt !== '—' ? `<span class="badge">Qnt: ${qnt}</span>` : ''}
+              ${r.tabela ? '<span class="badge">Tabela</span>' : ''}
+              ${r.justificativa ? '<span class="badge">Justificativa</span>' : ''}
+            ` : ''}
+          </div>
+          ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
+          <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select" aria-label="Alterar estágio">
+            ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
+          </select>
+        </div>
+      `;
+    }).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
     return `<div class="col" style="--stage-color:${st.color}">
       <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>
       <div class="col-cards">${cards}</div>
@@ -485,20 +492,6 @@ function bestRecord(v, categoryKey){
   const items = DATA.filter(r=>r.v===v && r.catKey===categoryKey);
   if(!items.length) return null;
   return items.reduce((a,b)=> STAGE_IDX[b.stage] > STAGE_IDX[a.stage] ? b : a);
-}
-
-function pillFor(rec){
-  if(!rec) return `<span class="pill"><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
-  const st = stageInfo(rec.stage);
-  let extra = '';
-  if (rec.stage === 'pendente') {
-    const parts = [];
-    if (rec.orcamentos > 0) parts.push(`Orçada (${rec.orcamentos})`);
-    if (rec.tabela) parts.push('Tabela');
-    if (rec.justificativa) parts.push('Justificativa');
-    if (parts.length) extra = ' · ' + parts.join(', ');
-  }
-  return `<span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}${extra} · OS ${escapeHtml(rec.os)}</span>`;
 }
 
 function renderGeral(){
@@ -536,7 +529,11 @@ function renderGeral(){
               <select class="stage-select" data-id="${r.id}" data-os="${escapeHtml(r.os)}">
                 ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
               </select>
-              <span class="os-note">${r.note ? escapeHtml(r.note) : ''}${orcada !== 'Não' ? ` | Orçada: ${orcada}` : ''}${qnt !== '—' ? ` | Qnt: ${qnt}` : ''}</span>
+              <div class="os-meta">
+                <span>Orçada: ${orcada}</span>
+                <span>Qnt: ${qnt}</span>
+              </div>
+              ${r.note ? `<div class="os-note">${escapeHtml(r.note)}</div>` : ''}
             </div>
           </div>
         `;
