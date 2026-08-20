@@ -325,12 +325,22 @@ async function updateSheet(osNumber, newStatus) {
     return false;
   }
   try {
-    await fetch(APPS_SCRIPT_URL, {
+    const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
     });
-    return true;
+    if (!response.ok) {
+      console.error('HTTP error:', response.status);
+      return false;
+    }
+    const result = await response.json().catch(() => null);
+    if (result && result.ok === true) {
+      return true;
+    } else {
+      console.warn('Apps Script retornou falha:', result);
+      return false;
+    }
   } catch (err) {
     console.error('Erro ao atualizar a planilha:', err);
     return false;
@@ -343,12 +353,22 @@ async function createOSInSheet(data) {
     return false;
   }
   try {
-    await fetch(APPS_SCRIPT_URL, {
+    const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'criarOS', ...data })
     });
-    return true;
+    if (!response.ok) {
+      console.error('HTTP error:', response.status);
+      return false;
+    }
+    const result = await response.json().catch(() => null);
+    if (result && result.ok === true) {
+      return true;
+    } else {
+      console.warn('Apps Script retornou falha:', result);
+      return false;
+    }
   } catch (err) {
     console.error('Erro ao criar OS na planilha:', err);
     return false;
