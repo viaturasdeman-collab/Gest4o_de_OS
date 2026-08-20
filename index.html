@@ -275,7 +275,7 @@ function mapRowsToData(rows){
     const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
     const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
     const orcadaRaw = findField(row, ['orçada', 'orcada']) || row['orçada'] || row['Orçada'] || '';
-    const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd']) || row['qnt'] || '';
+    const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd','Qnt']) || row['qnt'] || '';
 
     const stage = parseStage(status);
     const details = (stage === 'pendente') ? extractPendenteDetails(status, note, orcadaRaw, qntRaw) : { orcamentos: 0, tabela: false, justificativa: false };
