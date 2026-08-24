@@ -158,6 +158,7 @@
 <script>
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
+const STORAGE_KEY = 'deman_data_v1';
 
 const STAGES = [
   {key:'pendente',  label:'Pendente',   color:'var(--pendente)'},
@@ -240,6 +241,33 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   return { orcamentos, tabela, justificativa };
 }
 
+// ==============================================
+// GERENCIAMENTO DE ARMAZENAMENTO LOCAL
+// ==============================================
+function saveLocalData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  } catch (e) {
+    console.warn('Não foi possível salvar no localStorage:', e);
+  }
+}
+
+function loadLocalData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        DATA = parsed;
+        return true;
+      }
+    }
+  } catch (e) {
+    console.warn('Falha ao carregar do localStorage:', e);
+  }
+  return false;
+}
+
 let DATA = [];
 let activeTab = 'geral';
 
@@ -248,6 +276,7 @@ function processCsvText(csvText){
   if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
   const rows = parsed.data || [];
   DATA = mapRowsToData(rows);
+  saveLocalData();  // ← salva após sucesso da leitura da planilha
   render();
 }
 
@@ -319,9 +348,16 @@ async function loadData(){
 
   if (!loadedFromSheet) {
     console.error('Falha ao carregar a planilha (direto e proxies).');
-    DATA = [];
-    renderStats();
-    errorArea.style.display = 'block';
+    // Tenta usar o localStorage como fallback
+    const loadedFromLocal = loadLocalData();
+    if (loadedFromLocal) {
+      errorArea.style.display = 'none'; // mostramos os dados locais, sem erro aparente
+      render();
+    } else {
+      DATA = [];
+      renderStats();
+      errorArea.style.display = 'block';
+    }
   }
 }
 
@@ -342,6 +378,8 @@ async function updateSheet(osNumber, newStatus, viatura) {
     }
     const result = await response.json().catch(() => null);
     if (result && result.ok === true) {
+      // Após sucesso, atualiza o localStorage
+      saveLocalData();
       return true;
     } else {
       console.warn('Apps Script retornou falha:', result);
@@ -370,6 +408,7 @@ async function createOSInSheet(data) {
     }
     const result = await response.json().catch(() => null);
     if (result && result.ok === true) {
+      saveLocalData();
       return true;
     } else {
       console.warn('Apps Script retornou falha:', result);
@@ -524,12 +563,10 @@ function renderGeral(){
     const cards = vehicles.map(v => {
       const osList = DATA.filter(r => r.v === v);
 
-      // Determina as cores únicas dos status presentes
       const statusColors = osList.map(r => stageInfo(r.stage).color);
       const uniqueColors = [...new Set(statusColors)];
 
-      // Monta o gradiente da borda
-      let borderStyle = 'var(--border)'; // fallback
+      let borderStyle = 'var(--border)';
       if (uniqueColors.length === 1) {
         borderStyle = uniqueColors[0];
       } else if (uniqueColors.length > 1) {
@@ -705,6 +742,9 @@ document.getElementById('csvFileInput').addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
+// ==============================================
+// INICIALIZAÇÃO E POLLING (30s)
+// ==============================================
 loadData();
 
 setInterval(() => {
