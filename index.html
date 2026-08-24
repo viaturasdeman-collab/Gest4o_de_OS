@@ -11,7 +11,7 @@
   :root{
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
     --border:#303A47; --text:#E7ECF2; --text-dim:#93A0B0; --text-faint:#5C6879;
-    --pendente:#5B6472; --aprovada:#FFF500; --finalizada:#00FF0A; --cancelada:#EF5350;
+    --pendente:#5B6472; --aprovada:#fff500; --finalizada:#00ff0a; --cancelada:#EF5350;
     --semos:#EF5350;
     --amber:#E8A93A;
   }
@@ -84,8 +84,7 @@
   .fam-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);background:var(--bg);
     border:1px solid var(--border);border-radius:20px;padding:2px 10px;}
   .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:14px 18px 18px;}
-  .veh-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 13px;}
-  .veh-card.all-ok{border-color:var(--finalizada);background:linear-gradient(160deg,rgba(0,255,10,.05),transparent 60%);}
+  .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;}
   .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
   .svc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0 5px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;}
   .svc-row:first-of-type{border-top:none;}
@@ -524,6 +523,22 @@ function renderGeral(){
     const vehicles = families[fam].sort((a,b) => a.localeCompare(b));
     const cards = vehicles.map(v => {
       const osList = DATA.filter(r => r.v === v);
+
+      // Determina as cores únicas dos status presentes
+      const statusColors = osList.map(r => stageInfo(r.stage).color);
+      const uniqueColors = [...new Set(statusColors)];
+
+      // Monta o gradiente da borda
+      let borderStyle = 'var(--border)'; // fallback
+      if (uniqueColors.length === 1) {
+        borderStyle = uniqueColors[0];
+      } else if (uniqueColors.length > 1) {
+        const stops = uniqueColors.map((color, idx) => {
+          return `${color} ${Math.round(idx / (uniqueColors.length - 1) * 100)}%`;
+        }).join(', ');
+        borderStyle = `linear-gradient(135deg, ${stops})`;
+      }
+
       const osEntries = osList.map(r => {
         const st = stageInfo(r.stage);
         const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
@@ -546,8 +561,8 @@ function renderGeral(){
           </div>
         `;
       }).join('');
-      const allOk = osList.every(r => r.stage === 'aprovada' || r.stage === 'finalizada');
-      return `<div class="veh-card ${allOk ? 'all-ok' : ''}">
+
+      return `<div class="veh-card" style="border: 2px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, ${borderStyle} border-box;">
         <div class="veh-name">${escapeHtml(v)}</div>
         ${osEntries}
       </div>`;
