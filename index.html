@@ -328,7 +328,8 @@ async function loadData(){
   }
 }
 
-async function updateSheet(osNumber, newStatus) {
+// Atualizada para enviar viatura
+async function updateSheet(osNumber, newStatus, viatura) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
     console.warn('URL do Apps Script não configurada.');
     return false;
@@ -337,7 +338,7 @@ async function updateSheet(osNumber, newStatus) {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
+      body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus, viatura: viatura })
     });
     if (!response.ok) {
       console.error('HTTP error:', response.status);
@@ -488,7 +489,7 @@ function renderKanban(categoryKey){
         rec.justificativa = false;
       }
       render();
-      const ok = await updateSheet(rec.os, newStage);
+      const ok = await updateSheet(rec.os, newStage, rec.v);  // passando viatura
       if (!ok) {
         rec.stage = oldStage;
         alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.');
@@ -579,7 +580,7 @@ function renderGeral(){
         rec.justificativa = false;
       }
       render();
-      const ok = await updateSheet(rec.os, newStage);
+      const ok = await updateSheet(rec.os, newStage, rec.v);  // passando viatura
       if (!ok) {
         rec.stage = oldStage;
         alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.');
@@ -697,12 +698,12 @@ document.getElementById('csvFileInput').addEventListener('change', (e) => {
 // ==============================================
 loadData(); // primeira carga
 
-// Atualiza automaticamente a cada 60 segundos
+// Atualiza automaticamente a cada 30 segundos
 setInterval(() => {
   // Evita sobrescrever se o usuário estiver com um seletor aberto
   if (document.activeElement && document.activeElement.tagName === 'SELECT') return;
   loadData();
-}, 30000); // 60.000 ms = 1 minuto
+}, 30000); // 30 segundos
 </script>
 </body>
 </html>
