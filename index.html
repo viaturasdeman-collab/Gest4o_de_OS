@@ -11,7 +11,7 @@
   :root{
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
     --border:#303A47; --text:#E7ECF2; --text-dim:#93A0B0; --text-faint:#5C6879;
-    --pendente:#5B6472; --aprovada:#fff500; --finalizada:#00ff0a; --cancelada:#EF5350;
+    --Pendente:#5B6472; --Aprovada:#fff500; --Finalizada:#00ff0a; --Cancelada:#EF5350;
     --semos:#EF5350;
     --amber:#E8A93A;
   }
@@ -161,10 +161,10 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIF
 const STORAGE_KEY = 'deman_data_v1';
 
 const STAGES = [
-  {key:'pendente',  label:'Pendente',   color:'var(--pendente)'},
-  {key:'aprovada',  label:'Aprovada',   color:'var(--aprovada)'},
-  {key:'finalizada',label:'Finalizada', color:'var(--finalizada)'},
-  {key:'cancelada', label:'Cancelada',  color:'var(--cancelada)'},
+  {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
+  {key:'Aprovada',  label:'Aprovada',   color:'var(--Aprovada)'},
+  {key:'Finalizada',label:'Finalizada', color:'var(--Finalizada)'},
+  {key:'Cancelada', label:'Cancelada',  color:'var(--Cancelada)'},
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
@@ -200,10 +200,10 @@ function findField(row, keywords){
 
 function parseStage(raw){
   const r = normalizeStr(raw || '');
-  if (r.includes('cancelada')) return 'cancelada';
-  if (r.includes('entregue') || r.includes('finalizada') || r.includes('concluida')) return 'finalizada';
-  if (r.includes('aprovada')) return 'aprovada';
-  return 'pendente';
+  if (r.includes('Cancelada')) return 'Cancelada';
+  if (r.includes('entregue') || r.includes('Finalizada') || r.includes('concluida')) return 'Finalizada';
+  if (r.includes('Aprovada')) return 'Aprovada';
+  return 'Pendente';
 }
 
 function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
@@ -294,7 +294,7 @@ function mapRowsToData(rows){
     const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd', 'quant']) || row['qnt'] || '';
 
     const stage = parseStage(status);
-    const details = (stage === 'pendente') ? extractPendenteDetails(status, note, orcadaRaw, qntRaw) : { orcamentos: 0, tabela: false, justificativa: false };
+    const details = (stage === 'Pendente') ? extractPendenteDetails(status, note, orcadaRaw, qntRaw) : { orcamentos: 0, tabela: false, justificativa: false };
 
     return {
       id: 'sheet-' + i,
@@ -491,7 +491,7 @@ function renderKanban(categoryKey){
           <div class="v">${escapeHtml(r.v)}</div>
           <div class="os">OS Nº ${escapeHtml(r.os)}</div>
           <div class="pend-details">
-            ${r.stage === 'pendente' ? `
+            ${r.stage === 'Pendente' ? `
               <span class="badge">Orçada: ${orcada}</span>
               ${qnt !== '—' ? `<span class="badge">Qnt: ${qnt}</span>` : ''}
               ${r.tabela ? '<span class="badge">Tabela</span>' : ''}
@@ -518,7 +518,7 @@ function renderKanban(categoryKey){
       const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
-      if (newStage !== 'pendente') {
+      if (newStage !== 'Pendente') {
         rec.orcamentos = 0;
         rec.tabela = false;
         rec.justificativa = false;
@@ -623,7 +623,7 @@ function renderGeral(){
       const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
-      if (newStage !== 'pendente') {
+      if (newStage !== 'Pendente') {
         rec.orcamentos = 0;
         rec.tabela = false;
         rec.justificativa = false;
@@ -643,10 +643,10 @@ function renderStats(){
   const categories = getCategories();
   const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
   const catStats = categories.map(c=>({n: DATA.filter(r=>r.catKey===c.key).length, l:`OS de ${c.label}`}));
-  const pendentes = DATA.filter(r=>r.stage==='pendente').length;
-  const aprovadas = DATA.filter(r=>r.stage==='aprovada').length;
-  const finalizadas = DATA.filter(r=>r.stage==='finalizada').length;
-  const canceladas = DATA.filter(r=>r.stage==='cancelada').length;
+  const pendentes = DATA.filter(r=>r.stage==='Pendente').length;
+  const aprovadas = DATA.filter(r=>r.stage==='Aprovada').length;
+  const finalizadas = DATA.filter(r=>r.stage==='Finalizada').length;
+  const canceladas = DATA.filter(r=>r.stage==='Cancelada').length;
   const stats = [
     {n: total, l:'Viaturas com OS'},
     {n: pendentes, l:'Pendentes'},
@@ -700,7 +700,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   }
 
   const newRecord = {id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, note};
-  if (stage === 'pendente') {
+  if (stage === 'Pendente') {
     newRecord.orcamentos = 0;
     newRecord.tabela = false;
     newRecord.justificativa = false;
