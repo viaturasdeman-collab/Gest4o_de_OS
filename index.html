@@ -31,7 +31,6 @@
   .countdown .num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:34px;color:var(--amber);line-height:1;}
   .countdown .lbl{font-size:12px;color:var(--text-dim);line-height:1.2;}
 
-  /* Indicador visual de atualização */
   .update-indicator{
     font-size: 11px;
     color: var(--text-faint);
@@ -131,7 +130,6 @@
     </div>
   </header>
 
-  <!-- Indicador de atualização -->
   <div class="update-indicator" id="updateStatus">Aguardando primeira carga...</div>
 
   <div class="stats" id="stats"></div>
@@ -212,7 +210,6 @@ function findField(row, keywords){
 
 function parseStage(raw){
   const r = normalizeStr(raw || '');
-  // Correção: comparar com strings minúsculas
   if (r.includes('cancelada')) return 'Cancelada';
   if (r.includes('entregue') || r.includes('finalizada') || r.includes('concluida')) return 'Finalizada';
   if (r.includes('aprovada')) return 'Aprovada';
@@ -341,13 +338,16 @@ async function loadData(){
   const errorArea = document.getElementById('errorArea');
   let loadedFromSheet = false;
 
+  // Adiciona parâmetro anti-cache à URL
+  const cacheBust = 'ts=' + Date.now();
+  const csvUrl = DIRECT_SHEET_CSV_URL + (DIRECT_SHEET_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
+
   try {
-    const csvText = await fetchCsv(DIRECT_SHEET_CSV_URL);
+    const csvText = await fetchCsv(csvUrl);
     processCsvText(csvText);
     errorArea.style.display = 'none';
     loadedFromSheet = true;
-    const now = new Date();
-    updateIndicator('Atualizado em ' + now.toLocaleTimeString());
+    updateIndicator('Atualizado em ' + new Date().toLocaleTimeString());
   } catch (e1) {
     console.warn('Falha na URL direta, tentando proxies...', e1);
     const proxies = [
@@ -357,12 +357,12 @@ async function loadData(){
     ];
     for (const p of proxies) {
       try {
-        const csvText = await fetchCsv(p + encodeURIComponent(DIRECT_SHEET_CSV_URL));
+        const proxyUrl = p + encodeURIComponent(csvUrl);
+        const csvText = await fetchCsv(proxyUrl);
         processCsvText(csvText);
         errorArea.style.display = 'none';
         loadedFromSheet = true;
-        const now = new Date();
-        updateIndicator('Atualizado via proxy em ' + now.toLocaleTimeString());
+        updateIndicator('Atualizado via proxy em ' + new Date().toLocaleTimeString());
         break;
       } catch (e2) {
         console.warn(`Proxy falhou (${p}):`, e2);
@@ -776,7 +776,7 @@ loadData();
 setInterval(() => {
   if (document.activeElement && document.activeElement.tagName === 'SELECT') return;
   loadData();
-}, POLLING_INTERVAL); // usa a constante definida no topo
+}, POLLING_INTERVAL);
 </script>
 </body>
 </html>
