@@ -49,9 +49,9 @@
     border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;white-space:nowrap;}
   .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  input[type=text], input[type=file]{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
+  input[type=text], input[type=file], select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
     padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;min-width:180px;}
-  input[type=text]:focus{outline:1px solid var(--amber);}
+  input[type=text]:focus, select:focus{outline:1px solid var(--amber);}
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
     border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);}
   .btn:hover{border-color:var(--amber);}
@@ -148,6 +148,11 @@
     <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
     <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria" style="min-width:140px;">
     <select id="af-stage" aria-label="Estágio"></select>
+    <select id="af-orcada" aria-label="Orçada">
+      <option value="Não">Não</option>
+      <option value="Sim">Sim</option>
+    </select>
+    <input type="text" id="af-qnt" placeholder="Qnt (opcional)" aria-label="Quantidade" style="min-width:80px;">
     <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:1;min-width:160px;">
     <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
@@ -168,7 +173,7 @@
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
-const POLLING_INTERVAL = 180000; 
+const POLLING_INTERVAL = 180000; // 3 minutos
 
 const STAGES = [
   {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
@@ -216,13 +221,15 @@ function parseStage(raw){
   return 'Pendente';
 }
 
-function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
+// Extrai apenas a quantidade de orçamentos (independente do status)
+function extractOrcamentos(statusRaw, note, orcadaRaw, qntRaw){
   const r = normalizeStr(statusRaw || '');
   const n = normalizeStr(note || '');
   const o = normalizeStr(orcadaRaw || '');
   const combined = r + ' ' + n;
   let orcamentos = 0;
 
+  // Prioridade 1: coluna QNT
   if (qntRaw && String(qntRaw).trim() !== '') {
     const parsed = parseInt(qntRaw, 10);
     if (!isNaN(parsed) && parsed > 0) {
@@ -230,10 +237,12 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
     }
   }
 
-  if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y' || /or/i.test(o))) {
+  // Prioridade 2: coluna orçada = sim
+  if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y')) {
     orcamentos = 1;
   }
 
+  // Prioridade 3: padrões no texto
   if (orcamentos === 0) {
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
     if (match) {
@@ -244,11 +253,18 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   }
 
   if (orcamentos > 5) orcamentos = 5;
+  return orcamentos;
+}
 
-  const tabela = combined.includes('tabela');
-  const justificativa = combined.includes('justificativa');
-
-  return { orcamentos, tabela, justificativa };
+// Extrai tabela e justificativa apenas para Pendente
+function extractPendenteFlags(statusRaw, note){
+  const r = normalizeStr(statusRaw || '');
+  const n = normalizeStr(note || '');
+  const combined = r + ' ' + n;
+  return {
+    tabela: combined.includes('tabela'),
+    justificativa: combined.includes('justificativa')
+  };
 }
 
 // ==============================================
@@ -309,7 +325,8 @@ function mapRowsToData(rows){
     const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd', 'quant']) || row['qnt'] || '';
 
     const stage = parseStage(status);
-    const details = (stage === 'Pendente') ? extractPendenteDetails(status, note, orcadaRaw, qntRaw) : { orcamentos: 0, tabela: false, justificativa: false };
+    const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
+    const flags = (stage === 'Pendente') ? extractPendenteFlags(status, note) : { tabela: false, justificativa: false };
 
     return {
       id: 'sheet-' + i,
@@ -318,9 +335,9 @@ function mapRowsToData(rows){
       category: categoriaLabel,
       catKey: catKey,
       stage: stage,
-      orcamentos: details.orcamentos,
-      tabela: details.tabela,
-      justificativa: details.justificativa,
+      orcamentos: orcamentos,
+      tabela: flags.tabela,
+      justificativa: flags.justificativa,
       note: (note || '').toString().trim(),
     };
   }).filter(r => r.v);
@@ -338,7 +355,6 @@ async function loadData(){
   const errorArea = document.getElementById('errorArea');
   let loadedFromSheet = false;
 
-  // Adiciona parâmetro anti-cache à URL
   const cacheBust = 'ts=' + Date.now();
   const csvUrl = DIRECT_SHEET_CSV_URL + (DIRECT_SHEET_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
 
@@ -517,12 +533,10 @@ function renderKanban(categoryKey){
           <div class="v">${escapeHtml(r.v)}</div>
           <div class="os">OS Nº ${escapeHtml(r.os)}</div>
           <div class="pend-details">
-            ${r.stage === 'Pendente' ? `
-              <span class="badge">Orçada: ${orcada}</span>
-              ${qnt !== '—' ? `<span class="badge">Qnt: ${qnt}</span>` : ''}
-              ${r.tabela ? '<span class="badge">Tabela</span>' : ''}
-              ${r.justificativa ? '<span class="badge">Justificativa</span>' : ''}
-            ` : ''}
+            <span class="badge">Orçada: ${orcada}</span>
+            ${qnt !== '—' ? `<span class="badge">Qnt: ${qnt}</span>` : ''}
+            ${r.stage === 'Pendente' && r.tabela ? '<span class="badge">Tabela</span>' : ''}
+            ${r.stage === 'Pendente' && r.justificativa ? '<span class="badge">Justificativa</span>' : ''}
           </div>
           ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
           <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select" aria-label="Alterar estágio">
@@ -544,11 +558,7 @@ function renderKanban(categoryKey){
       const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
-      if (newStage !== 'Pendente') {
-        rec.orcamentos = 0;
-        rec.tabela = false;
-        rec.justificativa = false;
-      }
+      // Não zera orcamentos, tabela, justificativa ao mudar status
       render();
       const ok = await updateSheet(rec.os, newStage, rec.v);
       if (!ok) {
@@ -649,11 +659,6 @@ function renderGeral(){
       const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
-      if (newStage !== 'Pendente') {
-        rec.orcamentos = 0;
-        rec.tabela = false;
-        rec.justificativa = false;
-      }
       render();
       const ok = await updateSheet(rec.os, newStage, rec.v);
       if (!ok) {
@@ -716,8 +721,17 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
   const catKey = slugify(catLabel);
   const stage = document.getElementById('af-stage').value;
+  const orcada = document.getElementById('af-orcada').value;
+  const qntRaw = document.getElementById('af-qnt').value.trim();
   const note = document.getElementById('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
+
+  let orcamentos = 0;
+  if (orcada === 'Sim') {
+    orcamentos = parseInt(qntRaw, 10);
+    if (isNaN(orcamentos) || orcamentos < 1) orcamentos = 1;
+    if (orcamentos > 5) orcamentos = 5;
+  }
 
   const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
   if(duplicate){
@@ -725,12 +739,17 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
     return;
   }
 
-  const newRecord = {id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, note};
-  if (stage === 'Pendente') {
-    newRecord.orcamentos = 0;
-    newRecord.tabela = false;
-    newRecord.justificativa = false;
-  }
+  const newRecord = {
+    id:'r'+Date.now(),
+    v, os,
+    category:catLabel,
+    catKey,
+    stage,
+    orcamentos,
+    tabela:false,
+    justificativa:false,
+    note
+  };
   DATA.push(newRecord);
   render();
 
@@ -739,8 +758,8 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
     viatura: v,
     os: os,
     status: stage,
-    orcada: '',
-    qnt: '',
+    orcada: orcada,
+    qnt: orcamentos > 0 ? String(orcamentos) : '',
     oficina: '',
     observacoes: note
   });
@@ -752,6 +771,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   }
 
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
+  document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
 });
