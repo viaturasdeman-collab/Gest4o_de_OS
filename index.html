@@ -50,17 +50,17 @@
   .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   input[type=text], input[type=file], select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
-    padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;min-width:180px;}
+    padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;}
   input[type=text]:focus, select:focus{outline:1px solid var(--amber);}
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
-    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);}
+    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);white-space:nowrap;}
   .btn:hover{border-color:var(--amber);}
   .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
   .btn.ghost{background:transparent;}
 
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
   .legend span{display:inline-flex;align-items:center;gap:5px;}
-  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;}
 
   .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
   .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
@@ -71,46 +71,49 @@
     border-radius:20px;padding:1px 8px;}
   .col-cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;}
   .card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--stage-color);
-    border-radius:9px;padding:9px 10px;}
+    border-radius:9px;padding:9px 10px;overflow:hidden;}
   .card .v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;}
   .card .os{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:1px;}
-  .card .note{font-size:11px;color:var(--text-faint);margin-top:3px;}
+  .card .note{font-size:11px;color:var(--text-faint);margin-top:3px;overflow-wrap:break-word;max-width:100%;}
   .card .pend-details{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-  .badge{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:2px 8px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;}
   .card select{margin-top:7px;width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:5px 6px;font-family:'Inter',sans-serif;font-size:11.5px;}
+    border-radius:6px;padding:4px 6px;font-family:'Inter',sans-serif;font-size:11px;}
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
   .family{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
   .family > summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;
-    justify-content:space-between;background:var(--surface);}
+    justify-content:space-between;background:var(--surface);gap:10px;}
   .family > summary::-webkit-details-marker{display:none;}
-  .family > summary::after{content:'▾';color:var(--text-faint);transition:transform .15s;margin-left:10px;}
+  .family > summary::after{content:'▾';color:var(--text-faint);transition:transform .15s;margin-left:auto;}
   .family[open] > summary::after{transform:rotate(180deg);}
-  .fam-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;letter-spacing:.03em;display:flex;align-items:center;gap:10px;}
+  .fam-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;letter-spacing:.03em;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .fam-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);background:var(--bg);
-    border:1px solid var(--border);border-radius:20px;padding:2px 10px;}
-  .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:14px 18px 18px;}
-  .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;}
-  .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
-  .svc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0 5px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;}
+    border:1px solid var(--border);border-radius:20px;padding:2px 10px;white-space:nowrap;}
+  .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:14px 18px 18px;}
+  .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;}
+  .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .svc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:5px 0 5px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;flex-wrap:wrap;}
   .svc-row:first-of-type{border-top:none;}
-  .svc-label{font-size:11.5px;color:var(--text-dim);min-width:88px;}
-  .svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:1;}
-  .pill{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10.8px;
-    padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;}
-  .pill .dot{width:7px;height:7px;}
+  .svc-label{font-size:11.5px;color:var(--text-dim);min-width:80px;}
+  .svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:1;min-width:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;
+    padding:2px 6px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;max-width:100%;}
+  .pill .dot{width:7px;height:7px;flex:none;}
   .os-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);}
   select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:3px 5px;font-family:'Inter',sans-serif;font-size:10.5px;max-width:140px;}
-  .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;}
-  .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:160px;}
+    border-radius:6px;padding:2px 4px;font-family:'Inter',sans-serif;font-size:10px;max-width:140px;}
+  .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
+  .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 
   .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
     border-radius:10px;padding:12px;margin-bottom:14px;}
   .addform.open{display:flex;}
   .addform input,.addform select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;}
+    border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;}
+  .addform input[type="text"]{flex:1 1 150px;}
+  .addform select{flex:0 1 auto;}
+  .addform .btn{flex:0 0 auto;}
   footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
   .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
   .error-box p{margin:5px 0;}
@@ -146,14 +149,14 @@
   <div class="addform" id="addForm">
     <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
     <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
-    <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria" style="min-width:140px;">
+    <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria">
     <select id="af-stage" aria-label="Estágio"></select>
     <select id="af-orcada" aria-label="Orçada">
       <option value="Não">Não</option>
       <option value="Sim">Sim</option>
     </select>
-    <input type="text" id="af-qnt" placeholder="Qnt (opcional)" aria-label="Quantidade" style="min-width:80px;">
-    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:1;min-width:160px;">
+    <input type="text" id="af-qnt" placeholder="Qnt (opcional)" aria-label="Quantidade" style="max-width:80px;">
+    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:2;">
     <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
@@ -170,6 +173,7 @@
 </div>
 
 <script>
+// (O script JavaScript permanece idêntico ao da versão anterior)
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
@@ -184,173 +188,105 @@ const STAGES = [
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
 function normalizeViatura(v){
-  return v.trim()
-    .toUpperCase()
-    .replace(/\s+/g, ' ')
-    .replace(/\s*-\s*/g, '-')
-    .replace(/\s+(?=\d)/g, '-');
+  return v.trim().toUpperCase().replace(/\s+/g,' ').replace(/\s*-\s*/g,'-').replace(/\s+(?=\d)/g,'-');
 }
-
 function normalizeStr(str){
-  return String(str || '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
+  return String(str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 }
-
 function slugify(str){
-  const n = normalizeStr(str || '');
-  return n.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'outras';
+  const n = normalizeStr(str||'');
+  return n.replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'outras';
 }
-
 function findField(row, keywords){
-  const keys = Object.keys(row || {});
+  const keys = Object.keys(row||{});
   for (const k of keys) {
     const nk = normalizeStr(k);
     if (keywords.some(kw => nk.includes(kw))) return row[k];
   }
   return '';
 }
-
 function parseStage(raw){
-  const r = normalizeStr(raw || '');
+  const r = normalizeStr(raw||'');
   if (r.includes('cancelada')) return 'Cancelada';
   if (r.includes('entregue') || r.includes('finalizada') || r.includes('concluida')) return 'Finalizada';
   if (r.includes('aprovada')) return 'Aprovada';
   return 'Pendente';
 }
-
-// Extrai apenas a quantidade de orçamentos (independente do status)
 function extractOrcamentos(statusRaw, note, orcadaRaw, qntRaw){
-  const r = normalizeStr(statusRaw || '');
-  const n = normalizeStr(note || '');
-  const o = normalizeStr(orcadaRaw || '');
-  const combined = r + ' ' + n;
+  const r = normalizeStr(statusRaw||'');
+  const n = normalizeStr(note||'');
+  const o = normalizeStr(orcadaRaw||'');
+  const combined = r+' '+n;
   let orcamentos = 0;
 
-  // Prioridade 1: coluna QNT
   if (qntRaw && String(qntRaw).trim() !== '') {
-    const parsed = parseInt(qntRaw, 10);
-    if (!isNaN(parsed) && parsed > 0) {
-      orcamentos = Math.min(parsed, 5);
-    }
+    const parsed = parseInt(qntRaw,10);
+    if (!isNaN(parsed) && parsed > 0) orcamentos = Math.min(parsed,5);
   }
-
-  // Prioridade 2: coluna orçada = sim
-  if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y')) {
+  if (orcamentos === 0 && o && (o==='sim'||o==='true'||o==='1'||o==='x'||o==='yes'||o==='s'||o==='y')) {
     orcamentos = 1;
   }
-
-  // Prioridade 3: padrões no texto
   if (orcamentos === 0) {
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
-    if (match) {
-      orcamentos = parseInt(match[1], 10);
-    } else if (r.includes('orçada') || r.includes('orcada') || r.includes('cotada')) {
-      orcamentos = 1;
-    }
+    if (match) orcamentos = parseInt(match[1],10);
+    else if (r.includes('orçada')||r.includes('orcada')||r.includes('cotada')) orcamentos = 1;
   }
-
-  if (orcamentos > 5) orcamentos = 5;
-  return orcamentos;
+  return Math.min(orcamentos,5);
 }
-
-// Extrai tabela e justificativa apenas para Pendente
 function extractPendenteFlags(statusRaw, note){
-  const r = normalizeStr(statusRaw || '');
-  const n = normalizeStr(note || '');
-  const combined = r + ' ' + n;
-  return {
-    tabela: combined.includes('tabela'),
-    justificativa: combined.includes('justificativa')
-  };
+  const r = normalizeStr(statusRaw||'');
+  const n = normalizeStr(note||'');
+  const combined = r+' '+n;
+  return { tabela: combined.includes('tabela'), justificativa: combined.includes('justificativa') };
 }
 
-// ==============================================
-// GERENCIAMENTO DE ARMAZENAMENTO LOCAL
-// ==============================================
-function saveLocalData() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
-  } catch (e) {
-    console.warn('Não foi possível salvar no localStorage:', e);
-  }
-}
-
-function loadLocalData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        DATA = parsed;
-        return true;
-      }
-    }
-  } catch (e) {
-    console.warn('Falha ao carregar do localStorage:', e);
-  }
-  return false;
-}
+function saveLocalData(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e){} }
+function loadLocalData(){ try { const raw = localStorage.getItem(STORAGE_KEY); if(raw){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)&&parsed.length){ DATA=parsed; return true; } } } catch(e){} return false; }
 
 let DATA = [];
 let activeTab = 'geral';
 let isLoading = false;
 
-function updateIndicator(text) {
-  const el = document.getElementById('updateStatus');
-  if (el) el.textContent = text;
-}
-
+function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 function processCsvText(csvText){
-  const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-  if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
+  const parsed = Papa.parse(csvText,{header:true,skipEmptyLines:true});
+  if(parsed.errors&&parsed.errors.length) console.warn('CSV parse warnings:',parsed.errors);
   const rows = parsed.data || [];
   DATA = mapRowsToData(rows);
   render();
 }
-
 function mapRowsToData(rows){
-  return rows.map((row, i) => {
-    const rawCategoria = findField(row, ['categoria']) || row['Categoria'] || '';
-    const categoriaLabel = (rawCategoria || '').toString().trim() || 'Outras';
+  return rows.map((row,i)=>{
+    const rawCategoria = findField(row,['categoria']) || row['Categoria'] || '';
+    const categoriaLabel = (rawCategoria||'').toString().trim() || 'Outras';
     const catKey = slugify(categoriaLabel);
-
-    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os', 'numero']) || '';
-    const viatura = findField(row, ['viatura', 'veiculo', 'viagem']) || row['Viatura'] || row['Veículo'] || '';
-    const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
-    const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
-    const orcadaRaw = findField(row, ['orçada', 'orcada']) || row['orçada'] || row['Orçada'] || '';
-    const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd', 'quant']) || row['qnt'] || '';
-
+    const osField = findField(row,['os','os n','os nº','numero os','numero']) || '';
+    const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
+    const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
+    const note = findField(row,['observa','oficina','empresa']) || row['Observações'] || row['Observacoes'] || '';
+    const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
+    const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
     const stage = parseStage(status);
     const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
-    const flags = (stage === 'Pendente') ? extractPendenteFlags(status, note) : { tabela: false, justificativa: false };
-
+    const flags = (stage==='Pendente') ? extractPendenteFlags(status, note) : {tabela:false,justificativa:false};
     return {
-      id: 'sheet-' + i,
-      v: normalizeViatura(viatura),
-      os: (osField || '').toString().trim(),
-      category: categoriaLabel,
-      catKey: catKey,
-      stage: stage,
-      orcamentos: orcamentos,
-      tabela: flags.tabela,
-      justificativa: flags.justificativa,
-      note: (note || '').toString().trim(),
+      id:'sheet-'+i,
+      v:normalizeViatura(viatura),
+      os:(osField||'').toString().trim(),
+      category:categoriaLabel,
+      catKey:catKey,
+      stage:stage,
+      orcamentos:orcamentos,
+      tabela:flags.tabela,
+      justificativa:flags.justificativa,
+      note:(note||'').toString().trim()
     };
-  }).filter(r => r.v);
+  }).filter(r=>r.v);
 }
 
-async function fetchCsv(url){
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return await response.text();
-}
-
+async function fetchCsv(url){ const response=await fetch(url); if(!response.ok) throw new Error(`HTTP ${response.status}`); return await response.text(); }
 async function loadData(){
-  if (isLoading) return;
+  if(isLoading) return;
   isLoading = true;
   const errorArea = document.getElementById('errorArea');
   let loadedFromSheet = false;
@@ -361,190 +297,133 @@ async function loadData(){
   try {
     const csvText = await fetchCsv(csvUrl);
     processCsvText(csvText);
-    errorArea.style.display = 'none';
+    errorArea.style.display='none';
     loadedFromSheet = true;
     updateIndicator('Atualizado em ' + new Date().toLocaleTimeString());
-  } catch (e1) {
+  } catch(e1) {
     console.warn('Falha na URL direta, tentando proxies...', e1);
-    const proxies = [
-      'https://api.allorigins.win/raw?url=',
-      'https://corsproxy.io/?',
-      'https://api.codetabs.com/v1/proxy?quest='
-    ];
+    const proxies = ['https://api.allorigins.win/raw?url=','https://corsproxy.io/?','https://api.codetabs.com/v1/proxy?quest='];
     for (const p of proxies) {
       try {
         const proxyUrl = p + encodeURIComponent(csvUrl);
         const csvText = await fetchCsv(proxyUrl);
         processCsvText(csvText);
-        errorArea.style.display = 'none';
+        errorArea.style.display='none';
         loadedFromSheet = true;
         updateIndicator('Atualizado via proxy em ' + new Date().toLocaleTimeString());
         break;
-      } catch (e2) {
+      } catch(e2) {
         console.warn(`Proxy falhou (${p}):`, e2);
       }
     }
   }
 
-  if (!loadedFromSheet) {
+  if(!loadedFromSheet) {
     console.error('Falha ao carregar a planilha (direto e proxies).');
     const loadedFromLocal = loadLocalData();
-    if (loadedFromLocal) {
-      errorArea.style.display = 'none';
+    if(loadedFromLocal) {
+      errorArea.style.display='none';
       updateIndicator('Usando dados locais (planilha indisponível)');
       render();
     } else {
-      DATA = [];
+      DATA=[];
       renderStats();
-      errorArea.style.display = 'block';
+      errorArea.style.display='block';
       updateIndicator('Falha ao carregar dados');
     }
   }
-
   isLoading = false;
 }
 
-async function updateSheet(osNumber, newStatus, viatura) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    console.warn('URL do Apps Script não configurada.');
-    return false;
-  }
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus, viatura: viatura })
+async function updateSheet(osNumber,newStatus,viatura){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return false;
+  try{
+    const response = await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'atualizarStatus',os:osNumber,status:newStatus,viatura:viatura})
     });
-    if (!response.ok) {
-      console.error('HTTP error:', response.status);
-      return false;
-    }
-    const result = await response.json().catch(() => null);
-    if (result && result.ok === true) {
-      saveLocalData();
-      return true;
-    } else {
-      console.warn('Apps Script retornou falha:', result);
-      return false;
-    }
-  } catch (err) {
-    console.error('Erro ao atualizar a planilha:', err);
-    return false;
-  }
+    if(!response.ok) return false;
+    const result = await response.json().catch(()=>null);
+    if(result && result.ok === true){ saveLocalData(); return true; } else return false;
+  }catch(err){ console.error('Erro ao atualizar a planilha:',err); return false; }
 }
 
-async function createOSInSheet(data) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    console.warn('URL do Apps Script não configurada.');
-    return false;
-  }
-  try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'criarOS', ...data })
+async function createOSInSheet(data){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return false;
+  try{
+    const response = await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'criarOS',...data})
     });
-    if (!response.ok) {
-      console.error('HTTP error:', response.status);
-      return false;
-    }
-    const result = await response.json().catch(() => null);
-    if (result && result.ok === true) {
-      saveLocalData();
-      return true;
-    } else {
-      console.warn('Apps Script retornou falha:', result);
-      return false;
-    }
-  } catch (err) {
-    console.error('Erro ao criar OS na planilha:', err);
-    return false;
-  }
+    if(!response.ok) return false;
+    const result = await response.json().catch(()=>null);
+    if(result && result.ok === true){ saveLocalData(); return true; } else return false;
+  }catch(err){ console.error('Erro ao criar OS na planilha:',err); return false; }
 }
 
 function daysUntilParade(){
-  const today = new Date();
-  const startToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const parade = new Date(today.getFullYear(), 8, 7);
-  let target = parade;
-  if (target < startToday) {
-    target = new Date(today.getFullYear() + 1, 8, 7);
-  }
-  const diff = Math.ceil((target - startToday) / 86400000);
-  return diff;
+  const today=new Date();
+  const startToday=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const parade=new Date(today.getFullYear(),8,7);
+  let target=parade;
+  if(target<startToday) target=new Date(today.getFullYear()+1,8,7);
+  return Math.ceil((target-startToday)/86400000);
 }
-
 function stageInfo(key){ return STAGES.find(s=>s.key===key) || STAGES[0]; }
-
-function escapeHtml(s){
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
 function renderLegend(){
-  const el = document.getElementById('legend');
+  const el=document.getElementById('legend');
   el.innerHTML = STAGES.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`).join('') +
     `<span><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
 }
-
 function getCategories(){
-  const map = new Map();
-  DATA.forEach(r => { if(r.catKey && !map.has(r.catKey)) map.set(r.catKey, r.category); });
+  const map=new Map();
+  DATA.forEach(r=>{ if(r.catKey&&!map.has(r.catKey)) map.set(r.catKey,r.category); });
   return Array.from(map.entries()).map(([key,label])=>({key,label}));
 }
-
 function renderTabs(){
-  const cats = getCategories();
-  const container = document.getElementById('tabsContainer');
-  container.innerHTML = `
-    <button class="tab ${activeTab === 'geral' ? 'active' : ''}" data-tab="geral" aria-label="Visão geral">Visão Geral</button>
-    ${cats.map(cat => `
-      <button class="tab ${activeTab === cat.key ? 'active' : ''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>
-    `).join('')}
-  `;
-  document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  const cats=getCategories();
+  const container=document.getElementById('tabsContainer');
+  container.innerHTML = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>` +
+    cats.map(cat=>`<button class="tab ${activeTab===cat.key?'active':''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>`).join('');
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      activeTab = t.dataset.tab;
+      activeTab=t.dataset.tab;
       render();
     });
   });
 }
-
-function matchesSearch(v, q){ 
-  if (!q) return true;
-  const vNorm = normalizeViatura(v);
-  const qNorm = normalizeViatura(q);
-  return vNorm.includes(qNorm);
-}
+function matchesSearch(v,q){ if(!q) return true; const vNorm=normalizeViatura(v); const qNorm=normalizeViatura(q); return vNorm.includes(qNorm); }
 
 function renderKanban(categoryKey){
-  const q = document.getElementById('search').value.trim();
-  const cols = STAGES.map(st=>{
-    const items = DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
-    const cards = items.length ? items.map(r=>{
-      const st = stageInfo(r.stage);
-      const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
-      const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+  const q=document.getElementById('search').value.trim();
+  const cols=STAGES.map(st=>{
+    const items=DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
+    const cards=items.length ? items.map(r=>{
+      const st=stageInfo(r.stage);
+      const orcada=r.orcamentos>0?'Sim':'Não';
+      const qnt=r.orcamentos>0?r.orcamentos:'—';
       return `
         <div class="card" style="--stage-color:${st.color}">
           <div class="v">${escapeHtml(r.v)}</div>
           <div class="os">OS Nº ${escapeHtml(r.os)}</div>
           <div class="pend-details">
             <span class="badge">Orçada: ${orcada}</span>
-            ${qnt !== '—' ? `<span class="badge">Qnt: ${qnt}</span>` : ''}
-            ${r.stage === 'Pendente' && r.tabela ? '<span class="badge">Tabela</span>' : ''}
-            ${r.stage === 'Pendente' && r.justificativa ? '<span class="badge">Justificativa</span>' : ''}
+            ${qnt!=='—'?`<span class="badge">Qnt: ${qnt}</span>`:''}
+            ${r.stage==='Pendente' && r.tabela?'<span class="badge">Tabela</span>':''}
+            ${r.stage==='Pendente' && r.justificativa?'<span class="badge">Justificativa</span>':''}
           </div>
-          ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
-          <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select" aria-label="Alterar estágio">
+          ${r.note?`<div class="note">${escapeHtml(r.note)}</div>`:''}
+          <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select">
             ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
           </select>
-        </div>
-      `;
-    }).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
+        </div>`;
+    }).join('') : '<div class="empty-col">Nenhuma OS aqui</div>';
     return `<div class="col" style="--stage-color:${st.color}">
       <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>
       <div class="col-cards">${cards}</div>
@@ -553,69 +432,49 @@ function renderKanban(categoryKey){
   document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
   document.querySelectorAll('.stage-select').forEach(sel=>{
     sel.addEventListener('change', async (e)=>{
-      const rec = DATA.find(r=>r.id===e.target.dataset.id);
+      const rec=DATA.find(r=>r.id===e.target.dataset.id);
       if(!rec) return;
-      const oldStage = rec.stage;
-      const newStage = e.target.value;
-      rec.stage = newStage;
-      // Não zera orcamentos, tabela, justificativa ao mudar status
+      const oldStage=rec.stage;
+      const newStage=e.target.value;
+      rec.stage=newStage;
       render();
-      const ok = await updateSheet(rec.os, newStage, rec.v);
-      if (!ok) {
-        rec.stage = oldStage;
-        alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.');
-        render();
-      }
+      const ok=await updateSheet(rec.os,newStage,rec.v);
+      if(!ok){ rec.stage=oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
     });
   });
 }
 
-function bestRecord(v, categoryKey){
-  const items = DATA.filter(r=>r.v===v && r.catKey===categoryKey);
+function bestRecord(v,categoryKey){
+  const items=DATA.filter(r=>r.v===v && r.catKey===categoryKey);
   if(!items.length) return null;
-  return items.reduce((a,b)=> STAGE_IDX[b.stage] > STAGE_IDX[a.stage] ? b : a);
+  return items.reduce((a,b)=>STAGE_IDX[b.stage]>STAGE_IDX[a.stage]?b:a);
 }
-
 function renderGeral(){
-  const q = document.getElementById('search').value.trim().toLowerCase();
-  const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)))
-    .filter(v => matchesSearch(v, q))
-    .sort();
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const allVehicles=Array.from(new Set(DATA.map(r=>(r.v||'').trim()).filter(Boolean))).filter(v=>matchesSearch(v,q)).sort();
 
-  if (allVehicles.length === 0) {
-    document.getElementById('content').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
-    return;
-  }
+  if(allVehicles.length===0){ document.getElementById('content').innerHTML='<div class="empty-col">Nenhuma viatura encontrada</div>'; return; }
 
-  const familyOf = (v) => v.split('-')[0].toUpperCase();
-  const families = {};
-  allVehicles.forEach(v => {
-    const f = familyOf(v);
-    (families[f] = families[f] || []).push(v);
-  });
+  const familyOf=(v)=>v.split('-')[0].toUpperCase();
+  const families={};
+  allVehicles.forEach(v=>{ const f=familyOf(v); (families[f]=families[f]||[]).push(v); });
 
-  const html = Object.keys(families).sort().map(fam => {
-    const vehicles = families[fam].sort((a,b) => a.localeCompare(b));
-    const cards = vehicles.map(v => {
-      const osList = DATA.filter(r => r.v === v);
-
-      const statusColors = osList.map(r => stageInfo(r.stage).color);
-      const uniqueColors = [...new Set(statusColors)];
-
-      let borderStyle = 'var(--border)';
-      if (uniqueColors.length === 1) {
-        borderStyle = uniqueColors[0];
-      } else if (uniqueColors.length > 1) {
-        const stops = uniqueColors.map((color, idx) => {
-          return `${color} ${Math.round(idx / (uniqueColors.length - 1) * 100)}%`;
-        }).join(', ');
-        borderStyle = `linear-gradient(135deg, ${stops})`;
+  const html=Object.keys(families).sort().map(fam=>{
+    const vehicles=families[fam].sort((a,b)=>a.localeCompare(b));
+    const cards=vehicles.map(v=>{
+      const osList=DATA.filter(r=>r.v===v);
+      const statusColors=osList.map(r=>stageInfo(r.stage).color);
+      const uniqueColors=[...new Set(statusColors)];
+      let borderStyle='var(--border)';
+      if(uniqueColors.length===1) borderStyle=uniqueColors[0];
+      else if(uniqueColors.length>1){
+        const stops=uniqueColors.map((color,idx)=>`${color} ${Math.round(idx/(uniqueColors.length-1)*100)}%`).join(', ');
+        borderStyle=`linear-gradient(135deg, ${stops})`;
       }
-
-      const osEntries = osList.map(r => {
-        const st = stageInfo(r.stage);
-        const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
-        const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+      const osEntries=osList.map(r=>{
+        const st=stageInfo(r.stage);
+        const orcada=r.orcamentos>0?'Sim':'Não';
+        const qnt=r.orcamentos>0?r.orcamentos:'—';
         return `
           <div class="svc-row" style="border-left-color:${st.color}">
             <span class="svc-label">${escapeHtml(r.category)}</span>
@@ -629,18 +488,15 @@ function renderGeral(){
                 <span>Orçada: ${orcada}</span>
                 <span>Qnt: ${qnt}</span>
               </div>
-              ${r.note ? `<div class="os-note">${escapeHtml(r.note)}</div>` : ''}
+              ${r.note?`<div class="os-note">${escapeHtml(r.note)}</div>`:''}
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
-
       return `<div class="veh-card" style="border: 2px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, ${borderStyle} border-box;">
         <div class="veh-name">${escapeHtml(v)}</div>
         ${osEntries}
       </div>`;
     }).join('');
-
     return `<details class="family" open>
       <summary>
         <span class="fam-name">${fam} <span class="fam-count">${vehicles.length} viatura${vehicles.length>1?'s':''}</span></span>
@@ -649,154 +505,91 @@ function renderGeral(){
       <div class="veh-grid">${cards}</div>
     </details>`;
   }).join('');
-
   document.getElementById('content').innerHTML = html;
-
   document.querySelectorAll('.stage-select').forEach(sel=>{
     sel.addEventListener('change', async (e)=>{
-      const rec = DATA.find(r=>r.id===e.target.dataset.id);
+      const rec=DATA.find(r=>r.id===e.target.dataset.id);
       if(!rec) return;
-      const oldStage = rec.stage;
-      const newStage = e.target.value;
-      rec.stage = newStage;
+      const oldStage=rec.stage;
+      const newStage=e.target.value;
+      rec.stage=newStage;
       render();
-      const ok = await updateSheet(rec.os, newStage, rec.v);
-      if (!ok) {
-        rec.stage = oldStage;
-        alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.');
-        render();
-      }
+      const ok=await updateSheet(rec.os,newStage,rec.v);
+      if(!ok){ rec.stage=oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
     });
   });
 }
-
 function renderStats(){
-  const categories = getCategories();
-  const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
-  const catStats = categories.map(c=>({n: DATA.filter(r=>r.catKey===c.key).length, l:`OS de ${c.label}`}));
-  const Pendentes = DATA.filter(r=>r.stage==='Pendente').length;
-  const Aprovadas = DATA.filter(r=>r.stage==='Aprovada').length;
-  const Finalizadas = DATA.filter(r=>r.stage==='Finalizada').length;
-  const Canceladas = DATA.filter(r=>r.stage==='Cancelada').length;
-  const stats = [
-    {n: total, l:'Viaturas com OS'},
-    {n: Pendentes, l:'Pendentes'},
-    {n: Aprovadas, l:'Aprovadas'},
-    {n: Finalizadas, l:'Finalizadas'},
-    {n: Canceladas, l:'Canceladas'},
+  const categories=getCategories();
+  const total=new Set(DATA.map(r=>(r.v||'').trim()).filter(Boolean)).size;
+  const catStats=categories.map(c=>({n:DATA.filter(r=>r.catKey===c.key).length,l:`OS de ${c.label}`}));
+  const Pendentes=DATA.filter(r=>r.stage==='Pendente').length;
+  const Aprovadas=DATA.filter(r=>r.stage==='Aprovada').length;
+  const Finalizadas=DATA.filter(r=>r.stage==='Finalizada').length;
+  const Canceladas=DATA.filter(r=>r.stage==='Cancelada').length;
+  const stats=[
+    {n:total,l:'Viaturas com OS'},
+    {n:Pendentes,l:'Pendentes'},
+    {n:Aprovadas,l:'Aprovadas'},
+    {n:Finalizadas,l:'Finalizadas'},
+    {n:Canceladas,l:'Canceladas'},
     ...catStats
   ];
-  document.getElementById('stats').innerHTML = stats.map(s=>`
-    <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>
-  `).join('');
+  document.getElementById('stats').innerHTML = stats.map(s=>`<div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
 }
-
 function render(){
-  document.getElementById('countdownNum').textContent = daysUntilParade();
+  document.getElementById('countdownNum').textContent=daysUntilParade();
   renderLegend();
   renderStats();
   renderTabs();
   if(activeTab==='geral') renderGeral();
   else if(getCategories().some(c=>c.key===activeTab)) renderKanban(activeTab);
-  else { activeTab = 'geral'; render(); }
+  else { activeTab='geral'; render(); }
 }
-
-function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), wait); }; }
-
-const searchInput = document.getElementById('search');
+function debounce(fn,wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+const searchInput=document.getElementById('search');
 searchInput.addEventListener('input', debounce(()=>render(),180));
-
-const afStageSel = document.getElementById('af-stage');
-afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
-
-document.getElementById('addBtn').addEventListener('click', ()=>{
-  document.getElementById('addForm').classList.toggle('open');
-});
-document.getElementById('af-cancel').addEventListener('click', ()=>{
-  document.getElementById('addForm').classList.remove('open');
-});
+const afStageSel=document.getElementById('af-stage');
+afStageSel.innerHTML=STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+document.getElementById('addBtn').addEventListener('click',()=>{ document.getElementById('addForm').classList.toggle('open'); });
+document.getElementById('af-cancel').addEventListener('click',()=>{ document.getElementById('addForm').classList.remove('open'); });
 document.getElementById('af-save').addEventListener('click', async ()=>{
-  const v = normalizeViatura(document.getElementById('af-v').value);
-  const os = document.getElementById('af-os').value.trim();
-  const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
-  const catKey = slugify(catLabel);
-  const stage = document.getElementById('af-stage').value;
-  const orcada = document.getElementById('af-orcada').value;
-  const qntRaw = document.getElementById('af-qnt').value.trim();
-  const note = document.getElementById('af-note').value.trim();
-  if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
-
-  let orcamentos = 0;
-  if (orcada === 'Sim') {
-    orcamentos = parseInt(qntRaw, 10);
-    if (isNaN(orcamentos) || orcamentos < 1) orcamentos = 1;
-    if (orcamentos > 5) orcamentos = 5;
+  const v=normalizeViatura(document.getElementById('af-v').value);
+  const os=document.getElementById('af-os').value.trim();
+  const catLabel=document.getElementById('af-cat').value.trim() || 'Outras';
+  const catKey=slugify(catLabel);
+  const stage=document.getElementById('af-stage').value;
+  const orcada=document.getElementById('af-orcada').value;
+  const qntRaw=document.getElementById('af-qnt').value.trim();
+  const note=document.getElementById('af-note').value.trim();
+  if(!v||!os){ alert('Preencha a viatura e o número da OS.'); return; }
+  let orcamentos=0;
+  if(orcada==='Sim'){
+    orcamentos=parseInt(qntRaw,10);
+    if(isNaN(orcamentos)||orcamentos<1) orcamentos=1;
+    if(orcamentos>5) orcamentos=5;
   }
-
-  const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
-  if(duplicate){
-    alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`);
-    return;
-  }
-
-  const newRecord = {
-    id:'r'+Date.now(),
-    v, os,
-    category:catLabel,
-    catKey,
-    stage,
-    orcamentos,
-    tabela:false,
-    justificativa:false,
-    note
-  };
+  const duplicate=DATA.some(r=>normalizeViatura(r.v)===v && r.catKey===catKey);
+  if(duplicate){ alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`); return; }
+  const newRecord={id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, note};
   DATA.push(newRecord);
   render();
-
-  const ok = await createOSInSheet({
-    categoria: catLabel,
-    viatura: v,
-    os: os,
-    status: stage,
-    orcada: orcada,
-    qnt: orcamentos > 0 ? String(orcamentos) : '',
-    oficina: '',
-    observacoes: note
-  });
-
-  if (!ok) {
-    const idx = DATA.indexOf(newRecord);
-    if (idx > -1) DATA.splice(idx, 1);
-    alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.');
-  }
-
+  const ok=await createOSInSheet({categoria:catLabel,viatura:v,os:os,status:stage,orcada:orcada,qnt:orcamentos>0?String(orcamentos):'',oficina:'',observacoes:note});
+  if(!ok){ const idx=DATA.indexOf(newRecord); if(idx>-1) DATA.splice(idx,1); alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.'); }
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
   document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
 });
-
-document.getElementById('csvFileInput').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    const csvText = ev.target.result;
-    processCsvText(csvText);
-    document.getElementById('errorArea').style.display = 'none';
-  };
+document.getElementById('csvFileInput').addEventListener('change', (e)=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{ const csvText=ev.target.result; processCsvText(csvText); document.getElementById('errorArea').style.display='none'; };
   reader.readAsText(file);
 });
-
-// ==============================================
-// INICIALIZAÇÃO E POLLING
-// ==============================================
 loadData();
-
-setInterval(() => {
-  if (document.activeElement && document.activeElement.tagName === 'SELECT') return;
-  loadData();
-}, POLLING_INTERVAL);
+setInterval(()=>{ if(document.activeElement && document.activeElement.tagName==='SELECT') return; loadData(); }, POLLING_INTERVAL);
 </script>
 </body>
 </html>
