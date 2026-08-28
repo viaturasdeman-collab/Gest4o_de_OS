@@ -11,7 +11,7 @@
   :root{
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
     --border:#303A47; --text:#E7ECF2; --text-dim:#93A0B0; --text-faint:#5C6879;
-    --Pendente:#5B6472; --Aprovada:#0085ff; --Finalizada:#00ff0a; --Cancelada:#EF5350;
+    --Pendente:#5B6472; --Aprovada:#fff500; --Finalizada:#00ff0a; --Cancelada:#EF5350;
     --semos:#EF5350;
     --amber:#E8A93A;
   }
@@ -176,17 +176,10 @@
 // ==============================================
 // CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
 // ==============================================
-// Link CSV publicado (guia específica)
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
-// URL do Apps Script (Web App)
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 180000; // 3 minutos
-
-// ==============================================
-// EVENTOS QUE GERAM ABAS A PARTIR DAS OBSERVAÇÕES
-// ==============================================
-const EVENTOS = ['7 setembro', 'carnaval', 'são joão', 'independência'];
 
 const STAGES = [
   {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
@@ -280,9 +273,7 @@ let isLoading = false;
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 
 function processCsvText(csvText){
-  // Remove linhas vazias
   const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
-  // Encontra a linha de cabeçalho (contém "Viatura" e "OS Nº")
   let headerIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].toLowerCase().includes('viatura') && lines[i].toLowerCase().includes('os nº')) {
@@ -296,7 +287,6 @@ function processCsvText(csvText){
     renderStats();
     return;
   }
-  // Recria um CSV limpo a partir do cabeçalho
   const cleanCsv = lines.slice(headerIndex).join('\n');
   const parsed = Papa.parse(cleanCsv, { header: true, skipEmptyLines: true });
   if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
@@ -315,7 +305,7 @@ function mapRowsToData(rows){
     const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
     const note = findField(row,['observa', 'observ', 'obs', 'nota', 'comentario']) || row['Observações'] || row['Observacoes'] || '';
-    const empresa = findField(row,['oficina', 'empresa']) || row['Oficina/Empresa'] || ''; // ← extrai empresa
+    const empresa = findField(row,['oficina', 'empresa']) || row['Oficina/Empresa'] || '';
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
 
@@ -333,8 +323,8 @@ function mapRowsToData(rows){
       orcamentos:orcamentos,
       tabela:flags.tabela,
       justificativa:flags.justificativa,
-      empresa:(empresa||'').toString().trim(),   // ← campo empresa
-      note:(note||'').toString().trim()          // mantém observação p/ filtros
+      empresa:(empresa||'').toString().trim(),
+      note:(note||'').toString().trim()
     };
   }).filter(r=>r.v);
 }
@@ -436,17 +426,22 @@ function renderLegend(){
 }
 
 // ==============================================
-// GERAÇÃO DE ABAS A PARTIR DE EVENTOS NAS OBSERVAÇÕES
+// GERAÇÃO DE ABAS AUTOMÁTICA A PARTIR DAS OBSERVAÇÕES
 // ==============================================
 function getEventos(){
-  const eventos = new Set();
+  const mapa = new Map(); // chave normalizada -> texto original
   DATA.forEach(r => {
-    const nota = normalizeStr(r.note);
-    EVENTOS.forEach(ev => {
-      if (nota.includes(normalizeStr(ev))) eventos.add(ev);
-    });
+    const original = (r.note || '').trim();
+    if (!original) return;
+    const chave = normalizeStr(original);
+    if (!mapa.has(chave)) {
+      mapa.set(chave, original);
+    }
   });
-  return Array.from(eventos);
+  // Retorna os textos originais, ordenados alfabeticamente
+  return Array.from(mapa.entries())
+    .map(([chave, original]) => original)
+    .sort((a, b) => a.localeCompare(b));
 }
 
 function renderTabs(){
