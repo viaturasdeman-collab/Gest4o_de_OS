@@ -173,11 +173,19 @@
 </div>
 
 <script>
-// (O script JavaScript permanece idêntico ao da versão anterior)
+// ==============================================
+// CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
+// ==============================================
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 180000; // 3 minutos
+
+// ==============================================
+// EVENTOS QUE GERAM ABAS A PARTIR DAS OBSERVAÇÕES
+// Edite esta lista conforme necessário (palavras-chave)
+// ==============================================
+const EVENTOS = ['7 setembro', 'carnaval', 'são joão', 'independência'];
 
 const STAGES = [
   {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
@@ -240,6 +248,9 @@ function extractPendenteFlags(statusRaw, note){
   return { tabela: combined.includes('tabela'), justificativa: combined.includes('justificativa') };
 }
 
+// ==============================================
+// FUNÇÕES DE ARMAZENAMENTO LOCAL
+// ==============================================
 function saveLocalData(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e){} }
 function loadLocalData(){ try { const raw = localStorage.getItem(STORAGE_KEY); if(raw){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)&&parsed.length){ DATA=parsed; return true; } } } catch(e){} return false; }
 
@@ -379,102 +390,74 @@ function renderLegend(){
   el.innerHTML = STAGES.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`).join('') +
     `<span><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
 }
-function getCategories(){
-  const map=new Map();
-  DATA.forEach(r=>{ if(r.catKey&&!map.has(r.catKey)) map.set(r.catKey,r.category); });
-  return Array.from(map.entries()).map(([key,label])=>({key,label}));
+
+// ==============================================
+// GERAÇÃO DE ABAS A PARTIR DE EVENTOS NAS OBSERVAÇÕES
+// ==============================================
+function getEventos(){
+  const eventos = new Set();
+  DATA.forEach(r => {
+    const nota = normalizeStr(r.note);
+    EVENTOS.forEach(ev => {
+      if (nota.includes(normalizeStr(ev))) eventos.add(ev);
+    });
+  });
+  return Array.from(eventos);
 }
+
 function renderTabs(){
-  const cats=getCategories();
+  const eventos = getEventos();
   const container=document.getElementById('tabsContainer');
   container.innerHTML = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>` +
-    cats.map(cat=>`<button class="tab ${activeTab===cat.key?'active':''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>`).join('');
+    eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
   document.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      activeTab=t.dataset.tab;
+      activeTab = t.dataset.tab;
       render();
     });
   });
 }
-function matchesSearch(v,q){ if(!q) return true; const vNorm=normalizeViatura(v); const qNorm=normalizeViatura(q); return vNorm.includes(qNorm); }
 
-function renderKanban(categoryKey){
-  const q=document.getElementById('search').value.trim();
-  const cols=STAGES.map(st=>{
-    const items=DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
-    const cards=items.length ? items.map(r=>{
-      const st=stageInfo(r.stage);
-      const orcada=r.orcamentos>0?'Sim':'Não';
-      const qnt=r.orcamentos>0?r.orcamentos:'—';
-      return `
-        <div class="card" style="--stage-color:${st.color}">
-          <div class="v">${escapeHtml(r.v)}</div>
-          <div class="os">OS Nº ${escapeHtml(r.os)}</div>
-          <div class="pend-details">
-            <span class="badge">Orçada: ${orcada}</span>
-            ${qnt!=='—'?`<span class="badge">Qnt: ${qnt}</span>`:''}
-            ${r.stage==='Pendente' && r.tabela?'<span class="badge">Tabela</span>':''}
-            ${r.stage==='Pendente' && r.justificativa?'<span class="badge">Justificativa</span>':''}
-          </div>
-          ${r.note?`<div class="note">${escapeHtml(r.note)}</div>`:''}
-          <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select">
-            ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
-          </select>
-        </div>`;
-    }).join('') : '<div class="empty-col">Nenhuma OS aqui</div>';
-    return `<div class="col" style="--stage-color:${st.color}">
-      <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>
-      <div class="col-cards">${cards}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
-  document.querySelectorAll('.stage-select').forEach(sel=>{
-    sel.addEventListener('change', async (e)=>{
-      const rec=DATA.find(r=>r.id===e.target.dataset.id);
-      if(!rec) return;
-      const oldStage=rec.stage;
-      const newStage=e.target.value;
-      rec.stage=newStage;
-      render();
-      const ok=await updateSheet(rec.os,newStage,rec.v);
-      if(!ok){ rec.stage=oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
-    });
-  });
-}
+// ==============================================
+// RENDER DA VISÃO GERAL (COM FILTRO OPCIONAL DE EVENTO)
+// ==============================================
+function renderGeral(eventoFiltro){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  let dados = DATA;
+  if (eventoFiltro) {
+    dados = DATA.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
+  }
+  const allVehicles = Array.from(new Set(dados.map(r => (r.v||'').trim()).filter(Boolean)))
+    .filter(v => matchesSearch(v, q))
+    .sort();
 
-function bestRecord(v,categoryKey){
-  const items=DATA.filter(r=>r.v===v && r.catKey===categoryKey);
-  if(!items.length) return null;
-  return items.reduce((a,b)=>STAGE_IDX[b.stage]>STAGE_IDX[a.stage]?b:a);
-}
-function renderGeral(){
-  const q=document.getElementById('search').value.trim().toLowerCase();
-  const allVehicles=Array.from(new Set(DATA.map(r=>(r.v||'').trim()).filter(Boolean))).filter(v=>matchesSearch(v,q)).sort();
+  if (allVehicles.length === 0) {
+    document.getElementById('content').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
+    return;
+  }
 
-  if(allVehicles.length===0){ document.getElementById('content').innerHTML='<div class="empty-col">Nenhuma viatura encontrada</div>'; return; }
+  const familyOf = (v) => v.split('-')[0].toUpperCase();
+  const families = {};
+  allVehicles.forEach(v => { const f = familyOf(v); (families[f] = families[f] || []).push(v); });
 
-  const familyOf=(v)=>v.split('-')[0].toUpperCase();
-  const families={};
-  allVehicles.forEach(v=>{ const f=familyOf(v); (families[f]=families[f]||[]).push(v); });
-
-  const html=Object.keys(families).sort().map(fam=>{
-    const vehicles=families[fam].sort((a,b)=>a.localeCompare(b));
-    const cards=vehicles.map(v=>{
-      const osList=DATA.filter(r=>r.v===v);
-      const statusColors=osList.map(r=>stageInfo(r.stage).color);
-      const uniqueColors=[...new Set(statusColors)];
-      let borderStyle='var(--border)';
-      if(uniqueColors.length===1) borderStyle=uniqueColors[0];
-      else if(uniqueColors.length>1){
-        const stops=uniqueColors.map((color,idx)=>`${color} ${Math.round(idx/(uniqueColors.length-1)*100)}%`).join(', ');
-        borderStyle=`linear-gradient(135deg, ${stops})`;
+  const html = Object.keys(families).sort().map(fam => {
+    const vehicles = families[fam].sort((a,b) => a.localeCompare(b));
+    const cards = vehicles.map(v => {
+      const osList = dados.filter(r => r.v === v);
+      const statusColors = osList.map(r => stageInfo(r.stage).color);
+      const uniqueColors = [...new Set(statusColors)];
+      let borderStyle = 'var(--border)';
+      if (uniqueColors.length === 1) borderStyle = uniqueColors[0];
+      else if (uniqueColors.length > 1) {
+        const stops = uniqueColors.map((color, idx) => `${color} ${Math.round(idx/(uniqueColors.length-1)*100)}%`).join(', ');
+        borderStyle = `linear-gradient(135deg, ${stops})`;
       }
-      const osEntries=osList.map(r=>{
-        const st=stageInfo(r.stage);
-        const orcada=r.orcamentos>0?'Sim':'Não';
-        const qnt=r.orcamentos>0?r.orcamentos:'—';
+      const osEntries = osList.map(r => {
+        const st = stageInfo(r.stage);
+        const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
+        const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
         return `
           <div class="svc-row" style="border-left-color:${st.color}">
             <span class="svc-label">${escapeHtml(r.category)}</span>
@@ -488,9 +471,10 @@ function renderGeral(){
                 <span>Orçada: ${orcada}</span>
                 <span>Qnt: ${qnt}</span>
               </div>
-              ${r.note?`<div class="os-note">${escapeHtml(r.note)}</div>`:''}
+              ${r.note ? `<div class="os-note">${escapeHtml(r.note)}</div>` : ''}
             </div>
-          </div>`;
+          </div>
+        `;
       }).join('');
       return `<div class="veh-card" style="border: 2px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, ${borderStyle} border-box;">
         <div class="veh-name">${escapeHtml(v)}</div>
@@ -505,89 +489,99 @@ function renderGeral(){
       <div class="veh-grid">${cards}</div>
     </details>`;
   }).join('');
+
   document.getElementById('content').innerHTML = html;
   document.querySelectorAll('.stage-select').forEach(sel=>{
     sel.addEventListener('change', async (e)=>{
-      const rec=DATA.find(r=>r.id===e.target.dataset.id);
+      const rec = DATA.find(r=>r.id===e.target.dataset.id);
       if(!rec) return;
-      const oldStage=rec.stage;
-      const newStage=e.target.value;
-      rec.stage=newStage;
+      const oldStage = rec.stage;
+      const newStage = e.target.value;
+      rec.stage = newStage;
       render();
-      const ok=await updateSheet(rec.os,newStage,rec.v);
-      if(!ok){ rec.stage=oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
+      const ok = await updateSheet(rec.os, newStage, rec.v);
+      if(!ok){ rec.stage = oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
     });
   });
 }
+
 function renderStats(){
-  const categories=getCategories();
-  const total=new Set(DATA.map(r=>(r.v||'').trim()).filter(Boolean)).size;
-  const catStats=categories.map(c=>({n:DATA.filter(r=>r.catKey===c.key).length,l:`OS de ${c.label}`}));
-  const Pendentes=DATA.filter(r=>r.stage==='Pendente').length;
-  const Aprovadas=DATA.filter(r=>r.stage==='Aprovada').length;
-  const Finalizadas=DATA.filter(r=>r.stage==='Finalizada').length;
-  const Canceladas=DATA.filter(r=>r.stage==='Cancelada').length;
-  const stats=[
-    {n:total,l:'Viaturas com OS'},
-    {n:Pendentes,l:'Pendentes'},
-    {n:Aprovadas,l:'Aprovadas'},
-    {n:Finalizadas,l:'Finalizadas'},
-    {n:Canceladas,l:'Canceladas'},
-    ...catStats
+  const total = new Set(DATA.map(r => (r.v||'').trim()).filter(Boolean)).size;
+  const Pendentes = DATA.filter(r=>r.stage==='Pendente').length;
+  const Aprovadas = DATA.filter(r=>r.stage==='Aprovada').length;
+  const Finalizadas = DATA.filter(r=>r.stage==='Finalizada').length;
+  const Canceladas = DATA.filter(r=>r.stage==='Cancelada').length;
+  const stats = [
+    {n: total, l:'Viaturas com OS'},
+    {n: Pendentes, l:'Pendentes'},
+    {n: Aprovadas, l:'Aprovadas'},
+    {n: Finalizadas, l:'Finalizadas'},
+    {n: Canceladas, l:'Canceladas'}
   ];
   document.getElementById('stats').innerHTML = stats.map(s=>`<div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
 }
+
 function render(){
-  document.getElementById('countdownNum').textContent=daysUntilParade();
+  document.getElementById('countdownNum').textContent = daysUntilParade();
   renderLegend();
   renderStats();
   renderTabs();
-  if(activeTab==='geral') renderGeral();
-  else if(getCategories().some(c=>c.key===activeTab)) renderKanban(activeTab);
-  else { activeTab='geral'; render(); }
-}
-function debounce(fn,wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
-const searchInput=document.getElementById('search');
-searchInput.addEventListener('input', debounce(()=>render(),180));
-const afStageSel=document.getElementById('af-stage');
-afStageSel.innerHTML=STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
-document.getElementById('addBtn').addEventListener('click',()=>{ document.getElementById('addForm').classList.toggle('open'); });
-document.getElementById('af-cancel').addEventListener('click',()=>{ document.getElementById('addForm').classList.remove('open'); });
-document.getElementById('af-save').addEventListener('click', async ()=>{
-  const v=normalizeViatura(document.getElementById('af-v').value);
-  const os=document.getElementById('af-os').value.trim();
-  const catLabel=document.getElementById('af-cat').value.trim() || 'Outras';
-  const catKey=slugify(catLabel);
-  const stage=document.getElementById('af-stage').value;
-  const orcada=document.getElementById('af-orcada').value;
-  const qntRaw=document.getElementById('af-qnt').value.trim();
-  const note=document.getElementById('af-note').value.trim();
-  if(!v||!os){ alert('Preencha a viatura e o número da OS.'); return; }
-  let orcamentos=0;
-  if(orcada==='Sim'){
-    orcamentos=parseInt(qntRaw,10);
-    if(isNaN(orcamentos)||orcamentos<1) orcamentos=1;
-    if(orcamentos>5) orcamentos=5;
+  if (activeTab === 'geral') {
+    renderGeral(null);
+  } else {
+    // assume que activeTab é um evento
+    renderGeral(activeTab);
   }
-  const duplicate=DATA.some(r=>normalizeViatura(r.v)===v && r.catKey===catKey);
+}
+
+function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', debounce(()=>render(),180));
+
+const afStageSel = document.getElementById('af-stage');
+afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+
+document.getElementById('addBtn').addEventListener('click', ()=>{ document.getElementById('addForm').classList.toggle('open'); });
+document.getElementById('af-cancel').addEventListener('click', ()=>{ document.getElementById('addForm').classList.remove('open'); });
+document.getElementById('af-save').addEventListener('click', async ()=>{
+  const v = normalizeViatura(document.getElementById('af-v').value);
+  const os = document.getElementById('af-os').value.trim();
+  const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
+  const catKey = slugify(catLabel);
+  const stage = document.getElementById('af-stage').value;
+  const orcada = document.getElementById('af-orcada').value;
+  const qntRaw = document.getElementById('af-qnt').value.trim();
+  const note = document.getElementById('af-note').value.trim();
+  if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
+  let orcamentos = 0;
+  if(orcada === 'Sim'){
+    orcamentos = parseInt(qntRaw,10);
+    if(isNaN(orcamentos) || orcamentos < 1) orcamentos = 1;
+    if(orcamentos > 5) orcamentos = 5;
+  }
+  const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
   if(duplicate){ alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`); return; }
-  const newRecord={id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, note};
+  const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, note };
   DATA.push(newRecord);
   render();
-  const ok=await createOSInSheet({categoria:catLabel,viatura:v,os:os,status:stage,orcada:orcada,qnt:orcamentos>0?String(orcamentos):'',oficina:'',observacoes:note});
-  if(!ok){ const idx=DATA.indexOf(newRecord); if(idx>-1) DATA.splice(idx,1); alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.'); }
+  const ok = await createOSInSheet({ categoria:catLabel, viatura:v, os:os, status:stage, orcada:orcada, qnt:orcamentos>0?String(orcamentos):'', oficina:'', observacoes:note });
+  if(!ok){ const idx = DATA.indexOf(newRecord); if(idx>-1) DATA.splice(idx,1); alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.'); }
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
   document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
 });
+
 document.getElementById('csvFileInput').addEventListener('change', (e)=>{
-  const file=e.target.files[0];
+  const file = e.target.files[0];
   if(!file) return;
-  const reader=new FileReader();
-  reader.onload=(ev)=>{ const csvText=ev.target.result; processCsvText(csvText); document.getElementById('errorArea').style.display='none'; };
+  const reader = new FileReader();
+  reader.onload = (ev)=>{ const csvText = ev.target.result; processCsvText(csvText); document.getElementById('errorArea').style.display='none'; };
   reader.readAsText(file);
 });
+
+// Inicialização e polling
 loadData();
 setInterval(()=>{ if(document.activeElement && document.activeElement.tagName==='SELECT') return; loadData(); }, POLLING_INTERVAL);
 </script>
