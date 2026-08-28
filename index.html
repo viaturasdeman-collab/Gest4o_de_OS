@@ -314,12 +314,18 @@ function mapRowsToData(rows){
     const osField = findField(row,['os','os n','os nº','numero os','numero']) || '';
     const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
-    const note = findField(row,['observa','oficina','empresa']) || row['Observações'] || row['Observacoes'] || '';
+    // Palavras-chave expandidas para Observações
+    const note = findField(row,['observa', 'observ', 'obs', 'nota', 'comentario', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
+
     const stage = parseStage(status);
     const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
     const flags = (stage==='Pendente') ? extractPendenteFlags(status, note) : {tabela:false,justificativa:false};
+
+    // Log para depuração (remova se não precisar)
+    console.log(`Linha ${i}: Viatura=${viatura}, OS=${osField}, Observação=${note}`);
+
     return {
       id:'sheet-'+i,
       v:normalizeViatura(viatura),
