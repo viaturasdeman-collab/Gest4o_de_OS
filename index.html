@@ -183,6 +183,7 @@ const POLLING_INTERVAL = 180000; // 3 minutos
 
 // ==============================================
 // EVENTOS QUE GERAM ABAS A PARTIR DAS OBSERVAÇÕES
+// Edite esta lista conforme necessário (palavras-chave)
 // ==============================================
 const EVENTOS = ['7 setembro', 'carnaval', 'são joão', 'independência'];
 
@@ -197,15 +198,6 @@ const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 function normalizeViatura(v){
   return v.trim().toUpperCase().replace(/\s+/g,' ').replace(/\s*-\s*/g,'-').replace(/\s+(?=\d)/g,'-');
 }
-
-// Função de busca (faltante)
-function matchesSearch(v, q) {
-  if (!q) return true;
-  const vNorm = normalizeViatura(v);
-  const qNorm = normalizeViatura(q);
-  return vNorm.includes(qNorm);
-}
-
 function normalizeStr(str){
   return String(str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 }
@@ -256,11 +248,40 @@ function extractPendenteFlags(statusRaw, note){
   return { tabela: combined.includes('tabela'), justificativa: combined.includes('justificativa') };
 }
 
+// Função de busca (faltante) corrigida
+function matchesSearch(v, q) {
+  if (!q) return true;
+  const vNorm = normalizeStr(v);
+  const qNorm = normalizeStr(q);
+  return vNorm.includes(qNorm);
+}
+
 // ==============================================
-// FUNÇÕES DE ARMAZENAMENTO LOCAL
+// FUNÇÕES DE ARMAZENAMENTO LOCAL (corrigidas)
 // ==============================================
-function saveLocalData(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e){} }
-function loadLocalData(){ try { const raw = localStorage.getItem(STORAGE_KEY); if(raw){ const parsed=JSON.parse(raw); if(Array.isArray(parsed)&&parsed.length){ DATA=parsed; return true; } } } catch(e){} return false; }
+function saveLocalData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  } catch (e) {
+    console.warn('Não foi possível salvar no localStorage:', e);
+  }
+}
+
+function loadLocalData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) {
+        DATA = parsed;
+        return true;
+      }
+    }
+  } catch (e) {
+    console.warn('Falha ao carregar do localStorage:', e);
+  }
+  return false;
+}
 
 let DATA = [];
 let activeTab = 'geral';
@@ -272,6 +293,7 @@ function processCsvText(csvText){
   if(parsed.errors&&parsed.errors.length) console.warn('CSV parse warnings:',parsed.errors);
   const rows = parsed.data || [];
   DATA = mapRowsToData(rows);
+  saveLocalData();  // ← salva os dados da planilha no localStorage
   render();
 }
 function mapRowsToData(rows){
