@@ -314,17 +314,14 @@ function mapRowsToData(rows){
     const osField = findField(row,['os','os n','os nº','numero os','numero']) || '';
     const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
-    // Palavras-chave expandidas para Observações
     const note = findField(row,['observa', 'observ', 'obs', 'nota', 'comentario']) || row['Observações'] || row['Observacoes'] || '';
+    const empresa = findField(row,['oficina', 'empresa']) || row['Oficina/Empresa'] || ''; // ← extrai empresa
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
 
     const stage = parseStage(status);
     const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
     const flags = (stage==='Pendente') ? extractPendenteFlags(status, note) : {tabela:false,justificativa:false};
-
-    // Log para depuração (remova se não precisar)
-    console.log(`Linha ${i}: Viatura=${viatura}, OS=${osField}, Observação=${note}`);
 
     return {
       id:'sheet-'+i,
@@ -336,7 +333,8 @@ function mapRowsToData(rows){
       orcamentos:orcamentos,
       tabela:flags.tabela,
       justificativa:flags.justificativa,
-      note:(note||'').toString().trim()
+      empresa:(empresa||'').toString().trim(),   // ← campo empresa
+      note:(note||'').toString().trim()          // mantém observação p/ filtros
     };
   }).filter(r=>r.v);
 }
@@ -517,7 +515,7 @@ function renderGeral(eventoFiltro){
                 <span>Orçada: ${orcada}</span>
                 <span>Qnt: ${qnt}</span>
               </div>
-              ${r.note ? `<div class="os-note">${escapeHtml(r.note)}</div>` : ''}
+              ${r.empresa ? `<div class="os-note">${escapeHtml(r.empresa)}</div>` : ''}
             </div>
           </div>
         `;
