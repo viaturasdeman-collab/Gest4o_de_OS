@@ -176,14 +176,15 @@
 // ==============================================
 // CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
 // ==============================================
-const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?output=csv';
+// Link CSV publicado (guia específica)
+const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
+// URL do Apps Script (Web App)
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 180000; // 3 minutos
 
 // ==============================================
 // EVENTOS QUE GERAM ABAS A PARTIR DAS OBSERVAÇÕES
-// Edite esta lista conforme necessário (palavras-chave)
 // ==============================================
 const EVENTOS = ['7 setembro', 'carnaval', 'são joão', 'independência'];
 
@@ -247,26 +248,17 @@ function extractPendenteFlags(statusRaw, note){
   const combined = r+' '+n;
   return { tabela: combined.includes('tabela'), justificativa: combined.includes('justificativa') };
 }
-
-// Função de busca (faltante) corrigida
 function matchesSearch(v, q) {
   if (!q) return true;
-  const vNorm = normalizeStr(v);
-  const qNorm = normalizeStr(q);
-  return vNorm.includes(qNorm);
+  return normalizeStr(v).includes(normalizeStr(q));
 }
 
 // ==============================================
-// FUNÇÕES DE ARMAZENAMENTO LOCAL (corrigidas)
+// FUNÇÕES DE ARMAZENAMENTO LOCAL
 // ==============================================
 function saveLocalData() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
-  } catch (e) {
-    console.warn('Não foi possível salvar no localStorage:', e);
-  }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) { console.warn('Erro ao salvar local:', e); }
 }
-
 function loadLocalData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -277,9 +269,7 @@ function loadLocalData() {
         return true;
       }
     }
-  } catch (e) {
-    console.warn('Falha ao carregar do localStorage:', e);
-  }
+  } catch(e) { console.warn('Erro ao carregar local:', e); }
   return false;
 }
 
@@ -288,14 +278,34 @@ let activeTab = 'geral';
 let isLoading = false;
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
+
 function processCsvText(csvText){
-  const parsed = Papa.parse(csvText,{header:true,skipEmptyLines:true});
-  if(parsed.errors&&parsed.errors.length) console.warn('CSV parse warnings:',parsed.errors);
+  // Remove linhas vazias
+  const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+  // Encontra a linha de cabeçalho (contém "Viatura" e "OS Nº")
+  let headerIndex = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].toLowerCase().includes('viatura') && lines[i].toLowerCase().includes('os nº')) {
+      headerIndex = i;
+      break;
+    }
+  }
+  if (headerIndex === -1) {
+    console.error('Cabeçalho não encontrado no CSV');
+    DATA = [];
+    renderStats();
+    return;
+  }
+  // Recria um CSV limpo a partir do cabeçalho
+  const cleanCsv = lines.slice(headerIndex).join('\n');
+  const parsed = Papa.parse(cleanCsv, { header: true, skipEmptyLines: true });
+  if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
   const rows = parsed.data || [];
   DATA = mapRowsToData(rows);
-  saveLocalData();  // ← salva os dados da planilha no localStorage
+  saveLocalData();
   render();
 }
+
 function mapRowsToData(rows){
   return rows.map((row,i)=>{
     const rawCategoria = findField(row,['categoria']) || row['Categoria'] || '';
