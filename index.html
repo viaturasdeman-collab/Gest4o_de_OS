@@ -183,7 +183,6 @@ const POLLING_INTERVAL = 180000; // 3 minutos
 
 // ==============================================
 // EVENTOS QUE GERAM ABAS A PARTIR DAS OBSERVAÇÕES
-// Edite esta lista conforme necessário (palavras-chave)
 // ==============================================
 const EVENTOS = ['7 setembro', 'carnaval', 'são joão', 'independência'];
 
@@ -198,6 +197,15 @@ const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 function normalizeViatura(v){
   return v.trim().toUpperCase().replace(/\s+/g,' ').replace(/\s*-\s*/g,'-').replace(/\s+(?=\d)/g,'-');
 }
+
+// Função de busca (faltante)
+function matchesSearch(v, q) {
+  if (!q) return true;
+  const vNorm = normalizeViatura(v);
+  const qNorm = normalizeViatura(q);
+  return vNorm.includes(qNorm);
+}
+
 function normalizeStr(str){
   return String(str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 }
