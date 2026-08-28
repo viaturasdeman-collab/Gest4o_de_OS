@@ -315,7 +315,7 @@ function mapRowsToData(rows){
     const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
     // Palavras-chave expandidas para Observações
-    const note = findField(row,['observa', 'observ', 'obs', 'nota', 'comentario', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
+    const note = findField(row,['observa', 'observ', 'obs', 'nota', 'comentario']) || row['Observações'] || row['Observacoes'] || '';
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
 
