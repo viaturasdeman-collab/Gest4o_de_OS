@@ -29,10 +29,6 @@
   .htitle{display:flex;flex-direction:column;gap:2px;}
   .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;}
   h1{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;}
-  .countdown{display:flex;align-items:baseline;gap:8px;background:var(--bg);border:1px solid var(--border);
-    border-radius:10px;padding:10px 18px;}
-  .countdown .num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:34px;color:var(--amber);line-height:1;}
-  .countdown .lbl{font-size:12px;color:var(--text-dim);line-height:1.2;}
 
   .update-indicator{
     font-size: 11px;
@@ -145,10 +141,6 @@
       <div class="eyebrow">DEMAN · Controle de Viaturas</div>
       <h1>Status das OS-BAMEX</h1>
     </div>
-    <div class="countdown">
-      <span class="num" id="countdownNum">—</span>
-      <span class="lbl">dias<br>restantes</span>
-    </div>
   </header>
 
   <div class="update-indicator" id="updateStatus">Aguardando primeira carga...</div>
@@ -159,7 +151,7 @@
   <div class="toolbar">
     <div class="tabs" id="tabsContainer"></div>
     <div class="right-tools">
-      <input type="text" id="search" placeholder="Buscar viatura (ex: AS-20)" aria-label="Buscar viatura">
+      <input type="text" id="search" placeholder="Buscar viatura ou OS" aria-label="Buscar viatura ou OS">
       <button class="btn" id="addBtn" aria-label="Adicionar nova OS">+ Nova OS</button>
     </div>
   </div>
@@ -458,14 +450,6 @@ async function createOSInSheet(data){
   }catch(err){ console.error('Erro ao criar OS na planilha:',err); return false; }
 }
 
-function daysUntilParade(){
-  const today=new Date();
-  const startToday=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-  const parade=new Date(today.getFullYear(),8,7);
-  let target=parade;
-  if(target<startToday) target=new Date(today.getFullYear()+1,8,7);
-  return Math.ceil((target-startToday)/86400000);
-}
 function stageInfo(key){ return STAGES.find(s=>s.key===key) || STAGES[0]; }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
@@ -518,9 +502,16 @@ function renderGeral(eventoFiltro){
   if (eventoFiltro) {
     dados = DATA.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
   }
-  const allVehicles = Array.from(new Set(dados.map(r => (r.v||'').trim()).filter(Boolean)))
-    .filter(v => matchesSearch(v, q))
-    .sort();
+
+  // Aplica pesquisa por viatura ou OS
+  if (q) {
+    dados = dados.filter(r => 
+      matchesSearch(r.v, q) || 
+      (r.os && r.os.toString().toLowerCase().includes(q))
+    );
+  }
+
+  const allVehicles = Array.from(new Set(dados.map(r => (r.v||'').trim()).filter(Boolean))).sort();
 
   if (allVehicles.length === 0) {
     document.getElementById('content').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
@@ -611,7 +602,6 @@ function renderStats(){
 }
 
 function render(){
-  document.getElementById('countdownNum').textContent = daysUntilParade();
   renderLegend();
   renderStats();
   renderTabs();
