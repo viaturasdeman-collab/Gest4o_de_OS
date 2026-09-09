@@ -481,8 +481,12 @@ function getEventos(){
 function renderTabs(){
   const eventos = getEventos();
   const container=document.getElementById('tabsContainer');
-  container.innerHTML = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>` +
-    eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
+  // Inclui aba "Visão Geral", depois "Finalizadas" fixa, e então eventos
+  let html = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>`;
+  html += `<button class="tab ${activeTab==='finalizadas'?'active':''}" data-tab="finalizadas">Finalizadas</button>`;
+  html += eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
+  container.innerHTML = html;
+
   document.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -494,16 +498,25 @@ function renderTabs(){
 }
 
 // ==============================================
-// RENDER DA VISÃO GERAL (COM FILTRO OPCIONAL DE EVENTO)
+// RENDER DA VISÃO GERAL (COM FILTROS)
 // ==============================================
-function renderGeral(eventoFiltro){
+function renderGeral(eventoFiltro, apenasFinalizadas = false){
   const q = document.getElementById('search').value.trim().toLowerCase();
   let dados = DATA;
-  if (eventoFiltro) {
-    dados = DATA.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
+
+  // Filtra pelo status finalizada (ou exclui, conforme o caso)
+  if (apenasFinalizadas) {
+    dados = dados.filter(r => r.stage === 'Finalizada');
+  } else {
+    dados = dados.filter(r => r.stage !== 'Finalizada');
   }
 
-  // Aplica pesquisa por viatura ou OS
+  // Filtra por evento, se fornecido
+  if (eventoFiltro) {
+    dados = dados.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
+  }
+
+  // Pesquisa por viatura ou OS
   if (q) {
     dados = dados.filter(r => 
       matchesSearch(r.v, q) || 
@@ -605,10 +618,14 @@ function render(){
   renderLegend();
   renderStats();
   renderTabs();
-  if (activeTab === 'geral') {
-    renderGeral(null);
+
+  if (activeTab === 'finalizadas') {
+    renderGeral(null, true);
+  } else if (activeTab === 'geral') {
+    renderGeral(null, false);
   } else {
-    renderGeral(activeTab);
+    // evento específico (não finalizadas)
+    renderGeral(activeTab, false);
   }
 }
 
