@@ -56,6 +56,7 @@
   .btn:hover{border-color:var(--amber);}
   .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
   .btn.ghost{background:transparent;}
+  .btn.active-mode{background:var(--amber);color:#1a1204;border-color:var(--amber);}
 
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
   .legend span{display:inline-flex;align-items:center;gap:5px;}
@@ -152,6 +153,7 @@
     <div class="tabs" id="tabsContainer"></div>
     <div class="right-tools">
       <input type="text" id="search" placeholder="Buscar viatura ou OS" aria-label="Buscar viatura ou OS">
+      <button class="btn ghost" id="toggleFinalizadasBtn">Ver Finalizadas</button>
       <button class="btn" id="addBtn" aria-label="Adicionar nova OS">+ Nova OS</button>
     </div>
   </div>
@@ -305,6 +307,7 @@ function loadLocalData() {
 let DATA = [];
 let activeTab = 'geral';
 let isLoading = false;
+let showFinalizadas = false; // novo estado
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 
@@ -481,9 +484,8 @@ function getEventos(){
 function renderTabs(){
   const eventos = getEventos();
   const container=document.getElementById('tabsContainer');
-  // Inclui aba "Visão Geral", depois "Finalizadas" fixa, e então eventos
+  // Apenas "Visão Geral" e as abas de eventos
   let html = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>`;
-  html += `<button class="tab ${activeTab==='finalizadas'?'active':''}" data-tab="finalizadas">Finalizadas</button>`;
   html += eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
   container.innerHTML = html;
 
@@ -500,12 +502,12 @@ function renderTabs(){
 // ==============================================
 // RENDER DA VISÃO GERAL (COM FILTROS)
 // ==============================================
-function renderGeral(eventoFiltro, apenasFinalizadas = false){
+function renderGeral(eventoFiltro){
   const q = document.getElementById('search').value.trim().toLowerCase();
   let dados = DATA;
 
-  // Filtra pelo status finalizada (ou exclui, conforme o caso)
-  if (apenasFinalizadas) {
+  // Aplica filtro de finalizadas conforme estado do botão
+  if (showFinalizadas) {
     dados = dados.filter(r => r.stage === 'Finalizada');
   } else {
     dados = dados.filter(r => r.stage !== 'Finalizada');
@@ -619,13 +621,17 @@ function render(){
   renderStats();
   renderTabs();
 
-  if (activeTab === 'finalizadas') {
-    renderGeral(null, true);
-  } else if (activeTab === 'geral') {
-    renderGeral(null, false);
+  // Atualiza o texto do botão
+  const btn = document.getElementById('toggleFinalizadasBtn');
+  if (btn) {
+    btn.textContent = showFinalizadas ? 'Ver Ativas' : 'Ver Finalizadas';
+    btn.classList.toggle('active-mode', showFinalizadas);
+  }
+
+  if (activeTab === 'geral') {
+    renderGeral(null);
   } else {
-    // evento específico (não finalizadas)
-    renderGeral(activeTab, false);
+    renderGeral(activeTab);
   }
 }
 
@@ -633,6 +639,12 @@ function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setT
 
 const searchInput = document.getElementById('search');
 searchInput.addEventListener('input', debounce(()=>render(),180));
+
+// Botão de alternância
+document.getElementById('toggleFinalizadasBtn').addEventListener('click', ()=>{
+  showFinalizadas = !showFinalizadas;
+  render();
+});
 
 const afStageSel = document.getElementById('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
