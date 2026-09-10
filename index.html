@@ -15,6 +15,7 @@
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
     --border:#303A47; --text:#E7ECF2; --text-dim:#93A0B0; --text-faint:#5C6879;
     --Pendente:#5B6472; --Aprovada:#00abfb; --Finalizada:#00ff0a; --Cancelada:#EF5350;
+    --Reavaliar:#B18CFF;
     --semos:#EF5350;
     --amber:#E8A93A;
   }
@@ -220,10 +221,11 @@ const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 120000; // 2 minutos
 
 const STAGES = [
-  {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
-  {key:'Aprovada',  label:'Aprovada',   color:'var(--Aprovada)'},
-  {key:'Finalizada',label:'Finalizada', color:'var(--Finalizada)'},
-  {key:'Cancelada', label:'Cancelada',  color:'var(--Cancelada)'},
+  {key:'Pendente',   label:'Pendente',     color:'var(--Pendente)'},
+  {key:'Aprovada',   label:'Aprovada',     color:'var(--Aprovada)'},
+  {key:'Finalizada', label:'Finalizada',   color:'var(--Finalizada)'},
+  {key:'Cancelada',  label:'Cancelada',    color:'var(--Cancelada)'},
+  {key:'Reavaliar',  label:'Reavaliação',  color:'var(--Reavaliar)'},
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
@@ -249,6 +251,7 @@ function parseStage(raw){
   const r = normalizeStr(raw||'');
   if (r.includes('cancelada')) return 'Cancelada';
   if (r.includes('entregue') || r.includes('finalizada') || r.includes('concluida')) return 'Finalizada';
+  if (r.includes('reavali')) return 'Reavaliar';
   if (r.includes('aprovada')) return 'Aprovada';
   return 'Pendente';
 }
@@ -307,11 +310,10 @@ function loadLocalData() {
 let DATA = [];
 let activeTab = 'geral';
 let isLoading = false;
-let showFinalizadas = false; // novo estado
+let showFinalizadas = false;
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 
-// Skeleton helpers
 function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
 function hideSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='none'; document.body.classList.remove('loading'); }
 
@@ -466,7 +468,7 @@ function renderLegend(){
 // GERAÇÃO DE ABAS AUTOMÁTICA A PARTIR DAS OBSERVAÇÕES
 // ==============================================
 function getEventos(){
-  const mapa = new Map(); // chave normalizada -> texto original
+  const mapa = new Map();
   DATA.forEach(r => {
     const original = (r.note || '').trim();
     if (!original) return;
@@ -475,7 +477,6 @@ function getEventos(){
       mapa.set(chave, original);
     }
   });
-  // Retorna os textos originais, ordenados alfabeticamente
   return Array.from(mapa.entries())
     .map(([chave, original]) => original)
     .sort((a, b) => a.localeCompare(b));
@@ -484,7 +485,6 @@ function getEventos(){
 function renderTabs(){
   const eventos = getEventos();
   const container=document.getElementById('tabsContainer');
-  // Apenas "Visão Geral" e as abas de eventos
   let html = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>`;
   html += eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
   container.innerHTML = html;
@@ -506,7 +506,7 @@ function renderGeral(eventoFiltro){
   const q = document.getElementById('search').value.trim().toLowerCase();
   let dados = DATA;
 
-  // Aplica filtro de finalizadas conforme estado do botão
+  // Filtra finalizadas conforme estado do botão
   if (showFinalizadas) {
     dados = dados.filter(r => r.stage === 'Finalizada');
   } else {
@@ -606,12 +606,14 @@ function renderStats(){
   const Aprovadas = DATA.filter(r=>r.stage==='Aprovada').length;
   const Finalizadas = DATA.filter(r=>r.stage==='Finalizada').length;
   const Canceladas = DATA.filter(r=>r.stage==='Cancelada').length;
+  const Reavaliacoes = DATA.filter(r=>r.stage==='Reavaliar').length;
   const stats = [
     {n: total, l:'Viaturas com OS'},
     {n: Pendentes, l:'Pendentes'},
     {n: Aprovadas, l:'Aprovadas'},
     {n: Finalizadas, l:'Finalizadas'},
-    {n: Canceladas, l:'Canceladas'}
+    {n: Canceladas, l:'Canceladas'},
+    {n: Reavaliacoes, l:'Reavaliações'}
   ];
   document.getElementById('stats').innerHTML = stats.map(s=>`<div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
 }
@@ -621,7 +623,6 @@ function render(){
   renderStats();
   renderTabs();
 
-  // Atualiza o texto do botão
   const btn = document.getElementById('toggleFinalizadasBtn');
   if (btn) {
     btn.textContent = showFinalizadas ? 'Ver Ativas' : 'Ver Finalizadas';
@@ -640,7 +641,6 @@ function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setT
 const searchInput = document.getElementById('search');
 searchInput.addEventListener('input', debounce(()=>render(),180));
 
-// Botão de alternância
 document.getElementById('toggleFinalizadasBtn').addEventListener('click', ()=>{
   showFinalizadas = !showFinalizadas;
   render();
