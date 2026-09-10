@@ -38,10 +38,20 @@
     margin-bottom: 10px;
   }
 
+  /* STATS CLICÁVEIS */
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
-  .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;
+    cursor:pointer;transition:border-color .15s, background .15s, transform .12s;user-select:none;position:relative;}
+  .stat:hover{border-color:var(--amber);}
+  .stat:active{transform:scale(0.98);}
   .stat .n{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;}
   .stat .l{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
+  .stat.active-filter{border-color:var(--amber);background:linear-gradient(135deg, rgba(232,169,58,.12), transparent);}
+  .stat.active-filter .l{color:var(--amber);}
+  .stat.active-filter::after{
+    content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:12px;font-weight:700;
+  }
+  .stat.total-stat .n{color:var(--text);}
 
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
   .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;overflow-x:auto;flex-wrap:nowrap;}
@@ -57,7 +67,6 @@
   .btn:hover{border-color:var(--amber);}
   .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
   .btn.ghost{background:transparent;}
-  .btn.active-mode{background:var(--amber);color:#1a1204;border-color:var(--amber);}
 
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
   .legend span{display:inline-flex;align-items:center;gap:5px;}
@@ -130,7 +139,6 @@
   .progress-indeterminate { animation: progress-loop 1.6s linear infinite; background:linear-gradient(90deg, rgba(255,255,255,0.06), var(--amber), rgba(255,255,255,0.06)); background-size: 200% 100%; }
   @keyframes progress-loop { 0%{background-position:200% 0}100%{background-position:-200% 0} }
 
-  /* Smooth transitions */
   .family { transition: transform .18s ease, opacity .18s ease; }
   .veh-card { transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease; }
 </style>
@@ -154,7 +162,7 @@
     <div class="tabs" id="tabsContainer"></div>
     <div class="right-tools">
       <input type="text" id="search" placeholder="Buscar viatura ou OS" aria-label="Buscar viatura ou OS">
-      <button class="btn ghost" id="toggleFinalizadasBtn">Ver Finalizadas</button>
+      <button class="btn ghost" id="clearFilterBtn" style="display:none;">Limpar filtro</button>
       <button class="btn" id="addBtn" aria-label="Adicionar nova OS">+ Nova OS</button>
     </div>
   </div>
@@ -174,7 +182,6 @@
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
 
-  <!-- Skeleton placeholder; exibido enquanto os dados carregam -->
   <div id="skeleton" class="skeleton-wrap" aria-hidden="true" style="display:none;">
     <div class="skel skel-rect" style="height:120px"></div>
     <div class="skel skel-text"></div>
@@ -197,7 +204,6 @@
 // ==============================================
 // CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
 // ==============================================
-// Sentry (opcional) — substitua REPLACE_WITH_SENTRY_DSN por secret SENTRY_DSN
 (function initSentry(){
   try {
     const SENTRY_DSN = 'REPLACE_WITH_SENTRY_DSN';
@@ -218,7 +224,7 @@
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
-const POLLING_INTERVAL = 180000; // 2 minutos
+const POLLING_INTERVAL = 120000;
 
 const STAGES = [
   {key:'Pendente',   label:'Pendente',     color:'var(--Pendente)'},
@@ -310,10 +316,9 @@ function loadLocalData() {
 let DATA = [];
 let activeTab = 'geral';
 let isLoading = false;
-let showFinalizadas = false;
+let activeStatusFilter = null; // null = mostra todas (exceto finalizadas), ou chave de status
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
-
 function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
 function hideSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='none'; document.body.classList.remove('loading'); }
 
@@ -506,10 +511,11 @@ function renderGeral(eventoFiltro){
   const q = document.getElementById('search').value.trim().toLowerCase();
   let dados = DATA;
 
-  // Filtra finalizadas conforme estado do botão
-  if (showFinalizadas) {
-    dados = dados.filter(r => r.stage === 'Finalizada');
+  // Filtro por status selecionado (via clique nos stats)
+  if (activeStatusFilter) {
+    dados = dados.filter(r => r.stage === activeStatusFilter);
   } else {
+    // Comportamento padrão: exclui finalizadas
     dados = dados.filter(r => r.stage !== 'Finalizada');
   }
 
@@ -607,15 +613,41 @@ function renderStats(){
   const Finalizadas = DATA.filter(r=>r.stage==='Finalizada').length;
   const Canceladas = DATA.filter(r=>r.stage==='Cancelada').length;
   const Reavaliacoes = DATA.filter(r=>r.stage==='Reavaliar').length;
+
   const stats = [
-    {n: total, l:'Viaturas com OS'},
-    {n: Pendentes, l:'Pendentes'},
-    {n: Aprovadas, l:'Aprovadas'},
-    {n: Finalizadas, l:'Finalizadas'},
-    {n: Canceladas, l:'Canceladas'},
-    {n: Reavaliacoes, l:'Reavaliações'}
+    {n: total,        l:'Viaturas com OS', filter: null,          isTotal: true},
+    {n: Pendentes,    l:'Pendentes',       filter: 'Pendente'},
+    {n: Aprovadas,    l:'Aprovadas',       filter: 'Aprovada'},
+    {n: Finalizadas,  l:'Finalizadas',     filter: 'Finalizada'},
+    {n: Canceladas,   l:'Canceladas',      filter: 'Cancelada'},
+    {n: Reavaliacoes, l:'Reavaliações',    filter: 'Reavaliar'},
   ];
-  document.getElementById('stats').innerHTML = stats.map(s=>`<div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
+
+  document.getElementById('stats').innerHTML = stats.map(s=>{
+    const isActive = (s.isTotal && activeStatusFilter === null) || (s.filter && activeStatusFilter === s.filter);
+    const classes = ['stat'];
+    if (s.isTotal) classes.push('total-stat');
+    if (isActive) classes.push('active-filter');
+    const dataAttr = s.isTotal ? 'data-total="1"' : `data-filter="${s.filter}"`;
+    const title = s.isTotal ? 'Mostrar todas (exceto finalizadas)' : `Filtrar por ${s.l}`;
+    return `<div class="${classes.join(' ')}" ${dataAttr} title="${title}">
+      <div class="n">${s.n}</div>
+      <div class="l">${s.l}</div>
+    </div>`;
+  }).join('');
+
+  // Adiciona os event listeners nos cards
+  document.querySelectorAll('.stat').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      if (card.dataset.total === '1') {
+        activeStatusFilter = null;
+      } else {
+        const filter = card.dataset.filter;
+        activeStatusFilter = (activeStatusFilter === filter) ? null : filter;
+      }
+      render();
+    });
+  });
 }
 
 function render(){
@@ -623,10 +655,10 @@ function render(){
   renderStats();
   renderTabs();
 
-  const btn = document.getElementById('toggleFinalizadasBtn');
-  if (btn) {
-    btn.textContent = showFinalizadas ? 'Ver Ativas' : 'Ver Finalizadas';
-    btn.classList.toggle('active-mode', showFinalizadas);
+  // Botão "Limpar filtro" visível apenas quando há filtro ativo
+  const clearBtn = document.getElementById('clearFilterBtn');
+  if (clearBtn) {
+    clearBtn.style.display = activeStatusFilter ? 'inline-block' : 'none';
   }
 
   if (activeTab === 'geral') {
@@ -641,8 +673,8 @@ function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setT
 const searchInput = document.getElementById('search');
 searchInput.addEventListener('input', debounce(()=>render(),180));
 
-document.getElementById('toggleFinalizadasBtn').addEventListener('click', ()=>{
-  showFinalizadas = !showFinalizadas;
+document.getElementById('clearFilterBtn').addEventListener('click', ()=>{
+  activeStatusFilter = null;
   render();
 });
 
