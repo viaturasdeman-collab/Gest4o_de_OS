@@ -226,6 +226,13 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIF
 const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 180000;
 
+// Chaves fixas de abas
+const TAB_GERAL = 'geral';
+const TAB_MANUTENCAO = '__manutencao__'; // chave interna da aba fixa Manutenção
+
+// Palavras-chave para a aba "Manutenção" (normalizadas)
+const MANUTENCAO_KEYWORDS = ['manuten'];
+
 const STAGES = [
   {key:'Pendente',   label:'Pendente',     color:'var(--Pendente)'},
   {key:'Aprovada',   label:'Aprovada',     color:'var(--Aprovada)'},
@@ -293,6 +300,12 @@ function matchesSearch(v, q) {
   return normalizeStr(v).includes(normalizeStr(q));
 }
 
+// Verifica se uma observação corresponde à categoria "Manutenção"
+function isManutencaoNote(note){
+  const n = normalizeStr(note || '');
+  return MANUTENCAO_KEYWORDS.some(kw => n.includes(kw));
+}
+
 // ==============================================
 // FUNÇÕES DE ARMAZENAMENTO LOCAL
 // ==============================================
@@ -314,9 +327,9 @@ function loadLocalData() {
 }
 
 let DATA = [];
-let activeTab = 'geral';
+let activeTab = TAB_GERAL;
 let isLoading = false;
-let activeStatusFilter = null; // null = mostra todas (exceto finalizadas), ou chave de status
+let activeStatusFilter = null;
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
@@ -477,6 +490,8 @@ function getEventos(){
   DATA.forEach(r => {
     const original = (r.note || '').trim();
     if (!original) return;
+    // Ignora a observação que já corresponde à aba fixa "Manutenção"
+    if (isManutencaoNote(original)) return;
     const chave = normalizeStr(original);
     if (!mapa.has(chave)) {
       mapa.set(chave, original);
@@ -490,7 +505,12 @@ function getEventos(){
 function renderTabs(){
   const eventos = getEventos();
   const container=document.getElementById('tabsContainer');
-  let html = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>`;
+
+  // Aba "Visão Geral" (fixa)
+  let html = `<button class="tab ${activeTab===TAB_GERAL?'active':''}" data-tab="${TAB_GERAL}">Visão Geral</button>`;
+  // Aba "Manutenção" (fixa)
+  html += `<button class="tab ${activeTab===TAB_MANUTENCAO?'active':''}" data-tab="${TAB_MANUTENCAO}">Manutenção</button>`;
+  // Abas dinâmicas (eventos)
   html += eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
   container.innerHTML = html;
 
@@ -519,8 +539,11 @@ function renderGeral(eventoFiltro){
     dados = dados.filter(r => r.stage !== 'Finalizada');
   }
 
-  // Filtra por evento, se fornecido
-  if (eventoFiltro) {
+  // Filtro da aba "Manutenção" (observações que contenham "manuten")
+  if (eventoFiltro === TAB_MANUTENCAO) {
+    dados = dados.filter(r => isManutencaoNote(r.note));
+  } else if (eventoFiltro) {
+    // Filtro por evento específico (dinâmico)
     dados = dados.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
   }
 
@@ -636,7 +659,6 @@ function renderStats(){
     </div>`;
   }).join('');
 
-  // Adiciona os event listeners nos cards
   document.querySelectorAll('.stat').forEach(card=>{
     card.addEventListener('click', ()=>{
       if (card.dataset.total === '1') {
@@ -655,14 +677,13 @@ function render(){
   renderStats();
   renderTabs();
 
-  // Botão "Limpar filtro" visível apenas quando há filtro ativo
   const clearBtn = document.getElementById('clearFilterBtn');
   if (clearBtn) {
     clearBtn.style.display = activeStatusFilter ? 'inline-block' : 'none';
   }
 
-  if (activeTab === 'geral') {
-    renderGeral(null);
+  if (activeTab === TAB_GERAL || activeTab === TAB_MANUTENCAO) {
+    renderGeral(activeTab === TAB_MANUTENCAO ? TAB_MANUTENCAO : null);
   } else {
     renderGeral(activeTab);
   }
