@@ -30,6 +30,30 @@
   .htitle{display:flex;flex-direction:column;gap:2px;}
   .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;}
   h1{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;}
+  .user-area{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-dim);}
+  .user-area .who{font-family:'IBM Plex Mono',monospace;}
+  .user-area .who b{color:var(--amber);}
+
+  /* LOGIN OVERLAY */
+  .login-overlay{
+    position:fixed;inset:0;background:rgba(16,20,26,.97);
+    display:flex;align-items:center;justify-content:center;z-index:9999;
+  }
+  .login-box{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:26px 24px;width:340px;display:flex;flex-direction:column;gap:12px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .login-box h2{font-family:'Rajdhani',sans-serif;font-size:22px;margin:0 0 4px;letter-spacing:.02em;}
+  .login-box p.sub{font-size:12px;color:var(--text-dim);margin:0 0 8px;}
+  .login-box input{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:14px;
+  }
+  .login-box input:focus{outline:1px solid var(--amber);}
+  .login-box .btn{width:100%;justify-content:center;padding:11px;font-size:15px;}
+  .login-error{color:#EF5350;font-size:12px;text-align:center;display:none;}
+  .login-footer{font-size:10.5px;color:var(--text-faint);text-align:center;margin-top:6px;}
 
   .update-indicator{
     font-size: 11px;
@@ -38,7 +62,6 @@
     margin-bottom: 10px;
   }
 
-  /* STATS CLICÁVEIS */
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
   .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;
     cursor:pointer;transition:border-color .15s, background .15s, transform .12s;user-select:none;position:relative;}
@@ -59,9 +82,9 @@
     border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;white-space:nowrap;}
   .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  input[type=text], input[type=file], select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
+  input[type=text], input[type=password], input[type=file], select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
     padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;}
-  input[type=text]:focus, select:focus{outline:1px solid var(--amber);}
+  input[type=text]:focus, input[type=password]:focus, select:focus{outline:1px solid var(--amber);}
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
     border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);white-space:nowrap;}
   .btn:hover{border-color:var(--amber);}
@@ -128,7 +151,6 @@
   .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
   .error-box p{margin:5px 0;}
 
-  /* Skeletons / shimmer */
   .skel { background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; border-radius:8px; }
   .skel-text { height:12px; width:80%; margin:6px 0; border-radius:4px; }
   .skel-rect { height:60px; width:100%; border-radius:8px; }
@@ -144,12 +166,32 @@
 </style>
 </head>
 <body>
+
+<!-- ============================================ -->
+<!-- LOGIN OVERLAY                                -->
+<!-- ============================================ -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <h2>DEMAN · Acesso</h2>
+    <p class="sub">Entre com suas credenciais para continuar.</p>
+    <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
+    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
+    <p id="loginError" class="login-error">Usuário ou senha inválidos.</p>
+    <button class="btn primary" id="loginBtn">Entrar</button>
+    <div class="login-footer">Uso interno · Registro de auditoria ativo</div>
+  </div>
+</div>
+
 <div class="wrap">
 
   <header>
     <div class="htitle">
       <div class="eyebrow">DEMAN · Controle de Viaturas</div>
       <h1>Status das OS-BAMEX</h1>
+    </div>
+    <div class="user-area">
+      <span class="who">Logado como <b id="currentUserName">—</b></span>
+      <button class="btn ghost" id="logoutBtn">Sair</button>
     </div>
   </header>
 
@@ -191,7 +233,7 @@
 
   <div id="content"></div>
 
-  <footer>Dados carregados da planilha Google Sheets. Se a carga automática falhar, use o botão abaixo.</footer>
+  <footer>Dados carregados da planilha Google Sheets.</footer>
 
   <div id="errorArea" class="error-box" style="display:none;">
     <p><strong>Não foi possível carregar os dados automaticamente.</strong></p>
@@ -204,33 +246,22 @@
 // ==============================================
 // CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
 // ==============================================
-(function initSentry(){
-  try {
-    const SENTRY_DSN = 'REPLACE_WITH_SENTRY_DSN';
-    if(!SENTRY_DSN) return;
-    const s = document.createElement('script');
-    s.src = 'https://browser.sentry-cdn.com/7.5.0/bundle.min.js';
-    s.crossOrigin = 'anonymous';
-    s.onload = () => {
-      if (window.Sentry) {
-        Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.05 });
-      }
-    };
-    document.head.appendChild(s);
-    window.addEventListener('unhandledrejection', e => { if(window.Sentry) Sentry.captureException(e.reason || e); });
-  } catch(e){ console.warn('Sentry init failed', e); }
-})();
-
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 180000;
 
-// Chaves fixas de abas
-const TAB_GERAL = 'geral';
-const TAB_MANUTENCAO = '__manutencao__'; // chave interna da aba fixa Manutenção
+// ⚠️ Usuários autorizados (troque as senhas! Ao menos 8 caracteres com letras e números)
+const USERS = {
+  'Bita':   { senha: 'Bamex@2026', nome: 'BITA'   },
+  'Adson':  { senha: 'Bamex@2026', nome: 'ADSON FRANCA'  },
+  'Paulo':  { senha: 'Bamex@2026', nome: 'PAULO SOTERO' },
+  'Luana':  { senha: 'Bamex@2026', nome: 'LUANA VICTORIA' },
+  'Alvaro':  { senha: 'Bamex@2026', nome: 'FABIO ALVARO' },
+};
 
-// Palavras-chave para a aba "Manutenção" (normalizadas)
+const TAB_GERAL = 'geral';
+const TAB_MANUTENCAO = '__manutencao__';
 const MANUTENCAO_KEYWORDS = ['manuten'];
 
 const STAGES = [
@@ -274,7 +305,6 @@ function extractOrcamentos(statusRaw, note, orcadaRaw, qntRaw){
   const o = normalizeStr(orcadaRaw||'');
   const combined = r+' '+n;
   let orcamentos = 0;
-
   if (qntRaw && String(qntRaw).trim() !== '') {
     const parsed = parseInt(qntRaw,10);
     if (!isNaN(parsed) && parsed > 0) orcamentos = Math.min(parsed,5);
@@ -299,30 +329,79 @@ function matchesSearch(v, q) {
   if (!q) return true;
   return normalizeStr(v).includes(normalizeStr(q));
 }
-
-// Verifica se uma observação corresponde à categoria "Manutenção"
 function isManutencaoNote(note){
   const n = normalizeStr(note || '');
   return MANUTENCAO_KEYWORDS.some(kw => n.includes(kw));
 }
 
 // ==============================================
-// FUNÇÕES DE ARMAZENAMENTO LOCAL
+// AUTENTICAÇÃO
+// ==============================================
+let currentUser = null;
+
+function isLoggedIn(){ return sessionStorage.getItem('deman_auth') === 'ok'; }
+function getCurrentUser(){
+  return sessionStorage.getItem('deman_user_nome') || '';
+}
+
+function showLogin(){
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('loginUser').focus();
+}
+function hideLogin(){
+  document.getElementById('loginOverlay').style.display = 'none';
+}
+
+async function handleLogin(){
+  const u = document.getElementById('loginUser').value.trim().toLowerCase();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+
+  const acc = USERS[u];
+  if (acc && acc.senha === p) {
+    sessionStorage.setItem('deman_auth','ok');
+    sessionStorage.setItem('deman_user', u);
+    sessionStorage.setItem('deman_user_nome', acc.nome);
+    currentUser = acc.nome;
+    err.style.display = 'none';
+    startApp();
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+function handleLogout(){
+  sessionStorage.removeItem('deman_auth');
+  sessionStorage.removeItem('deman_user');
+  sessionStorage.removeItem('deman_user_nome');
+  currentUser = null;
+  // Para o polling recarregando a página
+  location.reload();
+}
+
+document.getElementById('loginBtn').addEventListener('click', handleLogin);
+document.getElementById('loginPass').addEventListener('keydown', (e)=>{
+  if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('loginUser').addEventListener('keydown', (e)=>{
+  if (e.key === 'Enter') document.getElementById('loginPass').focus();
+});
+document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+// ==============================================
+// DEMAIS FUNÇÕES (armazenamento, etc.)
 // ==============================================
 function saveLocalData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) { console.warn('Erro ao salvar local:', e); }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
 }
 function loadLocalData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length) {
-        DATA = parsed;
-        return true;
-      }
+      if (Array.isArray(parsed) && parsed.length) { DATA = parsed; return true; }
     }
-  } catch(e) { console.warn('Erro ao carregar local:', e); }
+  } catch(e) {}
   return false;
 }
 
@@ -330,6 +409,7 @@ let DATA = [];
 let activeTab = TAB_GERAL;
 let isLoading = false;
 let activeStatusFilter = null;
+let pollingHandle = null;
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
@@ -340,21 +420,17 @@ function processCsvText(csvText){
   let headerIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].toLowerCase().includes('viatura') && lines[i].toLowerCase().includes('os nº')) {
-      headerIndex = i;
-      break;
+      headerIndex = i; break;
     }
   }
   if (headerIndex === -1) {
     console.error('Cabeçalho não encontrado no CSV');
-    DATA = [];
-    renderStats();
-    return;
+    DATA = []; renderStats(); return;
   }
   const cleanCsv = lines.slice(headerIndex).join('\n');
   const parsed = Papa.parse(cleanCsv, { header: true, skipEmptyLines: true });
   if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
-  const rows = parsed.data || [];
-  DATA = mapRowsToData(rows);
+  DATA = mapRowsToData(parsed.data || []);
   saveLocalData();
   render();
 }
@@ -393,6 +469,7 @@ function mapRowsToData(rows){
 }
 
 async function fetchCsv(url){ const response=await fetch(url); if(!response.ok) throw new Error(`HTTP ${response.status}`); return await response.text(); }
+
 async function loadData(){
   if(isLoading) return;
   isLoading = true;
@@ -410,7 +487,6 @@ async function loadData(){
     loadedFromSheet = true;
     updateIndicator('Atualizado em ' + new Date().toLocaleTimeString());
   } catch(e1) {
-    console.warn('Falha na URL direta, tentando proxies...', e1);
     const proxies = ['https://api.allorigins.win/raw?url=','https://corsproxy.io/?','https://api.codetabs.com/v1/proxy?quest='];
     for (const p of proxies) {
       try {
@@ -421,22 +497,18 @@ async function loadData(){
         loadedFromSheet = true;
         updateIndicator('Atualizado via proxy em ' + new Date().toLocaleTimeString());
         break;
-      } catch(e2) {
-        console.warn(`Proxy falhou (${p}):`, e2);
-      }
+      } catch(e2) {}
     }
   }
 
   if(!loadedFromSheet) {
-    console.error('Falha ao carregar a planilha (direto e proxies).');
     const loadedFromLocal = loadLocalData();
     if(loadedFromLocal) {
       errorArea.style.display='none';
       updateIndicator('Usando dados locais (planilha indisponível)');
       render();
     } else {
-      DATA=[];
-      renderStats();
+      DATA=[]; renderStats();
       errorArea.style.display='block';
       updateIndicator('Falha ao carregar dados');
     }
@@ -446,12 +518,18 @@ async function loadData(){
 }
 
 async function updateSheet(osNumber,newStatus,viatura){
-  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return false;
+  if(!APPS_SCRIPT_URL) return false;
   try{
     const response = await fetch(APPS_SCRIPT_URL,{
       method:'POST',
       headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'atualizarStatus',os:osNumber,status:newStatus,viatura:viatura})
+      body: JSON.stringify({
+        action:'atualizarStatus',
+        os:osNumber,
+        status:newStatus,
+        viatura:viatura,
+        usuario: currentUser || getCurrentUser() || 'Desconhecido'
+      })
     });
     if(!response.ok) return false;
     const result = await response.json().catch(()=>null);
@@ -460,12 +538,15 @@ async function updateSheet(osNumber,newStatus,viatura){
 }
 
 async function createOSInSheet(data){
-  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return false;
+  if(!APPS_SCRIPT_URL) return false;
   try{
+    const payload = Object.assign({}, data, {
+      usuario: currentUser || getCurrentUser() || 'Desconhecido'
+    });
     const response = await fetch(APPS_SCRIPT_URL,{
       method:'POST',
       headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'criarOS',...data})
+      body: JSON.stringify({action:'criarOS', ...payload})
     });
     if(!response.ok) return false;
     const result = await response.json().catch(()=>null);
@@ -482,35 +563,23 @@ function renderLegend(){
     `<span><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
 }
 
-// ==============================================
-// GERAÇÃO DE ABAS AUTOMÁTICA A PARTIR DAS OBSERVAÇÕES
-// ==============================================
 function getEventos(){
   const mapa = new Map();
   DATA.forEach(r => {
     const original = (r.note || '').trim();
     if (!original) return;
-    // Ignora a observação que já corresponde à aba fixa "Manutenção"
     if (isManutencaoNote(original)) return;
     const chave = normalizeStr(original);
-    if (!mapa.has(chave)) {
-      mapa.set(chave, original);
-    }
+    if (!mapa.has(chave)) mapa.set(chave, original);
   });
-  return Array.from(mapa.entries())
-    .map(([chave, original]) => original)
-    .sort((a, b) => a.localeCompare(b));
+  return Array.from(mapa.entries()).map(([chave, original]) => original).sort((a, b) => a.localeCompare(b));
 }
 
 function renderTabs(){
   const eventos = getEventos();
   const container=document.getElementById('tabsContainer');
-
-  // Aba "Visão Geral" (fixa)
   let html = `<button class="tab ${activeTab===TAB_GERAL?'active':''}" data-tab="${TAB_GERAL}">Visão Geral</button>`;
-  // Aba "Manutenção" (fixa)
   html += `<button class="tab ${activeTab===TAB_MANUTENCAO?'active':''}" data-tab="${TAB_MANUTENCAO}">Manutenção</button>`;
-  // Abas dinâmicas (eventos)
   html += eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
   container.innerHTML = html;
 
@@ -524,39 +593,27 @@ function renderTabs(){
   });
 }
 
-// ==============================================
-// RENDER DA VISÃO GERAL (COM FILTROS)
-// ==============================================
 function renderGeral(eventoFiltro){
   const q = document.getElementById('search').value.trim().toLowerCase();
   let dados = DATA;
 
-  // Filtro por status selecionado (via clique nos stats)
   if (activeStatusFilter) {
     dados = dados.filter(r => r.stage === activeStatusFilter);
   } else {
-    // Comportamento padrão: exclui finalizadas
     dados = dados.filter(r => r.stage !== 'Finalizada');
   }
 
-  // Filtro da aba "Manutenção" (observações que contenham "manuten")
   if (eventoFiltro === TAB_MANUTENCAO) {
     dados = dados.filter(r => isManutencaoNote(r.note));
   } else if (eventoFiltro) {
-    // Filtro por evento específico (dinâmico)
     dados = dados.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
   }
 
-  // Pesquisa por viatura ou OS
   if (q) {
-    dados = dados.filter(r => 
-      matchesSearch(r.v, q) || 
-      (r.os && r.os.toString().toLowerCase().includes(q))
-    );
+    dados = dados.filter(r => matchesSearch(r.v, q) || (r.os && r.os.toString().toLowerCase().includes(q)));
   }
 
   const allVehicles = Array.from(new Set(dados.map(r => (r.v||'').trim()).filter(Boolean))).sort();
-
   if (allVehicles.length === 0) {
     document.getElementById('content').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
     return;
@@ -652,8 +709,7 @@ function renderStats(){
     if (s.isTotal) classes.push('total-stat');
     if (isActive) classes.push('active-filter');
     const dataAttr = s.isTotal ? 'data-total="1"' : `data-filter="${s.filter}"`;
-    const title = s.isTotal ? 'Mostrar todas (exceto finalizadas)' : `Filtrar por ${s.l}`;
-    return `<div class="${classes.join(' ')}" ${dataAttr} title="${title}">
+    return `<div class="${classes.join(' ')}" ${dataAttr}">
       <div class="n">${s.n}</div>
       <div class="l">${s.l}</div>
     </div>`;
@@ -661,9 +717,8 @@ function renderStats(){
 
   document.querySelectorAll('.stat').forEach(card=>{
     card.addEventListener('click', ()=>{
-      if (card.dataset.total === '1') {
-        activeStatusFilter = null;
-      } else {
+      if (card.dataset.total === '1') activeStatusFilter = null;
+      else {
         const filter = card.dataset.filter;
         activeStatusFilter = (activeStatusFilter === filter) ? null : filter;
       }
@@ -678,15 +733,11 @@ function render(){
   renderTabs();
 
   const clearBtn = document.getElementById('clearFilterBtn');
-  if (clearBtn) {
-    clearBtn.style.display = activeStatusFilter ? 'inline-block' : 'none';
-  }
+  if (clearBtn) clearBtn.style.display = activeStatusFilter ? 'inline-block' : 'none';
 
-  if (activeTab === TAB_GERAL || activeTab === TAB_MANUTENCAO) {
-    renderGeral(activeTab === TAB_MANUTENCAO ? TAB_MANUTENCAO : null);
-  } else {
-    renderGeral(activeTab);
-  }
+  if (activeTab === TAB_MANUTENCAO) renderGeral(TAB_MANUTENCAO);
+  else if (activeTab === TAB_GERAL) renderGeral(null);
+  else renderGeral(activeTab);
 }
 
 function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
@@ -704,6 +755,7 @@ afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</optio
 
 document.getElementById('addBtn').addEventListener('click', ()=>{ document.getElementById('addForm').classList.toggle('open'); });
 document.getElementById('af-cancel').addEventListener('click', ()=>{ document.getElementById('addForm').classList.remove('open'); });
+
 document.getElementById('af-save').addEventListener('click', async ()=>{
   const v = normalizeViatura(document.getElementById('af-v').value);
   const os = document.getElementById('af-os').value.trim();
@@ -714,6 +766,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   const qntRaw = document.getElementById('af-qnt').value.trim();
   const note = document.getElementById('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
+
   let orcamentos = 0;
   if(orcada === 'Sim'){
     orcamentos = parseInt(qntRaw,10);
@@ -722,12 +775,29 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   }
   const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
   if(duplicate){ alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`); return; }
+
   const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, note };
   DATA.push(newRecord);
   render();
-  const ok = await createOSInSheet({ categoria:catLabel, viatura:v, os:os, status:stage, orcada:orcada, qnt:orcamentos>0?String(orcamentos):'', oficina:'', observacoes:note });
-  if(!ok){ const idx = DATA.indexOf(newRecord); if(idx>-1) DATA.splice(idx,1); alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.'); }
-  document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
+
+  const ok = await createOSInSheet({
+    categoria:catLabel,
+    viatura:v,
+    os:os,
+    status:stage,
+    orcada:orcada,
+    qnt:orcamentos>0?String(orcamentos):'',
+    oficina:'',
+    observacoes:note
+  });
+
+  if(!ok){
+    const idx = DATA.indexOf(newRecord);
+    if(idx>-1) DATA.splice(idx,1);
+    alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.');
+  }
+  document.getElementById('af-v').value=''; document.getElementById('af-os').value='';
+  document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
   document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
@@ -737,13 +807,31 @@ document.getElementById('csvFileInput').addEventListener('change', (e)=>{
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = (ev)=>{ const csvText = ev.target.result; processCsvText(csvText); document.getElementById('errorArea').style.display='none'; };
+  reader.onload = (ev)=>{ processCsvText(ev.target.result); document.getElementById('errorArea').style.display='none'; };
   reader.readAsText(file);
 });
 
-// Inicialização e polling
-loadData();
-setInterval(()=>{ if(document.activeElement && document.activeElement.tagName==='SELECT') return; loadData(); }, POLLING_INTERVAL);
+// ==============================================
+// INICIALIZAÇÃO
+// ==============================================
+function startApp(){
+  hideLogin();
+  currentUser = getCurrentUser();
+  document.getElementById('currentUserName').textContent = currentUser || '—';
+  loadData();
+  if (pollingHandle) clearInterval(pollingHandle);
+  pollingHandle = setInterval(()=>{
+    if(document.activeElement && document.activeElement.tagName==='SELECT') return;
+    loadData();
+  }, POLLING_INTERVAL);
+}
+
+// Só inicia se já estiver logado
+if (isLoggedIn()) {
+  startApp();
+} else {
+  showLogin();
+}
 </script>
 </body>
 </html>
