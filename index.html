@@ -62,7 +62,6 @@
     margin-bottom: 10px;
   }
 
-  /* ▼ NOVO — linha da última alteração registrada */
   .last-change{
     font-size: 11px;
     color: var(--text-faint);
@@ -205,7 +204,6 @@
   </header>
 
   <div class="update-indicator" id="updateStatus">Aguardando primeira carga...</div>
-  <!-- ▼ NOVO -->
   <div class="last-change" id="lastChange">Última alteração registrada: —</div>
 
   <div class="stats" id="stats"></div>
@@ -458,7 +456,6 @@ function mapRowsToData(rows){
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
 
-    // ▼ NOVO — colunas de auditoria
     const alteradoPor = findField(row,['alterado por']) || row['Alterado por'] || '';
     const ultimaAlt   = findField(row,['ultima alteracao', 'última alteração', 'ultima alteração', 'última alteracao']) || row['Última alteração'] || '';
 
@@ -478,7 +475,6 @@ function mapRowsToData(rows){
       justificativa:flags.justificativa,
       empresa:(empresa||'').toString().trim(),
       note:(note||'').toString().trim(),
-      // ▼ NOVO
       alteradoPor: (alteradoPor||'').toString().trim(),
       ultimaAlt:   (ultimaAlt||'').toString().trim(),
     };
@@ -502,7 +498,6 @@ async function loadData(){
     processCsvText(csvText);
     errorArea.style.display='none';
     loadedFromSheet = true;
-    // ▼ NOVO — substitui updateIndicator(...)
     renderLastUpdate();
   } catch(e1) {
     const proxies = ['https://api.allorigins.win/raw?url=','https://corsproxy.io/?','https://api.codetabs.com/v1/proxy?quest='];
@@ -513,7 +508,6 @@ async function loadData(){
         processCsvText(csvText);
         errorArea.style.display='none';
         loadedFromSheet = true;
-        // ▼ NOVO
         renderLastUpdate();
         break;
       } catch(e2) {}
@@ -524,7 +518,6 @@ async function loadData(){
     const loadedFromLocal = loadLocalData();
     if(loadedFromLocal) {
       errorArea.style.display='none';
-      // ▼ NOVO
       renderLastUpdate();
       render();
     } else {
@@ -578,14 +571,12 @@ function stageInfo(key){ return STAGES.find(s=>s.key===key) || STAGES[0]; }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
 // ==============================================
-// ▼ NOVO — Última alteração registrada (auditoria)
+// Última alteração registrada (auditoria)
 // ==============================================
-// Encontra a maior data (formato dd/MM/yyyy HH:mm:ss) entre os registros
 function getUltimaAlteracaoGlobal(){
   let maior = null;
   DATA.forEach(r => {
     if (!r.ultimaAlt) return;
-    // Converte "dd/MM/yyyy HH:mm:ss" em Date
     const m = String(r.ultimaAlt).match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
     if (!m) return;
     const d = new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +m[6]);
@@ -594,7 +585,6 @@ function getUltimaAlteracaoGlobal(){
   return maior;
 }
 
-// Atualiza o rodapé com "Dados consultados em ..." e "Última alteração registrada: ..."
 function renderLastUpdate(){
   const agora = new Date();
   const el1 = document.getElementById('updateStatus');
@@ -712,8 +702,6 @@ function renderGeral(eventoFiltro){
                 <span>Qnt: ${qnt}</span>
               </div>
               ${r.empresa ? `<div class="os-note">${escapeHtml(r.empresa)}</div>` : ''}
-              <!-- ▼ NOVO — auditoria por OS -->
-              ${r.alteradoPor ? `<div class="os-note">Alterado por ${escapeHtml(r.alteradoPor)}${r.ultimaAlt ? ' em ' + escapeHtml(r.ultimaAlt) : ''}</div>` : ''}
             </div>
           </div>
         `;
@@ -792,7 +780,7 @@ function render(){
   renderLegend();
   renderStats();
   renderTabs();
-  renderLastUpdate();   // ▼ NOVO
+  renderLastUpdate();
   const clearBtn = document.getElementById('clearFilterBtn');
   if (clearBtn) clearBtn.style.display = activeStatusFilter ? 'inline-block' : 'none';
 
