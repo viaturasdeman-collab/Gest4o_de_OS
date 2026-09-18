@@ -222,6 +222,7 @@
     <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
     <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
     <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria">
+    <input type="text" id="af-empresa" placeholder="Oficina/Empresa (opcional)" aria-label="Oficina ou Empresa">
     <select id="af-stage" aria-label="Estágio"></select>
     <select id="af-orcada" aria-label="Orçada">
       <option value="Não">Não</option>
@@ -810,6 +811,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   const os = document.getElementById('af-os').value.trim();
   const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
   const catKey = slugify(catLabel);
+  const empresa = document.getElementById('af-empresa').value.trim();
   const stage = document.getElementById('af-stage').value;
   const orcada = document.getElementById('af-orcada').value;
   const qntRaw = document.getElementById('af-qnt').value.trim();
@@ -825,7 +827,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
   if(duplicate){ alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`); return; }
 
-  const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, note, alteradoPor:'', ultimaAlt:'' };
+  const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, empresa, note, alteradoPor:'', ultimaAlt:'' };
   DATA.push(newRecord);
   render();
 
@@ -836,7 +838,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
     status:stage,
     orcada:orcada,
     qnt:orcamentos>0?String(orcamentos):'',
-    oficina:'',
+    oficina:empresa,
     observacoes:note
   });
 
@@ -847,6 +849,7 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   }
   document.getElementById('af-v').value=''; document.getElementById('af-os').value='';
   document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
+  document.getElementById('af-empresa').value='';
   document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
