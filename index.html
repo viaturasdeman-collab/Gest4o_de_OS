@@ -147,14 +147,86 @@
   .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
   .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 
-  .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
-    border-radius:10px;padding:12px;margin-bottom:14px;}
-  .addform.open{display:flex;}
-  .addform input,.addform select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;}
-  .addform input[type="text"]{flex:1 1 150px;}
-  .addform select{flex:0 1 auto;}
-  .addform .btn{flex:0 0 auto;}
+  /* =============================================
+     FORMULÁRIO NOVA OS — layout em grid
+     ============================================= */
+  .addform{
+    display:none;
+    grid-template-columns: repeat(6, 1fr);
+    gap:10px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:14px;
+    align-items:center;
+  }
+  .addform.open{ display:grid; }
+
+  .addform input,
+  .addform select{
+    width:100%;
+    min-width:0;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:7px;
+    padding:9px 11px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+  }
+  .addform input::placeholder{ color:var(--text-faint); }
+  .addform input:focus,
+  .addform select:focus{ outline:1px solid var(--amber); }
+
+  /* Linha 1 — cada campo ocupa 1 coluna de 6 */
+  .addform #af-v,
+  .addform #af-os,
+  .addform #af-cat,
+  .addform #af-empresa,
+  .addform #af-stage,
+  .addform #af-orcada{ grid-column: span 1; }
+
+  /* Linha 2 — Qnt (1) + Observação (3) + Salvar (1) + Cancelar (1) */
+  .addform #af-qnt{ grid-column: span 1; }
+  .addform #af-note{ grid-column: span 3; }
+  .addform #af-save{ grid-column: span 1; }
+  .addform #af-cancel{ grid-column: span 1; }
+
+  .addform .btn{
+    width:100%;
+    justify-content:center;
+    padding:9px 12px;
+  }
+
+  @media (max-width: 900px){
+    .addform{ grid-template-columns: repeat(3, 1fr); }
+    .addform #af-v,
+    .addform #af-os,
+    .addform #af-cat,
+    .addform #af-empresa,
+    .addform #af-stage,
+    .addform #af-orcada{ grid-column: span 1; }
+    .addform #af-qnt{ grid-column: span 1; }
+    .addform #af-note{ grid-column: span 2; }
+    .addform #af-save{ grid-column: span 1; }
+    .addform #af-cancel{ grid-column: span 1; }
+  }
+
+  @media (max-width: 560px){
+    .addform{ grid-template-columns: 1fr 1fr; }
+    .addform #af-v,
+    .addform #af-os,
+    .addform #af-cat,
+    .addform #af-empresa,
+    .addform #af-stage,
+    .addform #af-orcada,
+    .addform #af-qnt,
+    .addform #af-save,
+    .addform #af-cancel{ grid-column: span 1; }
+    .addform #af-note{ grid-column: span 2; }
+  }
+
   footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
   .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
   .error-box p{margin:5px 0;}
@@ -222,14 +294,14 @@
     <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
     <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
     <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria">
-    <input type="text" id="af-empresa" placeholder="Oficina/Empresa (opcional)" aria-label="Oficina ou Empresa">
+    <input type="text" id="af-empresa" placeholder="Oficina/Empresa" aria-label="Oficina ou Empresa">
     <select id="af-stage" aria-label="Estágio"></select>
     <select id="af-orcada" aria-label="Orçada">
       <option value="Não">Não</option>
       <option value="Sim">Sim</option>
     </select>
-    <input type="text" id="af-qnt" placeholder="Qnt (opcional)" aria-label="Quantidade" style="max-width:80px;">
-    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:2;">
+    <input type="text" id="af-qnt" placeholder="Qnt" aria-label="Quantidade">
+    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação">
     <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
