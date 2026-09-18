@@ -55,19 +55,8 @@
   .login-error{color:#EF5350;font-size:12px;text-align:center;display:none;}
   .login-footer{font-size:10.5px;color:var(--text-faint);text-align:center;margin-top:6px;}
 
-  .update-indicator{
-    font-size: 11px;
-    color: var(--text-faint);
-    text-align: right;
-    margin-bottom: 10px;
-  }
-
-  .last-change{
-    font-size: 11px;
-    color: var(--text-faint);
-    text-align: right;
-    margin-bottom: 14px;
-  }
+  .update-indicator{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:10px;}
+  .last-change{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:14px;}
   .last-change b{ color: var(--amber); font-weight: 600; }
 
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
@@ -79,9 +68,7 @@
   .stat .l{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
   .stat.active-filter{border-color:var(--amber);background:linear-gradient(135deg, rgba(232,169,58,.12), transparent);}
   .stat.active-filter .l{color:var(--amber);}
-  .stat.active-filter::after{
-    content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:12px;font-weight:700;
-  }
+  .stat.active-filter::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:12px;font-weight:700;}
   .stat.total-stat .n{color:var(--text);}
 
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -103,25 +90,6 @@
   .legend span{display:inline-flex;align-items:center;gap:5px;}
   .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;}
 
-  .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
-  .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
-    padding:10px;max-height:70vh;display:flex;flex-direction:column;}
-  .col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px;border-bottom:2px solid var(--stage-color,var(--border));margin-bottom:8px;}
-  .col-head .t{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.02em;color:var(--stage-color);}
-  .col-head .c{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);background:var(--surface);
-    border-radius:20px;padding:1px 8px;}
-  .col-cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;}
-  .card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--stage-color);
-    border-radius:9px;padding:9px 10px;overflow:hidden;}
-  .card .v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;}
-  .card .os{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:1px;}
-  .card .note{font-size:11px;color:var(--text-faint);margin-top:3px;overflow-wrap:break-word;max-width:100%;}
-  .card .pend-details{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-  .badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;}
-  .card select{margin-top:7px;width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:4px 6px;font-family:'Inter',sans-serif;font-size:11px;}
-  .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
-
   .family{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
   .family > summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;
     justify-content:space-between;background:var(--surface);gap:10px;}
@@ -134,7 +102,16 @@
   .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:14px 18px 18px;}
   .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;}
   .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .svc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:5px 0 5px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;flex-wrap:wrap;}
+
+  /* ============ svc-row (linha da OS) — agora com lápis ============ */
+  .svc-row{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+    padding:6px 28px 6px 8px;                /* espaço à direita para o lápis */
+    border-top:1px solid var(--border);
+    border-left:3px solid transparent;
+    flex-wrap:wrap;
+    position:relative;                        /* ← ancora o lápis */
+  }
   .svc-row:first-of-type{border-top:none;}
   .svc-label{font-size:11.5px;color:var(--text-dim);min-width:80px;}
   .svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:1;min-width:0;}
@@ -147,9 +124,26 @@
   .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
   .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 
-  /* =============================================
-     FORMULÁRIO NOVA OS — layout em grid
-     ============================================= */
+  /* Botão lápis — canto superior direito do svc-row */
+  .edit-btn{
+    position:absolute; top:4px; right:2px;
+    width:22px; height:22px; padding:0;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--text-dim);
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color .15s, color .15s, background .15s, transform .12s;
+    z-index:2;
+  }
+  .edit-btn:hover{ border-color:var(--amber); color:var(--amber); background:var(--surface); }
+  .edit-btn:active{ transform:scale(.92); }
+  .edit-btn svg{ width:12px; height:12px; display:block; }
+
+  .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
+
+  /* ============ FORM NOVA OS (grid) ============ */
   .addform{
     display:none;
     grid-template-columns: repeat(6, 1fr);
@@ -162,69 +156,78 @@
     align-items:center;
   }
   .addform.open{ display:grid; }
-
   .addform input,
   .addform select{
-    width:100%;
-    min-width:0;
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    color:var(--text);
-    border-radius:7px;
-    padding:9px 11px;
-    font-family:'Inter',sans-serif;
-    font-size:13px;
+    width:100%; min-width:0;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    border-radius:7px; padding:9px 11px;
+    font-family:'Inter',sans-serif; font-size:13px;
   }
   .addform input::placeholder{ color:var(--text-faint); }
-  .addform input:focus,
-  .addform select:focus{ outline:1px solid var(--amber); }
-
-  /* Linha 1 — cada campo ocupa 1 coluna de 6 */
+  .addform input:focus, .addform select:focus{ outline:1px solid var(--amber); }
   .addform #af-v,
   .addform #af-os,
   .addform #af-cat,
   .addform #af-empresa,
   .addform #af-stage,
   .addform #af-orcada{ grid-column: span 1; }
-
-  /* Linha 2 — Qnt (1) + Observação (3) + Salvar (1) + Cancelar (1) */
   .addform #af-qnt{ grid-column: span 1; }
   .addform #af-note{ grid-column: span 3; }
   .addform #af-save{ grid-column: span 1; }
   .addform #af-cancel{ grid-column: span 1; }
-
-  .addform .btn{
-    width:100%;
-    justify-content:center;
-    padding:9px 12px;
-  }
-
-  @media (max-width: 900px){
+  .addform .btn{ width:100%; justify-content:center; padding:9px 12px; }
+  @media (max-width:900px){
     .addform{ grid-template-columns: repeat(3, 1fr); }
-    .addform #af-v,
-    .addform #af-os,
-    .addform #af-cat,
-    .addform #af-empresa,
-    .addform #af-stage,
-    .addform #af-orcada{ grid-column: span 1; }
-    .addform #af-qnt{ grid-column: span 1; }
     .addform #af-note{ grid-column: span 2; }
-    .addform #af-save{ grid-column: span 1; }
-    .addform #af-cancel{ grid-column: span 1; }
+  }
+  @media (max-width:560px){
+    .addform{ grid-template-columns: 1fr 1fr; }
+    .addform #af-note{ grid-column: span 2; }
   }
 
-  @media (max-width: 560px){
-    .addform{ grid-template-columns: 1fr 1fr; }
-    .addform #af-v,
-    .addform #af-os,
-    .addform #af-cat,
-    .addform #af-empresa,
-    .addform #af-stage,
-    .addform #af-orcada,
-    .addform #af-qnt,
-    .addform #af-save,
-    .addform #af-cancel{ grid-column: span 1; }
-    .addform #af-note{ grid-column: span 2; }
+  /* ============ MODAL DE EDIÇÃO ============ */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(16,20,26,.85);
+    display:flex; align-items:center; justify-content:center;
+    z-index:10000; padding:20px;
+  }
+  .modal-box{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px 24px;
+    width:100%; max-width:640px;
+    display:flex; flex-direction:column; gap:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+    max-height:90vh; overflow-y:auto;
+  }
+  .modal-box h2{
+    font-family:'Rajdhani',sans-serif; font-size:20px; margin:0;
+    letter-spacing:.02em; color:var(--amber);
+    display:flex; align-items:center; gap:8px;
+  }
+  .modal-box h2 svg{ width:16px; height:16px; }
+  .modal-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .modal-grid label{
+    display:flex; flex-direction:column; gap:4px;
+    font-size:11px; color:var(--text-dim);
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:.05em; text-transform:uppercase;
+  }
+  .modal-grid label.full{ grid-column:span 2; }
+  .modal-grid input, .modal-grid select{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    border-radius:7px; padding:9px 11px;
+    font-family:'Inter',sans-serif; font-size:13px;
+    width:100%; min-width:0;
+    text-transform:none; letter-spacing:0;
+  }
+  .modal-grid input:focus, .modal-grid select:focus{ outline:1px solid var(--amber); }
+  .modal-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:4px; }
+  @media (max-width:560px){
+    .modal-grid{ grid-template-columns:1fr; }
+    .modal-grid label.full{ grid-column:span 1; }
   }
 
   footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
@@ -259,6 +262,34 @@
     <p id="loginError" class="login-error">Usuário ou senha inválidos.</p>
     <button class="btn primary" id="loginBtn">Entrar</button>
     <div class="login-footer">Uso interno · Registro de auditoria ativo</div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MODAL DE EDIÇÃO                              -->
+<!-- ============================================ -->
+<div id="editModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>
+      </svg>
+      Editar OS
+    </h2>
+    <div class="modal-grid">
+      <label>Viatura<input type="text" id="ed-v"></label>
+      <label>Nº da OS<input type="text" id="ed-os"></label>
+      <label>Categoria<input type="text" id="ed-cat"></label>
+      <label>Oficina/Empresa<input type="text" id="ed-empresa"></label>
+      <label>Estágio<select id="ed-stage"></select></label>
+      <label>Orçada<select id="ed-orcada"><option value="Não">Não</option><option value="Sim">Sim</option></select></label>
+      <label>Qnt<input type="text" id="ed-qnt"></label>
+      <label class="full">Observação<input type="text" id="ed-note"></label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="ed-cancel">Cancelar</button>
+      <button class="btn primary" id="ed-save">Salvar alterações</button>
+    </div>
   </div>
 </div>
 
@@ -301,7 +332,7 @@
       <option value="Sim">Sim</option>
     </select>
     <input type="text" id="af-qnt" placeholder="Qnt" aria-label="Quantidade">
-    <input type="text" id="af-note" placeholder="Observação" aria-label="Observação">
+    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação">
     <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
@@ -422,17 +453,13 @@ function isManutencaoNote(note){
 let currentUser = null;
 
 function isLoggedIn(){ return sessionStorage.getItem('deman_auth') === 'ok'; }
-function getCurrentUser(){
-  return sessionStorage.getItem('deman_user_nome') || '';
-}
+function getCurrentUser(){ return sessionStorage.getItem('deman_user_nome') || ''; }
 
 function showLogin(){
   document.getElementById('loginOverlay').style.display = 'flex';
   document.getElementById('loginUser').focus();
 }
-function hideLogin(){
-  document.getElementById('loginOverlay').style.display = 'none';
-}
+function hideLogin(){ document.getElementById('loginOverlay').style.display = 'none'; }
 
 async function handleLogin(){
   const u = document.getElementById('loginUser').value.trim().toLowerCase();
@@ -461,12 +488,8 @@ function handleLogout(){
 }
 
 document.getElementById('loginBtn').addEventListener('click', handleLogin);
-document.getElementById('loginPass').addEventListener('keydown', (e)=>{
-  if (e.key === 'Enter') handleLogin();
-});
-document.getElementById('loginUser').addEventListener('keydown', (e)=>{
-  if (e.key === 'Enter') document.getElementById('loginPass').focus();
-});
+document.getElementById('loginPass').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') handleLogin(); });
+document.getElementById('loginUser').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
 document.getElementById('logoutBtn').addEventListener('click', handleLogout);
 
 // ==============================================
@@ -491,6 +514,7 @@ let activeTab = TAB_GERAL;
 let isLoading = false;
 let activeStatusFilter = null;
 let pollingHandle = null;
+let editingRecordId = null;   // ← NOVO — qual OS está aberta no modal
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
@@ -528,7 +552,6 @@ function mapRowsToData(rows){
     const empresa = findField(row,['oficina', 'empresa']) || row['Oficina/Empresa'] || '';
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
-
     const alteradoPor = findField(row,['alterado por']) || row['Alterado por'] || '';
     const ultimaAlt   = findField(row,['ultima alteracao', 'última alteração', 'ultima alteração', 'última alteracao']) || row['Última alteração'] || '';
 
@@ -640,6 +663,29 @@ async function createOSInSheet(data){
   }catch(err){ console.error('Erro ao criar OS na planilha:',err); return false; }
 }
 
+// ▼ NOVO — envia a edição para o Apps Script
+// O Apps Script precisa ter um handler `action:'editarOS'` que localize a linha
+// pela OS original (+ viatura) e atualize os campos.
+async function editOSInSheet(osOriginal, viaturaOriginal, data){
+  if(!APPS_SCRIPT_URL) return false;
+  try{
+    const payload = Object.assign({}, data, {
+      action: 'editarOS',
+      osOriginal: osOriginal,
+      viaturaOriginal: viaturaOriginal,
+      usuario: currentUser || getCurrentUser() || 'Desconhecido'
+    });
+    const response = await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify(payload)
+    });
+    if(!response.ok) return false;
+    const result = await response.json().catch(()=>null);
+    if(result && result.ok === true){ saveLocalData(); return true; } else return false;
+  }catch(err){ console.error('Erro ao editar OS na planilha:',err); return false; }
+}
+
 function stageInfo(key){ return STAGES.find(s=>s.key===key) || STAGES[0]; }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
@@ -745,6 +791,8 @@ function renderGeral(eventoFiltro){
   const families = {};
   allVehicles.forEach(v => { const f = familyOf(v); (families[f] = families[f] || []).push(v); });
 
+  const pencilSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>`;
+
   const html = Object.keys(families).sort().map(fam => {
     const vehicles = families[fam].sort((a,b) => a.localeCompare(b));
     const cards = vehicles.map(v => {
@@ -763,6 +811,7 @@ function renderGeral(eventoFiltro){
         const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
         return `
           <div class="svc-row" style="border-left-color:${st.color}">
+            <button class="edit-btn" data-edit-id="${r.id}" title="Editar OS ${escapeHtml(r.os)}" aria-label="Editar OS">${pencilSvg}</button>
             <span class="svc-label">${escapeHtml(r.category)}</span>
             <div class="svc-right">
               <span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}</span>
@@ -794,6 +843,8 @@ function renderGeral(eventoFiltro){
   }).join('');
 
   document.getElementById('content').innerHTML = html;
+
+  // Listeners dos selects de estágio
   document.querySelectorAll('.stage-select').forEach(sel=>{
     sel.addEventListener('change', async (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
@@ -804,6 +855,18 @@ function renderGeral(eventoFiltro){
       render();
       const ok = await updateSheet(rec.os, newStage, rec.v);
       if(!ok){ rec.stage = oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
+    });
+  });
+
+  // ▼ NOVO — listeners dos botões de edição (lápis)
+  document.querySelectorAll('.edit-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const id = btn.dataset.editId;
+      const rec = DATA.find(r => r.id === id);
+      if(!rec) return;
+      const ok = confirm(`Deseja realmente editar a OS ${rec.os} da viatura ${rec.v}?`);
+      if(ok) openEditModal(id);
     });
   });
 }
@@ -862,6 +925,112 @@ function render(){
   else renderGeral(activeTab);
 }
 
+// ==============================================
+// ▼ NOVO — MODAL DE EDIÇÃO
+// ==============================================
+const edStageSel = document.getElementById('ed-stage');
+edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+
+function openEditModal(recordId){
+  const rec = DATA.find(r => r.id === recordId);
+  if(!rec) return;
+  editingRecordId = recordId;
+  document.getElementById('ed-v').value = rec.v;
+  document.getElementById('ed-os').value = rec.os;
+  document.getElementById('ed-cat').value = rec.category;
+  document.getElementById('ed-empresa').value = rec.empresa || '';
+  document.getElementById('ed-stage').value = rec.stage;
+  document.getElementById('ed-orcada').value = rec.orcamentos > 0 ? 'Sim' : 'Não';
+  document.getElementById('ed-qnt').value = rec.orcamentos > 0 ? rec.orcamentos : '';
+  document.getElementById('ed-note').value = rec.note || '';
+  document.getElementById('editModal').style.display = 'flex';
+  document.getElementById('ed-v').focus();
+}
+
+function closeEditModal(){
+  editingRecordId = null;
+  document.getElementById('editModal').style.display = 'none';
+}
+
+document.getElementById('ed-cancel').addEventListener('click', closeEditModal);
+
+// Fechar clicando no fundo escuro
+document.getElementById('editModal').addEventListener('click', (e)=>{
+  if (e.target.id === 'editModal') closeEditModal();
+});
+
+// Fechar com ESC
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape' && document.getElementById('editModal').style.display === 'flex') {
+    closeEditModal();
+  }
+});
+
+document.getElementById('ed-save').addEventListener('click', async ()=>{
+  const rec = DATA.find(r => r.id === editingRecordId);
+  if(!rec){ closeEditModal(); return; }
+
+  const newV = normalizeViatura(document.getElementById('ed-v').value);
+  const newOs = document.getElementById('ed-os').value.trim();
+  const newCat = document.getElementById('ed-cat').value.trim() || 'Outras';
+  const newEmpresa = document.getElementById('ed-empresa').value.trim();
+  const newStage = document.getElementById('ed-stage').value;
+  const newOrcada = document.getElementById('ed-orcada').value;
+  const newQntRaw = document.getElementById('ed-qnt').value.trim();
+  const newNote = document.getElementById('ed-note').value.trim();
+
+  if(!newV || !newOs){ alert('Preencha a viatura e o número da OS.'); return; }
+
+  let newOrcamentos = 0;
+  if(newOrcada === 'Sim'){
+    newOrcamentos = parseInt(newQntRaw, 10);
+    if(isNaN(newOrcamentos) || newOrcamentos < 1) newOrcamentos = 1;
+    if(newOrcamentos > 5) newOrcamentos = 5;
+  }
+
+  // Guarda os valores antigos para rollback
+  const backup = {
+    v: rec.v, os: rec.os, category: rec.category, catKey: rec.catKey,
+    empresa: rec.empresa, stage: rec.stage, orcamentos: rec.orcamentos, note: rec.note
+  };
+  const originalOs = rec.os;
+  const originalViatura = rec.v;
+
+  // Aplica local (otimista)
+  rec.v = newV;
+  rec.os = newOs;
+  rec.category = newCat;
+  rec.catKey = slugify(newCat);
+  rec.empresa = newEmpresa;
+  rec.stage = newStage;
+  rec.orcamentos = newOrcamentos;
+  rec.note = newNote;
+
+  closeEditModal();
+  render();
+
+  const ok = await editOSInSheet(originalOs, originalViatura, {
+    viatura: newV,
+    os: newOs,
+    categoria: newCat,
+    oficina: newEmpresa,
+    status: newStage,
+    orcada: newOrcada,
+    qnt: newOrcamentos > 0 ? String(newOrcamentos) : '',
+    observacoes: newNote
+  });
+
+  if(!ok){
+    // Rollback
+    Object.assign(rec, backup);
+    alert('A edição não pôde ser salva na planilha. A alteração foi revertida.');
+    render();
+  }
+});
+
+// ==============================================
+// BUSCA, NOVA OS, CSV
+// ==============================================
 function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
 
 const searchInput = document.getElementById('search');
@@ -946,11 +1115,11 @@ function startApp(){
   if (pollingHandle) clearInterval(pollingHandle);
   pollingHandle = setInterval(()=>{
     if(document.activeElement && document.activeElement.tagName==='SELECT') return;
+    if(document.getElementById('editModal').style.display === 'flex') return; // ← não recarrega com modal aberto
     loadData();
   }, POLLING_INTERVAL);
 }
 
-// Só inicia se já estiver logado
 if (isLoggedIn()) {
   startApp();
 } else {
