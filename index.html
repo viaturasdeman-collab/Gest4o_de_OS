@@ -103,14 +103,14 @@
   .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;}
   .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 
-  /* ============ svc-row (linha da OS) — agora com lápis ============ */
+  /* ============ svc-row (linha da OS) — com lápis ============ */
   .svc-row{
     display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
-    padding:6px 28px 6px 8px;                /* espaço à direita para o lápis */
+    padding:6px 28px 6px 8px;
     border-top:1px solid var(--border);
     border-left:3px solid transparent;
     flex-wrap:wrap;
-    position:relative;                        /* ← ancora o lápis */
+    position:relative;
   }
   .svc-row:first-of-type{border-top:none;}
   .svc-label{font-size:11.5px;color:var(--text-dim);min-width:80px;}
@@ -514,7 +514,7 @@ let activeTab = TAB_GERAL;
 let isLoading = false;
 let activeStatusFilter = null;
 let pollingHandle = null;
-let editingRecordId = null;   // ← NOVO — qual OS está aberta no modal
+let editingRecordId = null;
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
@@ -663,9 +663,6 @@ async function createOSInSheet(data){
   }catch(err){ console.error('Erro ao criar OS na planilha:',err); return false; }
 }
 
-// ▼ NOVO — envia a edição para o Apps Script
-// O Apps Script precisa ter um handler `action:'editarOS'` que localize a linha
-// pela OS original (+ viatura) e atualize os campos.
 async function editOSInSheet(osOriginal, viaturaOriginal, data){
   if(!APPS_SCRIPT_URL) return false;
   try{
@@ -858,7 +855,7 @@ function renderGeral(eventoFiltro){
     });
   });
 
-  // ▼ NOVO — listeners dos botões de edição (lápis)
+  // Listeners dos botões de edição (lápis)
   document.querySelectorAll('.edit-btn').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
@@ -926,7 +923,7 @@ function render(){
 }
 
 // ==============================================
-// ▼ NOVO — MODAL DE EDIÇÃO
+// MODAL DE EDIÇÃO
 // ==============================================
 const edStageSel = document.getElementById('ed-stage');
 edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
@@ -1065,8 +1062,10 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
     if(isNaN(orcamentos) || orcamentos < 1) orcamentos = 1;
     if(orcamentos > 5) orcamentos = 5;
   }
-  const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
-  if(duplicate){ alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`); return; }
+
+  // ✅ CORRIGIDO — duplicidade checada apenas pelo NÚMERO da OS
+  const duplicate = DATA.some(r => String(r.os).trim().toLowerCase() === os.toLowerCase());
+  if(duplicate){ alert(`Já existe uma OS com o número ${os}. Verifique o número digitado.`); return; }
 
   const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, empresa, note, alteradoPor:'', ultimaAlt:'' };
   DATA.push(newRecord);
@@ -1115,7 +1114,7 @@ function startApp(){
   if (pollingHandle) clearInterval(pollingHandle);
   pollingHandle = setInterval(()=>{
     if(document.activeElement && document.activeElement.tagName==='SELECT') return;
-    if(document.getElementById('editModal').style.display === 'flex') return; // ← não recarrega com modal aberto
+    if(document.getElementById('editModal').style.display === 'flex') return;
     loadData();
   }, POLLING_INTERVAL);
 }
