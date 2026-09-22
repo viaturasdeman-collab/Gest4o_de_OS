@@ -765,7 +765,8 @@ function renderGeral(eventoFiltro){
   if (activeStatusFilter) {
     dados = dados.filter(r => r.stage === activeStatusFilter);
   } else {
-    dados = dados.filter(r => r.stage !== 'Finalizada');
+    // ✅ ALTERADO — Finalizadas E Canceladas ficam fora da Visão Geral
+    dados = dados.filter(r => r.stage !== 'Finalizada' && r.stage !== 'Cancelada');
   }
 
   if (eventoFiltro === TAB_MANUTENCAO) {
