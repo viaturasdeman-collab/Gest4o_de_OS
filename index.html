@@ -124,7 +124,7 @@
   .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
   .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 
-  /* ============ DESTAQUE DE ORÇAMENTOS ALTOS (>= 3) ============ */
+  /* ============ DESTAQUE DE ORÇAMENTOS ALTOS (>= 3, apenas Pendente) ============ */
   .svc-row.orc-alto{
     background: linear-gradient(90deg, rgba(232,169,58,.14), transparent 70%);
   }
@@ -828,8 +828,8 @@ function renderGeral(eventoFiltro){
         const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
         const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
 
-        // ✅ Destaque único para OS com orçamentos >= 3
-        const destacar = r.orcamentos >= 3;
+        // ✅ Destaque apenas quando Pendente E orçamentos >= 3
+        const destacar = (r.stage === 'Pendente' && r.orcamentos >= 3);
         const orcClass = destacar ? 'orc-alto' : '';
         const orcBadge = destacar ? `<span class="badge-orc">⚠ ${r.orcamentos}/5</span>` : '';
 
