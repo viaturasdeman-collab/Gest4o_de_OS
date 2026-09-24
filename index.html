@@ -124,6 +124,26 @@
   .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
   .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 
+  /* ============ DESTAQUE DE ORÇAMENTOS ALTOS (>= 3) ============ */
+  .svc-row.orc-alto{
+    background: linear-gradient(90deg, rgba(232,169,58,.14), transparent 70%);
+  }
+  .badge-orc{
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-left: 6px;
+    background: rgba(232,169,58,.18);
+    color: var(--amber);
+    border: 1px solid rgba(232,169,58,.55);
+  }
+
   /* Botão lápis — canto superior direito do svc-row */
   .edit-btn{
     position:absolute; top:4px; right:2px;
@@ -765,7 +785,7 @@ function renderGeral(eventoFiltro){
   if (activeStatusFilter) {
     dados = dados.filter(r => r.stage === activeStatusFilter);
   } else {
-    // ✅ ALTERADO — Finalizadas E Canceladas ficam fora da Visão Geral
+    // Finalizadas E Canceladas ficam fora da Visão Geral
     dados = dados.filter(r => r.stage !== 'Finalizada' && r.stage !== 'Cancelada');
   }
 
@@ -807,10 +827,16 @@ function renderGeral(eventoFiltro){
         const st = stageInfo(r.stage);
         const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
         const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+
+        // ✅ Destaque único para OS com orçamentos >= 3
+        const destacar = r.orcamentos >= 3;
+        const orcClass = destacar ? 'orc-alto' : '';
+        const orcBadge = destacar ? `<span class="badge-orc">⚠ ${r.orcamentos}/5</span>` : '';
+
         return `
-          <div class="svc-row" style="border-left-color:${st.color}">
+          <div class="svc-row ${orcClass}" style="border-left-color:${st.color}">
             <button class="edit-btn" data-edit-id="${r.id}" title="Editar OS ${escapeHtml(r.os)}" aria-label="Editar OS">${pencilSvg}</button>
-            <span class="svc-label">${escapeHtml(r.category)}</span>
+            <span class="svc-label">${escapeHtml(r.category)}${orcBadge}</span>
             <div class="svc-right">
               <span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}</span>
               <span class="os-num">OS ${escapeHtml(r.os)}</span>
