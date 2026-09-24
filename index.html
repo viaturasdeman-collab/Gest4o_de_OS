@@ -133,9 +133,9 @@
     align-items: center;
     gap: 3px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
     border-radius: 20px;
     white-space: nowrap;
     margin-left: 6px;
@@ -831,7 +831,7 @@ function renderGeral(eventoFiltro){
         // ✅ Destaque apenas quando Pendente E orçamentos >= 3
         const destacar = (r.stage === 'Pendente' && r.orcamentos >= 3);
         const orcClass = destacar ? 'orc-alto' : '';
-        const orcBadge = destacar ? `<span class="badge-orc">⚠ ${r.orcamentos}/5</span>` : '';
+        const orcBadge = destacar ? `<span class="badge-orc">$ ${r.orcamentos}</span>` : '';
 
         return `
           <div class="svc-row ${orcClass}" style="border-left-color:${st.color}">
