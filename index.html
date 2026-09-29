@@ -412,9 +412,6 @@
             <th>Orçada</th>
             <th>Qnt</th>
             <th>Oficina/Empresa</th>
-            <th>Observações</th>
-            <th>Alterado por</th>
-            <th>Última alteração</th>
           </tr>
         </thead>
         <tbody id="reportBody"></tbody>
@@ -512,7 +509,6 @@ const USERS = {
   'luana':    { senha: 'Bamex@2026', nome: 'LUANA VICTORIA', perfil: 'admin' },
   'alvaro':   { senha: 'Bamex@2026', nome: 'FABIO ALVARO',   perfil: 'admin' },
   'cardoso':  { senha: 'Bamex@2026', nome: 'JOSE CARDOSO',   perfil: 'admin' },
-  // ✅ Login somente para visualização
   'visual':   { senha: 'Ver@2026',   nome: 'VISUALIZAÇÃO',   perfil: 'view'  },
 };
 
@@ -911,7 +907,6 @@ function renderTabs(){
   });
 }
 
-// Retorna os dados filtrados conforme a aba, filtro de status e busca
 function getDadosFiltrados(eventoFiltro){
   const q = document.getElementById('search').value.trim().toLowerCase();
   let dados = DATA;
@@ -972,14 +967,12 @@ function renderGeral(eventoFiltro){
         const orcClass = destacar ? 'orc-alto' : '';
         const orcBadge = destacar ? `<span class="badge-orc">$ ${r.orcamentos}</span>` : '';
 
-        // ✅ Admin: mostra select. View: mostra estágio como texto estático
         const stageControl = admin
           ? `<select class="stage-select" data-id="${r.id}" data-os="${escapeHtml(r.os)}">
               ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
              </select>`
           : `<span class="stage-static">${st.label}</span>`;
 
-        // ✅ Admin: mostra lápis. View: não mostra
         const editBtn = admin
           ? `<button class="edit-btn" data-edit-id="${r.id}" title="Editar OS ${escapeHtml(r.os)}" aria-label="Editar OS">${pencilSvg}</button>`
           : '';
@@ -1017,7 +1010,6 @@ function renderGeral(eventoFiltro){
 
   document.getElementById('content').innerHTML = html;
 
-  // Só ata os listeners se for admin
   if(admin){
     document.querySelectorAll('.stage-select').forEach(sel=>{
       sel.addEventListener('change', async (e)=>{
@@ -1100,12 +1092,11 @@ function render(){
 }
 
 // ==============================================
-// RELATÓRIO
+// RELATÓRIO — 7 colunas (sem Observações, Alterado por, Última alteração)
 // ==============================================
 function abrirRelatorio(){
   const dados = getDadosFiltrados(activeTab === TAB_GERAL ? null : activeTab);
 
-  // Meta: data de emissão + usuário
   const agora = new Date();
   const metaHtml = `
     Emitido em ${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR')}<br>
@@ -1113,7 +1104,6 @@ function abrirRelatorio(){
   `;
   document.getElementById('reportMeta').innerHTML = metaHtml;
 
-  // Filtros aplicados
   const filtrosAplicados = [];
   if(activeTab === TAB_GERAL) filtrosAplicados.push('Visão Geral');
   else if(activeTab === TAB_MANUTENCAO) filtrosAplicados.push('Manutenção');
@@ -1130,12 +1120,10 @@ function abrirRelatorio(){
     <b>Total:</b> ${dados.length} OS
   `;
 
-  // Ordena por viatura
   const ordenado = dados.slice().sort((a,b) => a.v.localeCompare(b.v) || a.os.localeCompare(b.os));
 
-  // Corpo da tabela
   const bodyHtml = ordenado.length === 0
-    ? `<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado</td></tr>`
+    ? `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado</td></tr>`
     : ordenado.map(r => {
         const st = stageInfo(r.stage);
         return `
@@ -1147,9 +1135,6 @@ function abrirRelatorio(){
             <td>${r.orcamentos > 0 ? 'Sim' : 'Não'}</td>
             <td>${r.orcamentos > 0 ? r.orcamentos : '—'}</td>
             <td>${escapeHtml(r.empresa || '—')}</td>
-            <td>${escapeHtml(r.note || '—')}</td>
-            <td class="os">${escapeHtml(r.alteradoPor || '—')}</td>
-            <td class="os">${escapeHtml(r.ultimaAlt || '—')}</td>
           </tr>
         `;
       }).join('');
@@ -1362,7 +1347,6 @@ function startApp(){
   currentPerfil = getCurrentPerfil();
   document.getElementById('currentUserName').textContent = currentUser || '—';
 
-  // Badge do perfil
   const perfilEl = document.getElementById('currentUserPerfil');
   if(perfilEl){
     perfilEl.textContent = isAdmin() ? 'ADMIN' : 'VISUALIZAÇÃO';
@@ -1370,7 +1354,6 @@ function startApp(){
     perfilEl.style.display = 'inline-block';
   }
 
-  // Esconde o botão + Nova OS para quem só visualiza
   if(!isAdmin()){
     const addBtn = document.getElementById('addBtn');
     if(addBtn) addBtn.style.display = 'none';
