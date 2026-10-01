@@ -42,11 +42,10 @@ html,body{
   -webkit-text-size-adjust:100%;
   overscroll-behavior-y:contain;
 }
-a{color:inherit;}
 button{font:inherit;}
 
 /* ════════════════════════════════════════════
-   2. LAYOUT (topbar + sidebar + main)
+   2. LAYOUT
    ════════════════════════════════════════════ */
 #app{display:none;}
 #app.is-ready{display:block;}
@@ -63,13 +62,10 @@ button{font:inherit;}
   width:38px;height:38px;flex:none;
   display:flex;align-items:center;justify-content:center;
   background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);
-  cursor:pointer;font-size:18px;padding:0;
-  -webkit-tap-highlight-color:transparent;
+  cursor:pointer;font-size:18px;padding:0;-webkit-tap-highlight-color:transparent;
 }
 .menu-toggle:hover{border-color:var(--amber);color:var(--amber);}
-.topbar-title{
-  display:flex;flex-direction:column;gap:1px;min-width:0;flex:1;
-}
+.topbar-title{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1;}
 .topbar-title .eyebrow{
   font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
   color:var(--amber);text-transform:uppercase;
@@ -78,9 +74,7 @@ button{font:inherit;}
   font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;margin:0;letter-spacing:.01em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.topbar-user{
-  display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-dim);
-}
+.topbar-user{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-dim);}
 .topbar-user .who{font-family:'IBM Plex Mono',monospace;}
 .topbar-user .who b{color:var(--amber);}
 .badge-perfil{
@@ -103,24 +97,14 @@ button{font:inherit;}
   padding:10px 12px;border-radius:8px;cursor:pointer;
   color:var(--text-dim);text-decoration:none;font-size:14px;font-weight:500;
   border:none;background:transparent;text-align:left;width:100%;
-  -webkit-tap-highlight-color:transparent;
-  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent;transition:background .15s, color .15s;
 }
 .sidebar-link:hover{background:var(--surface);color:var(--text);}
 .sidebar-link.active{background:var(--surface-2);color:var(--text);box-shadow:inset 3px 0 0 var(--amber);}
-.sidebar-link .icon{
-  width:22px;flex:none;text-align:center;font-size:17px;line-height:1;
-}
-.sidebar-link .label{
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.sidebar-footer{
-  padding:12px 8px;border-top:1px solid var(--border);
-}
-.sidebar-backdrop{
-  display:none;position:fixed;inset:var(--topbar-h) 0 0 0;background:rgba(0,0,0,.55);
-  z-index:85;
-}
+.sidebar-link .icon{width:22px;flex:none;text-align:center;font-size:17px;line-height:1;}
+.sidebar-link .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-footer{padding:12px 8px;border-top:1px solid var(--border);}
+.sidebar-backdrop{display:none;position:fixed;inset:var(--topbar-h) 0 0 0;background:rgba(0,0,0,.55);z-index:85;}
 #app.sidebar-collapsed .sidebar{width:var(--sidebar-w-collapsed);}
 #app.sidebar-collapsed .sidebar-link .label,
 #app.sidebar-collapsed .sidebar-footer .label{opacity:0;pointer-events:none;}
@@ -178,7 +162,7 @@ button{font:inherit;}
 .login-create-link:hover{text-decoration:underline;}
 
 /* ════════════════════════════════════════════
-   4. COMPONENTES COMPARTILHADOS
+   4. COMPONENTES
    ════════════════════════════════════════════ */
 .btn{
   font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;
@@ -189,15 +173,17 @@ button{font:inherit;}
 .btn:hover{border-color:var(--amber);}
 .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
 .btn.ghost{background:transparent;}
-.btn.danger:hover{border-color:var(--vermelho);color:var(--vermelho);}
+.btn.danger{border-color:rgba(239,83,80,.5);color:var(--vermelho);}
+.btn.danger:hover{border-color:var(--vermelho);background:rgba(239,83,80,.12);}
 .btn.report{border-color:var(--azul);color:var(--azul);}
 .btn.report:hover{background:rgba(0,171,251,.12);}
-input[type=text], input[type=password], input[type=file], select{
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+input[type=text], input[type=password], input[type=file], select, textarea{
   background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
   padding:8px 10px;font-family:'Inter',sans-serif;font-size:16px;min-width:0;
   -webkit-appearance:none;
 }
-input[type=text]:focus, input[type=password]:focus, select:focus{outline:1px solid var(--amber);}
+input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus{outline:1px solid var(--amber);}
 input[type=file]{font-size:13px;}
 
 .modal-overlay{
@@ -217,6 +203,7 @@ input[type=file]{font-size:13px;}
   letter-spacing:.02em;display:flex;align-items:center;gap:8px;
 }
 .modal-box h2 svg{width:16px;height:16px;}
+.modal-box p.help{font-size:12px;color:var(--text-dim);margin:0;}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .modal-grid label{
   display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text-dim);
@@ -229,27 +216,29 @@ input[type=file]{font-size:13px;}
   width:100%;min-width:0;text-transform:none;letter-spacing:0;-webkit-appearance:none;
 }
 .modal-grid input:focus, .modal-grid select:focus{outline:1px solid var(--amber);}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
+.modal-grid input:disabled{opacity:.55;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap;}
+.modal-actions.left{justify-content:space-between;}
+.modal-error{color:var(--vermelho);font-size:12px;display:none;margin:0;}
 @media (max-width:560px){
   .modal-grid{grid-template-columns:1fr;}
   .modal-grid label.full{grid-column:span 1;}
 }
 
-.skel{
-  background:linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 100%);
-  background-size:200% 100%;animation:shimmer 1.2s linear infinite;border-radius:8px;
+/* Checkboxes de permissão */
+.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+@media (max-width:560px){ .perm-grid{grid-template-columns:1fr;} }
+.perm-check{
+  display:flex;align-items:center;gap:10px;padding:9px 11px;
+  background:var(--surface-2);border:1px solid var(--border);border-radius:8px;
+  cursor:pointer;font-size:12px;color:var(--text-dim);
+  transition:border-color .15s, color .15s, background .15s;
+  -webkit-tap-highlight-color:transparent;
 }
-.skel-text{height:12px;width:80%;margin:6px 0;border-radius:4px;}
-.skel-rect{height:60px;width:100%;border-radius:8px;}
-@keyframes shimmer{ from { background-position: 200% 0 } to { background-position: -200% 0 } }
-.skeleton-wrap{display:grid;gap:10px;padding:14px;}
-
-.update-indicator{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:10px;}
-.last-change{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:14px;}
-.last-change b{color:var(--amber);font-weight:600;}
-
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.perm-check:hover{border-color:var(--amber);color:var(--text);}
+.perm-check.checked{border-color:var(--amber);color:var(--text);background:rgba(232,169,58,.08);}
+.perm-check input{accent-color:var(--amber);margin:0;flex:none;width:16px;height:16px;}
+.perm-check .perm-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 /* ════════════════════════════════════════════
    5. HOME
@@ -267,9 +256,7 @@ input[type=file]{font-size:13px;}
   font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
   color:var(--amber);text-transform:uppercase;margin:22px 0 10px;
 }
-.home-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;
-}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;}
 .home-card{
   background:var(--surface);border:1px solid var(--border);border-radius:12px;
   padding:16px 18px;cursor:pointer;position:relative;overflow:hidden;
@@ -298,8 +285,12 @@ input[type=file]{font-size:13px;}
 .home-card.viat-dir .value{color:var(--roxo);}
 
 /* ════════════════════════════════════════════
-   6. PAINEL OS (herdado do index.html original)
+   6. OS-BAMEX
    ════════════════════════════════════════════ */
+.update-indicator{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:10px;}
+.last-change{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:14px;}
+.last-change b{color:var(--amber);font-weight:600;}
+
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
 .stat{
   background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -315,6 +306,7 @@ input[type=file]{font-size:13px;}
 .stat.active-filter::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:12px;font-weight:700;}
 .stat.total-stat .n{color:var(--text);}
 
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;overflow-x:auto;flex-wrap:nowrap;}
 .tab{
   font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14.5px;letter-spacing:.02em;
@@ -322,12 +314,13 @@ input[type=file]{font-size:13px;}
   border:none;background:transparent;white-space:nowrap;
 }
 .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
+.right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 
 .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
 .legend span{display:inline-flex;align-items:center;gap:5px;}
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;}
 
-.family{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;transition:transform .18s ease, opacity .18s ease;}
+.family{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
 .family > summary{
   list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;
   justify-content:space-between;background:var(--surface);gap:10px;
@@ -341,7 +334,7 @@ input[type=file]{font-size:13px;}
   border:1px solid var(--border);border-radius:20px;padding:2px 10px;white-space:nowrap;
 }
 .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:14px 18px 18px;}
-.veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;}
+.veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;}
 .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 
 .svc-row{
@@ -364,7 +357,6 @@ select.stage-select{
   margin-top:2px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
   border-radius:6px;padding:2px 4px;font-family:'Inter',sans-serif;font-size:10px;max-width:140px;
 }
-select.stage-select:disabled{opacity:.7;cursor:not-allowed;background:var(--surface);}
 .stage-static{
   font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);
   padding:2px 6px;border:1px dashed var(--border);border-radius:6px;
@@ -401,7 +393,6 @@ select.stage-select:disabled{opacity:.7;cursor:not-allowed;background:var(--surf
   border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:13px;
 }
 .addform input::placeholder{color:var(--text-faint);}
-.addform input:focus, .addform select:focus{outline:1px solid var(--amber);}
 .addform #af-note{grid-column:span 3;}
 .addform .btn{width:100%;justify-content:center;padding:9px 12px;}
 @media (max-width:900px){
@@ -413,8 +404,17 @@ select.stage-select:disabled{opacity:.7;cursor:not-allowed;background:var(--surf
   .addform #af-note{grid-column:span 2;}
 }
 
+.skeleton-wrap{display:grid;gap:10px;padding:14px;}
+.skel{
+  background:linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 100%);
+  background-size:200% 100%;animation:shimmer 1.2s linear infinite;border-radius:8px;
+}
+.skel-text{height:12px;width:80%;margin:6px 0;border-radius:4px;}
+.skel-rect{height:60px;width:100%;border-radius:8px;}
+@keyframes shimmer{ from { background-position: 200% 0 } to { background-position: -200% 0 } }
+
 /* ════════════════════════════════════════════
-   7. PAINEL VIATURAS (herdado do viaturas.html)
+   7. VIATURAS
    ════════════════════════════════════════════ */
 .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
 .summary-card{
@@ -441,18 +441,6 @@ select.stage-select:disabled{opacity:.7;cursor:not-allowed;background:var(--surf
 .summary-card.active-filter{border-color:var(--amber);background:linear-gradient(135deg, rgba(232,169,58,.12), transparent);}
 .summary-card.active-filter .label{color:var(--amber);}
 .summary-card.active-filter::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:14px;font-weight:700;}
-.summary-card.ativas.active-filter{border-color:var(--azul);background:linear-gradient(135deg, rgba(0,171,251,.12), transparent);}
-.summary-card.ativas.active-filter .label{color:var(--azul);}
-.summary-card.ativas.active-filter::after{color:var(--azul);}
-.summary-card.reservas.active-filter{border-color:var(--roxo);background:linear-gradient(135deg, rgba(177,140,255,.12), transparent);}
-.summary-card.reservas.active-filter .label{color:var(--roxo);}
-.summary-card.reservas.active-filter::after{color:var(--roxo);}
-.summary-card.baixadas.active-filter{border-color:var(--vermelho);background:linear-gradient(135deg, rgba(239,83,80,.12), transparent);}
-.summary-card.baixadas.active-filter .label{color:var(--vermelho);}
-.summary-card.baixadas.active-filter::after{color:var(--vermelho);}
-.summary-card.diretorias.active-filter{border-color:var(--verde);background:linear-gradient(135deg, rgba(61,220,132,.12), transparent);}
-.summary-card.diretorias.active-filter .label{color:var(--verde);}
-.summary-card.diretorias.active-filter::after{color:var(--verde);}
 
 .local-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;}
 .local-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
@@ -480,7 +468,47 @@ select.stage-select:disabled{opacity:.7;cursor:not-allowed;background:var(--surf
 }
 
 /* ════════════════════════════════════════════
-   8. RELATÓRIO (impressão)
+   8. USUÁRIOS
+   ════════════════════════════════════════════ */
+.users-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.users-toolbar input{min-width:220px;}
+.users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
+.user-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+}
+.user-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--text-faint);}
+.user-card.admin::before{background:var(--amber);}
+.user-card.view::before{background:var(--azul);}
+.user-card.inativo{opacity:.65;}
+.user-card.inativo::before{background:var(--vermelho);}
+.user-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.user-card-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:var(--text);line-height:1.1;}
+.user-card-login{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);margin-top:2px;}
+.user-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.user-badge{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:12px;
+  border:1px solid var(--border);white-space:nowrap;
+}
+.user-badge.admin{background:rgba(232,169,58,.15);color:var(--amber);border-color:var(--amber);}
+.user-badge.view{background:rgba(0,171,251,.12);color:var(--azul);border-color:var(--azul);}
+.user-badge.ativo{background:rgba(61,220,132,.12);color:var(--verde);border-color:var(--verde);}
+.user-badge.inativo{background:rgba(239,83,80,.12);color:var(--vermelho);border-color:var(--vermelho);}
+.user-badge.primeiro{background:rgba(177,140,255,.12);color:var(--roxo);border-color:var(--roxo);}
+
+.user-perms{display:flex;flex-wrap:wrap;gap:5px;}
+.perm-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:10px;
+  background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);
+  white-space:nowrap;
+}
+.perm-tag.on{color:var(--amber);border-color:rgba(232,169,58,.5);}
+.user-meta{font-size:10.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+.user-actions{display:flex;gap:6px;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--border);}
+.user-actions .btn{font-size:12px;padding:7px 12px;flex:1;min-width:0;text-align:center;}
+
+/* ════════════════════════════════════════════
+   9. RELATÓRIO (impressão)
    ════════════════════════════════════════════ */
 .report-box{
   background:var(--surface);border:1px solid var(--border);border-radius:14px;
@@ -514,7 +542,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
 }
-
 @media print{
   body{background:#fff;color:#000;}
   .topbar, .sidebar, .sidebar-backdrop, .view:not(#view-os), .modal-overlay:not(#reportModal){display:none !important;}
@@ -564,15 +591,18 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <aside class="sidebar" id="sidebar">
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" id="sidebarNav">
       <button class="sidebar-link" data-view="home">
         <span class="icon">🏠</span><span class="label">Início</span>
       </button>
-      <button class="sidebar-link" data-view="os">
+      <button class="sidebar-link" data-view="os" data-perm="ver_os">
         <span class="icon">📋</span><span class="label">OS-BAMEX</span>
       </button>
-      <button class="sidebar-link" data-view="viaturas">
+      <button class="sidebar-link" data-view="viaturas" data-perm="ver_viaturas">
         <span class="icon">🚗</span><span class="label">Viaturas</span>
+      </button>
+      <button class="sidebar-link" data-view="usuarios" data-perm="admin_usuarios">
+        <span class="icon">👥</span><span class="label">Usuários</span>
       </button>
     </nav>
     <div class="sidebar-footer">
@@ -588,29 +618,32 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <section class="view is-active" id="view-home">
       <div class="home-welcome">
         <h2>Bem-vindo, <span id="homeUserName">—</span></h2>
-        <p>Resumo em tempo real dos dois painéis.</p>
+        <p>Resumo em tempo real dos painéis.</p>
       </div>
 
       <div class="update-indicator" id="homeUpdateStatus">Carregando…</div>
 
-      <div class="home-section-title">OS-BAMEX</div>
-      <div class="home-grid" id="homeOSGrid">
-        <div class="home-card os"><div class="label">Total de OS</div><div class="value" id="h-os-total">—</div></div>
-        <div class="home-card os-pend"><div class="label">Pendentes</div><div class="value" id="h-os-pend">—</div></div>
-        <div class="home-card os"><div class="label">Aprovadas</div><div class="value" id="h-os-aprov">—</div></div>
-        <div class="home-card os-reav"><div class="label">Reavaliações</div><div class="value" id="h-os-reav">—</div></div>
+      <div id="homeOSSection">
+        <div class="home-section-title">OS-BAMEX</div>
+        <div class="home-grid">
+          <div class="home-card os"><div class="label">Total de OS</div><div class="value" id="h-os-total">—</div></div>
+          <div class="home-card os-pend"><div class="label">Pendentes</div><div class="value" id="h-os-pend">—</div></div>
+          <div class="home-card os"><div class="label">Aprovadas</div><div class="value" id="h-os-aprov">—</div></div>
+          <div class="home-card os-reav"><div class="label">Reavaliações</div><div class="value" id="h-os-reav">—</div></div>
+        </div>
       </div>
 
-      <div class="home-section-title">Viaturas</div>
-      <div class="home-grid" id="homeViatGrid">
-        <div class="home-card viaturas"><div class="label">Total geral</div><div class="value" id="h-v-total">—</div></div>
-        <div class="home-card viaturas"><div class="label">Ativas</div><div class="value" id="h-v-ativas">—</div></div>
-        <div class="home-card viat-dir"><div class="label">Diretorias</div><div class="value" id="h-v-dir">—</div></div>
-        <div class="home-card viat-baix"><div class="label">Baixadas</div><div class="value" id="h-v-baix">—</div></div>
+      <div id="homeViatSection">
+        <div class="home-section-title">Viaturas</div>
+        <div class="home-grid">
+          <div class="home-card viaturas"><div class="label">Total geral</div><div class="value" id="h-v-total">—</div></div>
+          <div class="home-card viaturas"><div class="label">Ativas</div><div class="value" id="h-v-ativas">—</div></div>
+          <div class="home-card viat-dir"><div class="label">Diretorias</div><div class="value" id="h-v-dir">—</div></div>
+          <div class="home-card viat-baix"><div class="label">Baixadas</div><div class="value" id="h-v-baix">—</div></div>
+        </div>
       </div>
 
       <div class="last-change" id="homeLastChange" style="margin-top:22px;">Última alteração registrada: —</div>
-
       <footer class="page-footer">Dados carregados das planilhas Google Sheets.</footer>
     </section>
 
@@ -625,26 +658,24 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div class="toolbar">
         <div class="tabs" id="tabsContainer"></div>
         <div class="right-tools">
-          <input type="text" id="osSearch" placeholder="Buscar viatura ou OS" aria-label="Buscar viatura ou OS">
+          <input type="text" id="osSearch" placeholder="Buscar viatura ou OS" aria-label="Buscar">
           <button class="btn ghost" id="clearFilterBtn" style="display:none;">Limpar filtro</button>
           <button class="btn report" id="reportBtn">📄 Relatório</button>
-          <button class="btn" id="addBtn" aria-label="Adicionar nova OS">+ Nova OS</button>
+          <button class="btn" id="addBtn" data-perm="os_criar" aria-label="Nova OS">+ Nova OS</button>
         </div>
       </div>
 
       <div class="addform" id="addForm">
-        <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
-        <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
-        <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria">
-        <input type="text" id="af-empresa" placeholder="Oficina/Empresa" aria-label="Oficina ou Empresa">
-        <select id="af-stage" aria-label="Estágio"></select>
-        <select id="af-orcada" aria-label="Orçada">
-          <option value="Não">Não</option><option value="Sim">Sim</option>
-        </select>
-        <input type="text" id="af-qnt" placeholder="Qnt" aria-label="Quantidade">
-        <input type="text" id="af-note" placeholder="Observação" aria-label="Observação">
-        <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
-        <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
+        <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)">
+        <input type="text" id="af-os" placeholder="Nº da OS">
+        <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)">
+        <input type="text" id="af-empresa" placeholder="Oficina/Empresa">
+        <select id="af-stage"></select>
+        <select id="af-orcada"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+        <input type="text" id="af-qnt" placeholder="Qnt">
+        <input type="text" id="af-note" placeholder="Observação">
+        <button class="btn primary" id="af-save">Salvar</button>
+        <button class="btn ghost" id="af-cancel">Cancelar</button>
       </div>
 
       <div id="osSkeleton" class="skeleton-wrap" aria-hidden="true" style="display:none;">
@@ -657,8 +688,8 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 
       <div id="errorArea" class="error-box" style="display:none;">
         <p><strong>Não foi possível carregar os dados automaticamente.</strong></p>
-        <p>Você pode baixar o CSV da planilha e carregá-lo manualmente:</p>
-        <input type="file" id="csvFileInput" accept=".csv" aria-label="Carregar CSV manualmente">
+        <p>Baixe o CSV da planilha e carregue manualmente:</p>
+        <input type="file" id="csvFileInput" accept=".csv">
       </div>
 
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
@@ -670,7 +701,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div class="summary" id="summaryCards"></div>
       <div class="toolbar">
         <div class="right-tools">
-          <input type="text" id="viatSearch" placeholder="Buscar prefixo ou local" autocapitalize="characters" autocorrect="off" spellcheck="false">
+          <input type="text" id="viatSearch" placeholder="Buscar prefixo ou local" autocapitalize="characters">
           <button class="btn ghost" id="viatClearFilterBtn" style="display:none;">Limpar filtro</button>
         </div>
       </div>
@@ -678,40 +709,91 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
+    <!-- ══════ USUÁRIOS ══════ -->
+    <section class="view" id="view-usuarios">
+      <div class="users-toolbar">
+        <input type="text" id="usersSearch" placeholder="Buscar por nome ou login" autocapitalize="none" autocorrect="off" spellcheck="false">
+        <button class="btn primary" id="newUserBtn">+ Novo usuário</button>
+      </div>
+      <div class="update-indicator" id="usersUpdateStatus">Carregando…</div>
+      <div id="usersContent" class="users-grid"></div>
+      <footer class="page-footer">Contas gravadas na planilha Google Sheets.</footer>
+    </section>
+
   </main>
 </div>
 
-<!-- ═══════════════ MODAL: CRIAR CONTA ═══════════════ -->
-<div id="createAccountModal" class="modal-overlay" style="display:none;">
-  <div class="modal-box" style="max-width:480px;">
-    <h2>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="8.5" cy="7" r="4"/>
-        <line x1="20" y1="8" x2="20" y2="14"/>
-        <line x1="23" y1="11" x2="17" y2="11"/>
-      </svg>
-      Criar nova conta
-    </h2>
-    <p style="font-size:12px;color:var(--text-dim);margin:0;">
-      Para criar uma nova conta é necessário informar a <b style="color:var(--amber);">senha de administrador</b>.
-      A nova conta é gravada na planilha e já fica disponível em todos os dispositivos.
+<!-- ═══════════════ MODAL: TROCAR SENHA (1º ACESSO) ═══════════════ -->
+<div id="changePassModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:440px;">
+    <h2>🔐 Defina sua nova senha</h2>
+    <p class="help">
+      Esta é a sua primeira vez no sistema. Você precisa definir uma <b>senha pessoal</b>
+      antes de continuar. A senha padrão não pode ser reutilizada.
     </p>
     <div class="modal-grid">
-      <label class="full">Usuário (login)
-        <input type="text" id="ca-user" placeholder="ex: joao" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <label class="full">Nova senha
+        <input type="password" id="cp-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
       </label>
-      <label class="full">Nome de exibição
-        <input type="text" id="ca-nome" placeholder="ex: JOÃO SILVA">
-      </label>
-      <label class="full">Senha de administrador
-        <input type="password" id="ca-admin-pass" placeholder="Senha admin" autocomplete="off">
+      <label class="full">Confirmar nova senha
+        <input type="password" id="cp-confirm" placeholder="Repita a senha" autocomplete="new-password">
       </label>
     </div>
-    <p id="ca-error" style="color:var(--vermelho);font-size:12px;display:none;margin:0;"></p>
+    <p id="cp-error" class="modal-error"></p>
     <div class="modal-actions">
-      <button class="btn ghost" id="ca-cancel">Cancelar</button>
-      <button class="btn primary" id="ca-save">Criar conta</button>
+      <button class="btn primary" id="cp-save">Salvar e entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: CRIAR / EDITAR USUÁRIO ═══════════════ -->
+<div id="userModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box wide">
+    <h2 id="userModalTitle">Criar nova conta</h2>
+    <p class="help" id="userModalHelp">
+      Defina o login, o nome, o perfil e o que esta conta poderá fazer.
+      A senha inicial é <b style="color:var(--amber);">Bamex@2026</b> — o usuário deverá trocá-la no primeiro acesso.
+    </p>
+    <div class="modal-grid">
+      <label>Usuário (login)
+        <input type="text" id="um-user" placeholder="ex: joao" autocapitalize="none" autocorrect="off" spellcheck="false">
+      </label>
+      <label>Nome de exibição
+        <input type="text" id="um-nome" placeholder="ex: JOÃO SILVA">
+      </label>
+      <label>Perfil
+        <select id="um-perfil">
+          <option value="view">Visualização</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </label>
+      <label id="um-root-label">Senha do administrador
+        <input type="password" id="um-root-pass" placeholder="Senha ROOT" autocomplete="off">
+      </label>
+    </div>
+
+    <div>
+      <div style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;">
+        Permissões
+      </div>
+      <div class="perm-grid" id="permGrid">
+        <label class="perm-check" data-perm="ver_os"><input type="checkbox" id="pm-ver_os"><span class="perm-label">Ver OS-BAMEX</span></label>
+        <label class="perm-check" data-perm="os_criar"><input type="checkbox" id="pm-os_criar"><span class="perm-label">Criar OS</span></label>
+        <label class="perm-check" data-perm="os_editar"><input type="checkbox" id="pm-os_editar"><span class="perm-label">Editar OS</span></label>
+        <label class="perm-check" data-perm="os_status"><input type="checkbox" id="pm-os_status"><span class="perm-label">Alterar status de OS</span></label>
+        <label class="perm-check" data-perm="ver_viaturas"><input type="checkbox" id="pm-ver_viaturas"><span class="perm-label">Ver Viaturas</span></label>
+        <label class="perm-check" data-perm="viat_gerenciar"><input type="checkbox" id="pm-viat_gerenciar"><span class="perm-label">Gerenciar viaturas</span></label>
+        <label class="perm-check" data-perm="admin_usuarios"><input type="checkbox" id="pm-admin_usuarios"><span class="perm-label">Gerenciar usuários</span></label>
+      </div>
+    </div>
+
+    <p id="um-error" class="modal-error"></p>
+    <div class="modal-actions left">
+      <button class="btn danger" id="um-reset" style="display:none;">Resetar senha</button>
+      <div style="display:flex;gap:8px;margin-left:auto;">
+        <button class="btn ghost" id="um-cancel">Cancelar</button>
+        <button class="btn primary" id="um-save">Salvar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -719,12 +801,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 <!-- ═══════════════ MODAL: EDITAR OS ═══════════════ -->
 <div id="editModal" class="modal-overlay" style="display:none;">
   <div class="modal-box wide">
-    <h2>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>
-      </svg>
-      Editar OS
-    </h2>
+    <h2>✎ Editar OS</h2>
     <div class="modal-grid">
       <label>Viatura<input type="text" id="ed-v"></label>
       <label>Nº da OS<input type="text" id="ed-os"></label>
@@ -751,7 +828,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     </div>
     <div class="report-filters" id="reportFilters"></div>
     <div class="report-table-wrap">
-      <table class="report-table" id="reportTable">
+      <table class="report-table">
         <thead>
           <tr>
             <th>Viatura</th><th>Nº OS</th><th>Categoria</th><th>Status</th>
@@ -784,26 +861,32 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 /* ════════════════════════════════════════════════════════════
    CONFIG
    ════════════════════════════════════════════════════════════ */
-const OS_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMVSQtq7RSHFRnzRPFQgV-_YQ-TCWId3XrXiynaZ6gajqwKhaMZxe7ISRqAM8PTqyP3g/exec';
+const OS_APPS_SCRIPT_URL       = 'https://script.google.com/macros/s/AKfycbzMVSQtq7RSHFRnzRPFQgV-_YQ-TCWId3XrXiynaZ6gajqwKhaMZxe7ISRqAM8PTqyP3g/exec';
 const VIATURAS_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTBLYK1DGYKjndJZYt2mm03aLiuwyamzc4s2dDsYY_YJpj3fh0CaptQGG1hMReJhqG/exec';
-const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
-const STORAGE_KEY_OS = 'deman_data_os_v1';
-const STORAGE_KEY_VIAT = 'deman_cache_viaturas_v1';
-const POLLING_INTERVAL = 180000;
+const DIRECT_SHEET_CSV_URL     = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
+const STORAGE_KEY_OS    = 'deman_data_os_v1';
+const STORAGE_KEY_VIAT  = 'deman_cache_viaturas_v1';
+const POLLING_INTERVAL  = 180000;
+const SENHA_PADRAO      = 'Bamex@2026';
+const ROOT_LOGIN        = 'deman';
 
-/* Fallback local de contas (se a API cair) */
+// Fallback local: SOMENTE ROOT. Todas as demais contas vêm da planilha.
 const USERS_FALLBACK = {
-  'bita':    { senha:'Bamex@2026', nome:'BITA',           perfil:'admin' },
-  'adson':   { senha:'Bamex@2026', nome:'ADSON FRANCA',   perfil:'admin' },
-  'paulo':   { senha:'Bamex@2026', nome:'PAULO SOTERO',   perfil:'admin' },
-  'luana':   { senha:'Bamex@2026', nome:'LUANA VICTORIA', perfil:'admin' },
-  'alvaro':  { senha:'Bamex@2026', nome:'FABIO ALVARO',   perfil:'admin' },
-  'cardoso': { senha:'Bamex@2026', nome:'JOSE CARDOSO',   perfil:'admin' },
-  'visual':  { senha:'Ver@2026',   nome:'VISUALIZAÇÃO',   perfil:'view'  },
+  'deman': { senha:'Bamex@2026', nome:'DEMAN (ROOT)', perfil:'admin' }
 };
 
+const PERMISSOES_LISTA = [
+  { key:'ver_os',         label:'Ver OS-BAMEX' },
+  { key:'os_criar',       label:'Criar OS' },
+  { key:'os_editar',      label:'Editar OS' },
+  { key:'os_status',      label:'Alterar status de OS' },
+  { key:'ver_viaturas',   label:'Ver Viaturas' },
+  { key:'viat_gerenciar', label:'Gerenciar viaturas' },
+  { key:'admin_usuarios', label:'Gerenciar usuários' }
+];
+
 /* ════════════════════════════════════════════════════════════
-   HELPERS GERAIS
+   HELPERS
    ════════════════════════════════════════════════════════════ */
 function normalizeStr(s){
   return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -811,27 +894,37 @@ function normalizeStr(s){
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
 function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+function $(id){ return document.getElementById(id); }
 
 /* ════════════════════════════════════════════════════════════
-   AUTH
+   ESTADO / SESSÃO
    ════════════════════════════════════════════════════════════ */
 let currentUser = '';
 let currentPerfil = 'view';
 let currentLogin = '';
+let currentPermissoes = {};
+let primeiraSenhaUsada = ''; // guarda a senha digitada no login p/ primeiro acesso
 
 function isLoggedIn(){ return sessionStorage.getItem('deman_auth') === 'ok'; }
+
+function temPermissao(p){
+  if(currentLogin === ROOT_LOGIN) return true;
+  return currentPermissoes[p] === true;
+}
 function isAdmin(){ return currentPerfil === 'admin'; }
 
-function showLogin(){ document.getElementById('loginOverlay').style.display = 'flex'; document.getElementById('loginUser').focus(); }
-function hideLogin(){ document.getElementById('loginOverlay').style.display = 'none'; }
-
-async function apiOS(action, payload){
+/* ════════════════════════════════════════════════════════════
+   API
+   ════════════════════════════════════════════════════════════ */
+async function apiCall(url, action, payload){
   const ctrl = new AbortController();
   const to = setTimeout(()=>ctrl.abort(), 25000);
   try{
-    const r = await fetch(OS_APPS_SCRIPT_URL, {
+    const r = await fetch(url, {
       method:'POST', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify(Object.assign({ action, usuario: currentUser, perfil: currentPerfil }, payload||{})),
+      body: JSON.stringify(Object.assign({
+        action, usuario: currentLogin || '', perfil: currentPerfil || 'view'
+      }, payload||{})),
       signal: ctrl.signal, cache:'no-store'
     });
     clearTimeout(to);
@@ -844,182 +937,351 @@ async function apiOS(action, payload){
     return { ok:false, error:'Erro de rede: '+err.message };
   }
 }
+const apiOS       = (action, payload) => apiCall(OS_APPS_SCRIPT_URL, action, payload);
+const apiViaturas = (action, payload) => apiCall(VIATURAS_APPS_SCRIPT_URL, action, payload);
 
-async function apiViaturas(action, payload){
-  const ctrl = new AbortController();
-  const to = setTimeout(()=>ctrl.abort(), 25000);
-  try{
-    const r = await fetch(VIATURAS_APPS_SCRIPT_URL, {
-      method:'POST', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify(Object.assign({ action, usuario: currentUser, perfil: currentPerfil }, payload||{})),
-      signal: ctrl.signal, cache:'no-store'
-    });
-    clearTimeout(to);
-    if(!r.ok) return { ok:false, error:'HTTP '+r.status };
-    const txt = await r.text();
-    try{ return JSON.parse(txt); } catch(e){ return { ok:false, error:'Resposta inválida' }; }
-  }catch(err){
-    clearTimeout(to);
-    if(err.name==='AbortError') return { ok:false, error:'A rede está lenta. Tente novamente.' };
-    return { ok:false, error:'Erro de rede: '+err.message };
-  }
-}
+/* ════════════════════════════════════════════════════════════
+   LOGIN
+   ════════════════════════════════════════════════════════════ */
+function showLogin(){ $('loginOverlay').style.display = 'flex'; $('loginUser').focus(); }
+function hideLogin(){ $('loginOverlay').style.display = 'none'; }
 
 async function handleLogin(){
-  const u = document.getElementById('loginUser').value.trim().toLowerCase();
-  const p = document.getElementById('loginPass').value;
-  const err = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-  if(!u || !p){ err.textContent='Preencha usuário e senha.'; err.style.display='block'; return; }
+  const u = $('loginUser').value.trim().toLowerCase();
+  const p = $('loginPass').value;
+  const err = $('loginError');
+  const btn = $('loginBtn');
 
-  btn.disabled = true; btn.textContent = 'Entrando…'; err.style.display='none';
+  if(!u || !p){ err.textContent = 'Preencha usuário e senha.'; err.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = 'Entrando…'; err.style.display = 'none';
 
   let r = await apiOS('autenticar', { login:u, senha:p });
+
+  // Fallback local (só ROOT)
   if(!r.ok && USERS_FALLBACK[u] && USERS_FALLBACK[u].senha === p){
-    r = { ok:true, usuario:u, nome:USERS_FALLBACK[u].nome, perfil:USERS_FALLBACK[u].perfil };
+    r = {
+      ok:true, usuario:u, nome:USERS_FALLBACK[u].nome, perfil:USERS_FALLBACK[u].perfil,
+      permissoes:{ver_os:true,os_criar:true,os_editar:true,os_status:true,ver_viaturas:true,viat_gerenciar:true,admin_usuarios:true},
+      primeiroAcesso:false
+    };
   }
 
   btn.disabled = false; btn.textContent = 'Entrar';
 
-  if(!r.ok){ err.textContent = r.error || 'Usuário ou senha inválidos.'; err.style.display='block'; return; }
+  if(!r.ok){
+    err.textContent = r.error || 'Usuário ou senha inválidos.';
+    err.style.display = 'block';
+    return;
+  }
 
+  // Guarda senha usada (necessária para troca no 1º acesso)
+  primeiraSenhaUsada = p;
+
+  // Persiste sessão
   sessionStorage.setItem('deman_auth','ok');
   sessionStorage.setItem('deman_user_login', u);
   sessionStorage.setItem('deman_user_nome', r.nome || u);
   sessionStorage.setItem('deman_user_perfil', r.perfil || 'view');
+  sessionStorage.setItem('deman_user_permissoes', JSON.stringify(r.permissoes || {}));
+
   currentLogin = u;
   currentUser = r.nome || u;
   currentPerfil = r.perfil || 'view';
+  currentPermissoes = r.permissoes || {};
+
+  // Primeiro acesso → força troca de senha
+  if(r.primeiroAcesso === true){
+    hideLogin();
+    abrirTrocarSenha(true);
+    return;
+  }
 
   startApp();
 }
 
 function handleLogout(){
-  sessionStorage.removeItem('deman_auth');
-  sessionStorage.removeItem('deman_user_login');
-  sessionStorage.removeItem('deman_user_nome');
-  sessionStorage.removeItem('deman_user_perfil');
+  sessionStorage.clear();
   try{ sessionStorage.removeItem(STORAGE_KEY_VIAT); }catch(e){}
   location.reload();
 }
 
 /* ════════════════════════════════════════════════════════════
-   CRIAÇÃO DE CONTA
+   TROCA DE SENHA (1º acesso)
    ════════════════════════════════════════════════════════════ */
-function openCreateAccountModal(){
-  document.getElementById('ca-user').value = '';
-  document.getElementById('ca-nome').value = '';
-  document.getElementById('ca-admin-pass').value = '';
-  const err = document.getElementById('ca-error'); err.style.display='none'; err.textContent='';
-  document.getElementById('createAccountModal').style.display = 'flex';
-  document.getElementById('ca-user').focus();
+let modoTrocaSenha = 'primeiro'; // 'primeiro' | 'voluntario'
+
+function abrirTrocarSenha(obrigatorio){
+  modoTrocaSenha = obrigatorio ? 'primeiro' : 'voluntario';
+  $('cp-new').value = '';
+  $('cp-confirm').value = '';
+  $('cp-error').style.display = 'none';
+  $('cp-error').textContent = '';
+  $('changePassModal').style.display = 'flex';
+  $('cp-new').focus();
 }
-function closeCreateAccountModal(){ document.getElementById('createAccountModal').style.display = 'none'; }
 
-async function handleCreateAccount(){
-  const u = document.getElementById('ca-user').value.trim().toLowerCase();
-  const nome = document.getElementById('ca-nome').value.trim();
-  const senhaRoot = document.getElementById('ca-admin-pass').value;
-  const err = document.getElementById('ca-error');
-  const btn = document.getElementById('ca-save');
-  err.style.display='none'; err.textContent='';
+async function salvarNovaSenha(){
+  const nova = $('cp-new').value;
+  const conf = $('cp-confirm').value;
+  const err = $('cp-error');
+  const btn = $('cp-save');
 
-  if(!u || !nome){ err.textContent='Preencha usuário e nome.'; err.style.display='block'; return; }
-  if(!/^[a-z0-9._-]{3,}$/.test(u)){ err.textContent='Usuário inválido (mín. 3 caracteres).'; err.style.display='block'; return; }
-  if(!senhaRoot){ err.textContent='Informe a senha de administrador.'; err.style.display='block'; return; }
+  err.style.display = 'none'; err.textContent = '';
 
-  btn.disabled = true; btn.textContent = 'Criando…';
-  const r = await apiOS('criarUsuario', { novoUsuario:u, novoNome:nome, senhaRoot });
-  btn.disabled = false; btn.textContent = 'Criar conta';
+  if(nova.length < 6){ err.textContent = 'A senha deve ter pelo menos 6 caracteres.'; err.style.display='block'; return; }
+  if(nova === SENHA_PADRAO){ err.textContent = 'A nova senha não pode ser a padrão.'; err.style.display='block'; return; }
+  if(nova !== conf){ err.textContent = 'As senhas não coincidem.'; err.style.display='block'; return; }
 
-  if(!r.ok){ err.textContent = r.error || 'Não foi possível criar a conta.'; err.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Salvando…';
 
-  alert('✅ Conta "'+r.usuario+'" criada com sucesso!\n\nNome: '+r.nome+'\nA senha é a mesma das contas admin.');
-  closeCreateAccountModal();
-  document.getElementById('loginUser').value = r.usuario;
-  document.getElementById('loginPass').value = '';
-  document.getElementById('loginPass').focus();
+  const r = await apiCall(OS_APPS_SCRIPT_URL, 'trocarSenha', {
+    login: currentLogin, senhaAtual: primeiraSenhaUsada, senhaNova: nova
+  });
+
+  btn.disabled = false; btn.textContent = 'Salvar e entrar';
+
+  if(!r.ok){
+    err.textContent = r.error || 'Não foi possível trocar a senha.';
+    err.style.display = 'block';
+    return;
+  }
+
+  $('changePassModal').style.display = 'none';
+
+  // Se foi 1º acesso, agora segue para o app
+  if(modoTrocaSenha === 'primeiro'){
+    primeiraSenhaUsada = nova;
+    startApp();
+  } else {
+    alert('Senha alterada com sucesso.');
+  }
 }
 
 /* ════════════════════════════════════════════════════════════
-   ROTEADOR (views)
+   MODAL DE USUÁRIO (criar / editar)
+   ════════════════════════════════════════════════════════════ */
+let modoUserModal = 'create';  // 'create' | 'edit'
+let editUserLogin = '';
+
+function setPermissoesNoForm(perms){
+  PERMISSOES_LISTA.forEach(p => {
+    const cb = $('pm-' + p.key);
+    if(cb) cb.checked = !!perms[p.key];
+  });
+  atualizarEstadoCheckboxes();
+}
+function atualizarEstadoCheckboxes(){
+  document.querySelectorAll('#permGrid .perm-check').forEach(label => {
+    const cb = label.querySelector('input');
+    label.classList.toggle('checked', cb.checked);
+  });
+}
+function aplicarDefaultsPorPerfil(perfil){
+  const adminDefaults = { ver_os:true, os_criar:true, os_editar:true, os_status:true, ver_viaturas:true, viat_gerenciar:true, admin_usuarios:true };
+  const viewDefaults  = { ver_os:true, os_criar:false, os_editar:false, os_status:false, ver_viaturas:true, viat_gerenciar:false, admin_usuarios:false };
+  setPermissoesNoForm(perfil === 'admin' ? adminDefaults : viewDefaults);
+}
+function lerPermissoesDoForm(){
+  const out = {};
+  PERMISSOES_LISTA.forEach(p => { out[p.key] = $('pm-' + p.key).checked; });
+  return out;
+}
+
+function abrirUserModal(modo, user){
+  modoUserModal = modo;
+  editUserLogin = '';
+
+  const title = modo === 'create' ? 'Criar nova conta' : 'Editar usuário';
+  $('userModalTitle').textContent = title;
+
+  if(modo === 'create'){
+    $('userModalHelp').style.display = '';
+    $('um-user').value = '';
+    $('um-user').disabled = false;
+    $('um-nome').value = '';
+    $('um-perfil').value = 'view';
+    $('um-root-label').style.display = '';
+    $('um-root-pass').value = '';
+    $('um-reset').style.display = 'none';
+    aplicarDefaultsPorPerfil('view');
+  } else {
+    editUserLogin = user.usuario;
+    $('userModalHelp').style.display = 'none';
+    $('um-user').value = user.usuario;
+    $('um-user').disabled = true;
+    $('um-nome').value = user.nome || '';
+    $('um-perfil').value = user.perfil || 'view';
+    $('um-root-label').style.display = 'none';
+    $('um-reset').style.display = 'inline-block';
+    setPermissoesNoForm(user.permissoes || {});
+  }
+
+  $('um-error').style.display = 'none';
+  $('um-error').textContent = '';
+  $('userModal').style.display = 'flex';
+  setTimeout(() => { (modo==='create' ? $('um-user') : $('um-nome')).focus(); }, 60);
+}
+
+function fecharUserModal(){
+  $('userModal').style.display = 'none';
+  modoUserModal = 'create';
+  editUserLogin = '';
+}
+
+async function salvarUserModal(){
+  const err = $('um-error');
+  const btn = $('um-save');
+  err.style.display = 'none'; err.textContent = '';
+
+  const nome = $('um-nome').value.trim();
+  const perfil = $('um-perfil').value;
+  const permissoes = lerPermissoesDoForm();
+
+  if(!nome){ err.textContent = 'Informe o nome de exibição.'; err.style.display = 'block'; return; }
+
+  btn.disabled = true; btn.textContent = 'Salvando…';
+
+  let r;
+  if(modoUserModal === 'create'){
+    const user = $('um-user').value.trim().toLowerCase();
+    const senhaRoot = $('um-root-pass').value;
+    if(!user){ err.textContent = 'Informe o usuário.'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
+    if(!/^[a-z0-9._-]{3,}$/.test(user)){ err.textContent = 'Usuário inválido (mín. 3 caracteres: a-z, 0-9, . _ -).'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
+    if(!senhaRoot){ err.textContent = 'Informe a senha do administrador.'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
+
+    r = await apiOS('criarUsuario', { novoUsuario:user, novoNome:nome, perfil, permissoes, senhaRoot });
+  } else {
+    r = await apiOS('atualizarUsuario', { usuarioAlvo: editUserLogin, perfil, permissoes });
+  }
+
+  btn.disabled = false; btn.textContent = 'Salvar';
+
+  if(!r.ok){
+    err.textContent = r.error || 'Não foi possível salvar.';
+    err.style.display = 'block';
+    return;
+  }
+
+  fecharUserModal();
+  await carregarUsuarios();
+}
+
+async function resetarSenhaUsuario(){
+  if(!editUserLogin) return;
+  if(!confirm('Resetar a senha de "'+editUserLogin+'" para a padrão? O usuário será forçado a trocá-la no próximo login.')) return;
+
+  const btn = $('um-reset');
+  btn.disabled = true; btn.textContent = 'Resetando…';
+
+  const r = await apiOS('resetarSenha', { usuarioAlvo: editUserLogin });
+
+  btn.disabled = false; btn.textContent = 'Resetar senha';
+
+  if(!r.ok){ alert('Erro: ' + r.error); return; }
+  alert('Senha resetada com sucesso.');
+  fecharUserModal();
+  await carregarUsuarios();
+}
+
+/* ════════════════════════════════════════════════════════════
+   ROTEADOR
    ════════════════════════════════════════════════════════════ */
 let activeView = 'home';
-const VIEW_TITLES = { home:'Início', os:'Status das OS-BAMEX', viaturas:'Painel de Viaturas por Local' };
+const VIEW_TITLES = {
+  home:'Início',
+  os:'Status das OS-BAMEX',
+  viaturas:'Painel de Viaturas por Local',
+  usuarios:'Gerenciamento de Usuários'
+};
+const VIEW_PERMS = {
+  home: null,
+  os: 'ver_os',
+  viaturas: 'ver_viaturas',
+  usuarios: 'admin_usuarios'
+};
+
 const isMobile = () => window.matchMedia('(max-width:900px)').matches;
 
 function showView(name){
   if(!VIEW_TITLES[name]) return;
+  if(VIEW_PERMS[name] && !temPermissao(VIEW_PERMS[name])){ name = 'home'; }
+
   activeView = name;
-
   document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
-  document.getElementById('view-'+name).classList.add('is-active');
-
+  $('view-' + name).classList.add('is-active');
   document.querySelectorAll('.sidebar-link[data-view]').forEach(b => {
     b.classList.toggle('active', b.dataset.view === name);
   });
+  $('viewTitle').textContent = VIEW_TITLES[name];
 
-  document.getElementById('viewTitle').textContent = VIEW_TITLES[name];
-
-  if(isMobile()){
-    document.getElementById('app').classList.remove('sidebar-open');
-  }
+  if(isMobile()) $('app').classList.remove('sidebar-open');
 
   if(name === 'home') renderHome();
   if(name === 'os' && OS_DATA.length) renderOS();
   if(name === 'viaturas' && VIATURAS.length) renderViaturas();
+  if(name === 'usuarios') carregarUsuarios();
+}
+
+/* Aplica filtro de permissão no sidebar */
+function aplicarPermissoesUI(){
+  document.querySelectorAll('.sidebar-link[data-perm]').forEach(b => {
+    const ok = temPermissao(b.dataset.perm);
+    b.style.display = ok ? '' : 'none';
+  });
+  document.querySelectorAll('[data-perm]').forEach(el => {
+    if(el.classList.contains('sidebar-link')) return;
+    el.style.display = temPermissao(el.dataset.perm) ? '' : 'none';
+  });
+
+  // Home: esconde seções que o usuário não pode ver
+  $('homeOSSection').style.display    = temPermissao('ver_os')       ? '' : 'none';
+  $('homeViatSection').style.display  = temPermissao('ver_viaturas') ? '' : 'none';
 }
 
 /* ════════════════════════════════════════════════════════════
    HOME
    ════════════════════════════════════════════════════════════ */
 function renderHome(){
-  document.getElementById('homeUserName').textContent = currentUser || '—';
+  $('homeUserName').textContent = currentUser || '—';
 
-  // OS
   const osTotal = OS_DATA.length;
-  const osPend = OS_DATA.filter(r => r.stage==='Pendente').length;
+  const osPend  = OS_DATA.filter(r => r.stage==='Pendente').length;
   const osAprov = OS_DATA.filter(r => r.stage==='Aprovada').length;
-  const osReav = OS_DATA.filter(r => r.stage==='Reavaliar').length;
+  const osReav  = OS_DATA.filter(r => r.stage==='Reavaliar').length;
 
-  document.getElementById('h-os-total').textContent = osTotal;
-  document.getElementById('h-os-pend').textContent = osPend;
-  document.getElementById('h-os-aprov').textContent = osAprov;
-  document.getElementById('h-os-reav').textContent = osReav;
+  $('h-os-total').textContent = osTotal;
+  $('h-os-pend').textContent  = osPend;
+  $('h-os-aprov').textContent = osAprov;
+  $('h-os-reav').textContent  = osReav;
 
-  // Viaturas
-  const vTotal = VIATURAS.length;
+  const vTotal   = VIATURAS.length;
   const vNaoBaix = VIATURAS.filter(v => v.origem !== 'baixada').length;
-  const vDir = VIATURAS.filter(v => v.origem === 'ativa' && ehDiretoria(v.gbm)).length;
-  const vBaix = VIATURAS.filter(v => v.origem === 'baixada').length;
+  const vDir     = VIATURAS.filter(v => v.origem === 'ativa' && ehDiretoria(v.gbm)).length;
+  const vBaix    = VIATURAS.filter(v => v.origem === 'baixada').length;
 
-  document.getElementById('h-v-total').textContent = vTotal;
-  document.getElementById('h-v-ativas').textContent = vNaoBaix;
-  document.getElementById('h-v-dir').textContent = vDir;
-  document.getElementById('h-v-baix').textContent = vBaix;
+  $('h-v-total').textContent   = vTotal;
+  $('h-v-ativas').textContent  = vNaoBaix;
+  $('h-v-dir').textContent     = vDir;
+  $('h-v-baix').textContent    = vBaix;
 
-  // Última alteração OS
   const ult = getUltimaAlteracaoOS();
-  const el = document.getElementById('homeLastChange');
-  if(!ult){
-    el.textContent = 'Última alteração registrada: —';
-  } else {
-    el.innerHTML = 'Última alteração registrada: <b>'+ult.toLocaleDateString('pt-BR')+' às '+ult.toLocaleTimeString('pt-BR')+'</b>';
-  }
+  const el = $('homeLastChange');
+  el.innerHTML = ult
+    ? 'Última alteração registrada: <b>' + ult.toLocaleDateString('pt-BR') + ' às ' + ult.toLocaleTimeString('pt-BR') + '</b>'
+    : 'Última alteração registrada: —';
 
-  // Atualiza status combinado
-  const upd = document.getElementById('homeUpdateStatus');
-  const osTxt = document.getElementById('updateStatus').textContent;
-  const vTxt = document.getElementById('viatUpdateStatus').textContent;
+  const upd = $('homeUpdateStatus');
+  const osTxt = $('updateStatus').textContent;
+  const vTxt  = $('viatUpdateStatus').textContent;
   upd.textContent = 'OS: ' + osTxt + ' · Viaturas: ' + vTxt;
 }
 
-/* Atalhos dos cards da home → navega para a view correta */
 document.querySelectorAll('#view-home .home-card').forEach(card => {
   card.addEventListener('click', () => {
     const id = card.querySelector('.value').id;
-    if(id.startsWith('h-os-')){ showView('os'); }
-    else if(id.startsWith('h-v-')){ showView('viaturas'); }
+    if(id.startsWith('h-os-') && temPermissao('ver_os')) showView('os');
+    else if(id.startsWith('h-v-') && temPermissao('ver_viaturas')) showView('viaturas');
   });
 });
 
@@ -1037,7 +1299,6 @@ const STAGES = [
   {key:'Cancelada',  label:'Cancelada',   color:'var(--Cancelada)'},
   {key:'Reavaliar',  label:'Reavaliação', color:'var(--Reavaliar)'},
 ];
-const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
 let OS_DATA = [];
 let activeTab = TAB_GERAL;
@@ -1089,22 +1350,17 @@ function extractOrcamentos(statusRaw, note, orcadaRaw, qntRaw){
   return Math.min(orcamentos,5);
 }
 function extractPendenteFlags(statusRaw, note){
-  const combined = normalizeStr((statusRaw||'')+' '+(note||''));
-  return { tabela: combined.includes('tabela'), justificativa: combined.includes('justificativa') };
+  const c = normalizeStr((statusRaw||'')+' '+(note||''));
+  return { tabela: c.includes('tabela'), justificativa: c.includes('justificativa') };
 }
-function matchesSearchOS(v, q){
-  if(!q) return true;
-  return normalizeStr(v).includes(normalizeStr(q));
-}
+function matchesSearchOS(v, q){ return !q || normalizeStr(v).includes(normalizeStr(q)); }
 function isManutencaoNote(note){
   const n = normalizeStr(note || '');
   return MANUTENCAO_KEYWORDS.some(kw => n.includes(kw));
 }
 function stageInfoOS(key){ return STAGES.find(s=>s.key===key) || STAGES[0]; }
 
-function saveLocalDataOS(){
-  try{ localStorage.setItem(STORAGE_KEY_OS, JSON.stringify(OS_DATA)); }catch(e){}
-}
+function saveLocalDataOS(){ try{ localStorage.setItem(STORAGE_KEY_OS, JSON.stringify(OS_DATA)); }catch(e){} }
 function loadLocalDataOS(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY_OS);
@@ -1116,17 +1372,15 @@ function loadLocalDataOS(){
   return false;
 }
 
-function updateIndicatorOS(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
-function showSkeletonOS(){ const s=document.getElementById('osSkeleton'); if(s) s.style.display='block'; }
-function hideSkeletonOS(){ const s=document.getElementById('osSkeleton'); if(s) s.style.display='none'; }
+function updateIndicatorOS(text){ const el=$('updateStatus'); if(el) el.textContent=text; }
+function showSkeletonOS(){ const s=$('osSkeleton'); if(s) s.style.display='block'; }
+function hideSkeletonOS(){ const s=$('osSkeleton'); if(s) s.style.display='none'; }
 
 function processCsvText(csvText){
   const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
   let headerIndex = -1;
   for(let i = 0; i < lines.length; i++){
-    if(lines[i].toLowerCase().includes('viatura') && lines[i].toLowerCase().includes('os nº')){
-      headerIndex = i; break;
-    }
+    if(lines[i].toLowerCase().includes('viatura') && lines[i].toLowerCase().includes('os nº')){ headerIndex = i; break; }
   }
   if(headerIndex === -1){ console.error('Cabeçalho não encontrado'); OS_DATA=[]; return; }
   const cleanCsv = lines.slice(headerIndex).join('\n');
@@ -1143,12 +1397,13 @@ function mapRowsToData(rows){
     const osField = findField(row,['os','os n','os nº','numero os','numero']) || '';
     const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
-    const note = findField(row,['observa','observ','obs','nota','comentario']) || row['Observações'] || row['Observacoes'] || '';
+    const note = findField(row,['observa','observ','obs','nota','comentario']) || row['Observações'] || '';
     const empresa = findField(row,['oficina','empresa']) || row['Oficina/Empresa'] || '';
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
     const alteradoPor = findField(row,['alterado por']) || row['Alterado por'] || '';
     const ultimaAlt = findField(row,['ultima alteracao','última alteração','ultima alteração','última alteracao']) || row['Última alteração'] || '';
+
     const stage = parseStageOS(status);
     const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
     const flags = (stage==='Pendente') ? extractPendenteFlags(status, note) : {tabela:false, justificativa:false};
@@ -1178,7 +1433,7 @@ async function loadDataOS(){
   if(isLoadingOS) return;
   isLoadingOS = true;
   showSkeletonOS();
-  const errorArea = document.getElementById('errorArea');
+  const errorArea = $('errorArea');
   let loadedFromSheet = false;
 
   const cacheBust = 'ts=' + Date.now();
@@ -1217,7 +1472,6 @@ async function loadDataOS(){
 }
 
 async function updateOSStatus(osNumber, newStatus, viatura){
-  if(!isAdmin()) return false;
   try{
     const r = await apiOS('atualizarStatus', { os:osNumber, status:newStatus, viatura });
     if(r && r.ok === true){ saveLocalDataOS(); return true; }
@@ -1225,14 +1479,12 @@ async function updateOSStatus(osNumber, newStatus, viatura){
   }catch(err){ console.error(err); return false; }
 }
 async function createOSInSheet(data){
-  if(!isAdmin()) return false;
   try{
     const r = await apiOS('criarOS', data);
     return r && r.ok === true;
   }catch(err){ console.error(err); return false; }
 }
 async function editOSInSheet(osOriginal, viaturaOriginal, data){
-  if(!isAdmin()) return false;
   try{
     const r = await apiOS('editarOS', Object.assign({ osOriginal, viaturaOriginal }, data));
     return r && r.ok === true;
@@ -1253,18 +1505,19 @@ function getUltimaAlteracaoOS(){
 
 function renderLastUpdateOS(){
   const agora = new Date();
-  const el1 = document.getElementById('updateStatus');
-  const el2 = document.getElementById('lastChange');
+  const el1 = $('updateStatus');
+  const el2 = $('lastChange');
   if(el1) el1.textContent = 'Dados consultados em '+agora.toLocaleDateString('pt-BR')+' às '+agora.toLocaleTimeString('pt-BR');
   if(el2){
     const ult = getUltimaAlteracaoOS();
-    if(!ult) el2.textContent = 'Última alteração registrada: —';
-    else el2.innerHTML = 'Última alteração registrada: <b>'+ult.toLocaleDateString('pt-BR')+' às '+ult.toLocaleTimeString('pt-BR')+'</b>';
+    el2.innerHTML = ult
+      ? 'Última alteração registrada: <b>'+ult.toLocaleDateString('pt-BR')+' às '+ult.toLocaleTimeString('pt-BR')+'</b>'
+      : 'Última alteração registrada: —';
   }
 }
 
 function renderLegendOS(){
-  const el = document.getElementById('legend');
+  const el = $('legend');
   el.innerHTML = STAGES.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`).join('') +
     `<span><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
 }
@@ -1283,21 +1536,18 @@ function getEventosOS(){
 
 function renderTabsOS(){
   const eventos = getEventosOS();
-  const container = document.getElementById('tabsContainer');
+  const container = $('tabsContainer');
   let html = `<button class="tab ${activeTab===TAB_GERAL?'active':''}" data-tab="${TAB_GERAL}">Visão Geral</button>`;
   html += `<button class="tab ${activeTab===TAB_MANUTENCAO?'active':''}" data-tab="${TAB_MANUTENCAO}">Manutenção</button>`;
   html += eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${escapeAttr(ev)}">${escapeHtml(ev)}</button>`).join('');
   container.innerHTML = html;
   container.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => {
-      activeTab = t.dataset.tab;
-      renderOS();
-    });
+    t.addEventListener('click', () => { activeTab = t.dataset.tab; renderOS(); });
   });
 }
 
 function getDadosFiltradosOS(eventoFiltro){
-  const q = document.getElementById('osSearch').value.trim().toLowerCase();
+  const q = $('osSearch').value.trim().toLowerCase();
   let dados = OS_DATA;
   if(activeStatusFilter) dados = dados.filter(r => r.stage === activeStatusFilter);
   else dados = dados.filter(r => r.stage !== 'Finalizada' && r.stage !== 'Cancelada');
@@ -1311,11 +1561,12 @@ function getDadosFiltradosOS(eventoFiltro){
 
 function renderGeralOS(eventoFiltro){
   const dados = getDadosFiltradosOS(eventoFiltro);
-  const admin = isAdmin();
+  const podeStatus = temPermissao('os_status');
+  const podeEditar = temPermissao('os_editar');
 
   const allVehicles = Array.from(new Set(dados.map(r => (r.v||'').trim()).filter(Boolean))).sort();
   if(allVehicles.length === 0){
-    document.getElementById('osContent').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
+    $('osContent').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
     return;
   }
   const familyOf = v => v.split('-')[0].toUpperCase();
@@ -1344,14 +1595,14 @@ function renderGeralOS(eventoFiltro){
         const orcClass = destacar ? 'orc-alto' : '';
         const orcBadge = destacar ? `<span class="badge-orc">$ ${r.orcamentos}</span>` : '';
 
-        const stageControl = admin
+        const stageControl = podeStatus
           ? `<select class="stage-select" data-id="${escapeAttr(r.id)}" data-os="${escapeAttr(r.os)}">
               ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
              </select>`
           : `<span class="stage-static">${st.label}</span>`;
 
-        const editBtn = admin
-          ? `<button class="edit-btn" data-edit-id="${escapeAttr(r.id)}" title="Editar OS ${escapeAttr(r.os)}" aria-label="Editar OS">${pencilSvg}</button>`
+        const editBtn = podeEditar
+          ? `<button class="edit-btn" data-edit-id="${escapeAttr(r.id)}" title="Editar OS ${escapeAttr(r.os)}">${pencilSvg}</button>`
           : '';
 
         return `
@@ -1378,9 +1629,9 @@ function renderGeralOS(eventoFiltro){
     </details>`;
   }).join('');
 
-  document.getElementById('osContent').innerHTML = html;
+  $('osContent').innerHTML = html;
 
-  if(admin){
+  if(podeStatus){
     document.querySelectorAll('#view-os .stage-select').forEach(sel => {
       sel.addEventListener('change', async e => {
         const rec = OS_DATA.find(r => r.id === e.target.dataset.id);
@@ -1390,9 +1641,11 @@ function renderGeralOS(eventoFiltro){
         rec.stage = newStage;
         renderOS();
         const ok = await updateOSStatus(rec.os, newStage, rec.v);
-        if(!ok){ rec.stage = oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); renderOS(); }
+        if(!ok){ rec.stage = oldStage; alert('O status não pôde ser atualizado. Revertido.'); renderOS(); }
       });
     });
+  }
+  if(podeEditar){
     document.querySelectorAll('#view-os .edit-btn').forEach(btn => {
       btn.addEventListener('click', e => {
         e.stopPropagation();
@@ -1406,22 +1659,16 @@ function renderGeralOS(eventoFiltro){
 
 function renderStatsOS(){
   const total = new Set(OS_DATA.map(r => (r.v||'').trim()).filter(Boolean)).size;
-  const Pendentes = OS_DATA.filter(r=>r.stage==='Pendente').length;
-  const Aprovadas = OS_DATA.filter(r=>r.stage==='Aprovada').length;
-  const Finalizadas = OS_DATA.filter(r=>r.stage==='Finalizada').length;
-  const Canceladas = OS_DATA.filter(r=>r.stage==='Cancelada').length;
-  const Reavaliacoes = OS_DATA.filter(r=>r.stage==='Reavaliar').length;
-
   const stats = [
     {n: total, l:'Viaturas com OS', filter:null, isTotal:true},
-    {n: Pendentes, l:'Pendentes', filter:'Pendente'},
-    {n: Aprovadas, l:'Aprovadas', filter:'Aprovada'},
-    {n: Finalizadas, l:'Finalizadas', filter:'Finalizada'},
-    {n: Canceladas, l:'Canceladas', filter:'Cancelada'},
-    {n: Reavaliacoes, l:'Reavaliações', filter:'Reavaliar'},
+    {n: OS_DATA.filter(r=>r.stage==='Pendente').length, l:'Pendentes', filter:'Pendente'},
+    {n: OS_DATA.filter(r=>r.stage==='Aprovada').length, l:'Aprovadas', filter:'Aprovada'},
+    {n: OS_DATA.filter(r=>r.stage==='Finalizada').length, l:'Finalizadas', filter:'Finalizada'},
+    {n: OS_DATA.filter(r=>r.stage==='Cancelada').length, l:'Canceladas', filter:'Cancelada'},
+    {n: OS_DATA.filter(r=>r.stage==='Reavaliar').length, l:'Reavaliações', filter:'Reavaliar'},
   ];
 
-  document.getElementById('stats').innerHTML = stats.map(s => {
+  $('stats').innerHTML = stats.map(s => {
     const isActive = (s.isTotal && activeStatusFilter === null) || (s.filter && activeStatusFilter === s.filter);
     const classes = ['stat'];
     if(s.isTotal) classes.push('total-stat');
@@ -1448,7 +1695,7 @@ function renderOS(){
   renderStatsOS();
   renderTabsOS();
   renderLastUpdateOS();
-  const clearBtn = document.getElementById('clearFilterBtn');
+  const clearBtn = $('clearFilterBtn');
   if(clearBtn) clearBtn.style.display = activeStatusFilter ? 'inline-block' : 'none';
 
   if(activeTab === TAB_MANUTENCAO) renderGeralOS(TAB_MANUTENCAO);
@@ -1456,11 +1703,10 @@ function renderOS(){
   else renderGeralOS(activeTab);
 }
 
-/* ---- Relatório OS ---- */
 function abrirRelatorioOS(){
   const dados = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
   const agora = new Date();
-  document.getElementById('reportMeta').innerHTML =
+  $('reportMeta').innerHTML =
     'Emitido em '+agora.toLocaleDateString('pt-BR')+' às '+agora.toLocaleTimeString('pt-BR')+'<br>Por: <b style="color:var(--amber);">'+escapeHtml(currentUser||'—')+'</b>';
 
   const filtros = [];
@@ -1468,13 +1714,13 @@ function abrirRelatorioOS(){
   else if(activeTab === TAB_MANUTENCAO) filtros.push('Manutenção');
   else filtros.push('Evento: '+activeTab);
   filtros.push(activeStatusFilter ? 'Status: '+activeStatusFilter : 'Status: Todos (exceto Finalizadas e Canceladas)');
-  const q = document.getElementById('osSearch').value.trim();
+  const q = $('osSearch').value.trim();
   if(q) filtros.push('Busca: "'+q+'"');
 
-  document.getElementById('reportFilters').innerHTML = '<b>Filtros aplicados:</b> '+filtros.map(escapeHtml).join(' · ')+' · <b>Total:</b> '+dados.length+' OS';
+  $('reportFilters').innerHTML = '<b>Filtros aplicados:</b> '+filtros.map(escapeHtml).join(' · ')+' · <b>Total:</b> '+dados.length+' OS';
 
   const ordenado = dados.slice().sort((a,b) => a.v.localeCompare(b.v) || a.os.localeCompare(b.os));
-  const bodyHtml = ordenado.length === 0
+  $('reportBody').innerHTML = ordenado.length === 0
     ? '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado</td></tr>'
     : ordenado.map(r => {
         const st = stageInfoOS(r.stage);
@@ -1489,34 +1735,30 @@ function abrirRelatorioOS(){
         </tr>`;
       }).join('');
 
-  document.getElementById('reportBody').innerHTML = bodyHtml;
-  document.getElementById('reportModal').style.display = 'flex';
+  $('reportModal').style.display = 'flex';
 }
 
 /* ---- Modal de edição OS ---- */
-const edStageSel = document.getElementById('ed-stage');
+const edStageSel = $('ed-stage');
 edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 
 function openEditModal(recordId){
-  if(!isAdmin()){ alert('Você não tem permissão para editar.'); return; }
+  if(!temPermissao('os_editar')){ alert('Você não tem permissão para editar.'); return; }
   const rec = OS_DATA.find(r => r.id === recordId);
   if(!rec) return;
   editingRecordId = recordId;
-  document.getElementById('ed-v').value = rec.v;
-  document.getElementById('ed-os').value = rec.os;
-  document.getElementById('ed-cat').value = rec.category;
-  document.getElementById('ed-empresa').value = rec.empresa || '';
-  document.getElementById('ed-stage').value = rec.stage;
-  document.getElementById('ed-orcada').value = rec.orcamentos > 0 ? 'Sim' : 'Não';
-  document.getElementById('ed-qnt').value = rec.orcamentos > 0 ? rec.orcamentos : '';
-  document.getElementById('ed-note').value = rec.note || '';
-  document.getElementById('editModal').style.display = 'flex';
-  document.getElementById('ed-v').focus();
+  $('ed-v').value = rec.v;
+  $('ed-os').value = rec.os;
+  $('ed-cat').value = rec.category;
+  $('ed-empresa').value = rec.empresa || '';
+  $('ed-stage').value = rec.stage;
+  $('ed-orcada').value = rec.orcamentos > 0 ? 'Sim' : 'Não';
+  $('ed-qnt').value = rec.orcamentos > 0 ? rec.orcamentos : '';
+  $('ed-note').value = rec.note || '';
+  $('editModal').style.display = 'flex';
+  $('ed-v').focus();
 }
-function closeEditModal(){
-  editingRecordId = null;
-  document.getElementById('editModal').style.display = 'none';
-}
+function closeEditModal(){ editingRecordId = null; $('editModal').style.display = 'none'; }
 
 /* ════════════════════════════════════════════════════════════
    ────────  PAINEL VIATURAS  ────────
@@ -1538,9 +1780,7 @@ function ehDiretoria(local){
 
 function salvarCache(){
   try{
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
-      viaturas: VIATURAS, locais: LOCAIS, locaisDiretorias: LOCAIS_DIRETORIAS
-    }));
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ viaturas: VIATURAS, locais: LOCAIS, locaisDiretorias: LOCAIS_DIRETORIAS }));
     sessionStorage.setItem(CACHE_META_KEY, String(Date.now()));
   }catch(e){}
 }
@@ -1556,16 +1796,9 @@ function carregarCache(){
     return true;
   }catch(e){ return false; }
 }
-function idadeCache(){
-  try{
-    const t = parseInt(sessionStorage.getItem(CACHE_META_KEY) || '0', 10);
-    if(!t) return Infinity;
-    return Math.floor((Date.now() - t) / 1000);
-  }catch(e){ return Infinity; }
-}
 
 async function loadDataViaturas(){
-  const upd = document.getElementById('viatUpdateStatus');
+  const upd = $('viatUpdateStatus');
   try{
     upd.textContent = 'Atualizando…';
     const r = await apiViaturas('listarViaturas');
@@ -1602,7 +1835,7 @@ function renderSummaryViaturas(){
     { key:'baixadas',   label:'Baixadas',         value:baixadas,    cls:'baixadas' },
     { key:'diretorias', label:'Diretorias',       value:diretorias,  cls:'diretorias' }
   ];
-  document.getElementById('summaryCards').innerHTML = cards.map(c => {
+  $('summaryCards').innerHTML = cards.map(c => {
     const active = activeFilter === c.key;
     return `<div class="summary-card ${c.cls} ${active?'active-filter':''}" data-filter="${c.key}">
       <div class="label">${c.label}</div>
@@ -1617,12 +1850,12 @@ function renderSummaryViaturas(){
       renderViaturas();
     });
   });
-  const clearBtn = document.getElementById('viatClearFilterBtn');
+  const clearBtn = $('viatClearFilterBtn');
   if(clearBtn) clearBtn.style.display = (activeFilter === 'todas') ? 'none' : 'inline-block';
 }
 
 function htmlVehRow(v){
-  const admin = isAdmin();
+  const podeGerenciar = temPermissao('viat_gerenciar');
   if(v.origem === 'baixada'){
     return `<div class="veh-row">
       <div class="veh-row-top">
@@ -1631,7 +1864,7 @@ function htmlVehRow(v){
       </div>
       ${v.motivo ? `<div class="veh-row-info" style="text-align:left;">Motivo: ${escapeHtml(v.motivo)}</div>` : ''}
       ${v.data ? `<div class="veh-row-info" style="text-align:left;">${escapeHtml(v.data)}</div>` : ''}
-      ${admin ? `<div class="veh-row-actions">
+      ${podeGerenciar ? `<div class="veh-row-actions">
         <button class="btn ghost" data-action="reativar" data-prefixo="${escapeAttr(v.prefixo)}">Reativar</button>
         <button class="btn ghost" data-action="moverReserva" data-prefixo="${escapeAttr(v.prefixo)}">→ Reserva</button>
       </div>` : ''}
@@ -1640,7 +1873,7 @@ function htmlVehRow(v){
   if(v.origem === 'reserva'){
     return `<div class="veh-row">
       <div class="veh-row-top"><span class="veh-row-prefix">${escapeHtml(v.prefixo)}</span></div>
-      ${admin ? `<div class="veh-row-actions">
+      ${podeGerenciar ? `<div class="veh-row-actions">
         <button class="btn ghost" data-action="permutar" data-prefixo="${escapeAttr(v.prefixo)}" data-origem="reserva" data-gbm="">→ Ativa</button>
         <button class="btn ghost danger" data-action="baixar" data-prefixo="${escapeAttr(v.prefixo)}" data-gbm="" data-origem="reserva">Baixar</button>
       </div>` : ''}
@@ -1648,7 +1881,7 @@ function htmlVehRow(v){
   }
   return `<div class="veh-row">
     <div class="veh-row-top"><span class="veh-row-prefix">${escapeHtml(v.prefixo)}</span></div>
-    ${admin ? `<div class="veh-row-actions">
+    ${podeGerenciar ? `<div class="veh-row-actions">
       <button class="btn ghost" data-action="mudar" data-prefixo="${escapeAttr(v.prefixo)}">Mudar local</button>
       <button class="btn ghost" data-action="permutar" data-prefixo="${escapeAttr(v.prefixo)}" data-origem="ativa" data-gbm="${escapeAttr(v.gbm||'')}">→ Reserva</button>
       <button class="btn ghost danger" data-action="baixar" data-prefixo="${escapeAttr(v.prefixo)}" data-gbm="${escapeAttr(v.gbm||'')}" data-origem="ativa">Baixar</button>
@@ -1672,8 +1905,8 @@ function htmlLocalCard(nome, viaturas, tipo){
 }
 
 function renderLocalGridViaturas(){
-  const q = normalizeStr(document.getElementById('viatSearch').value);
-  const container = document.getElementById('localGrid');
+  const q = normalizeStr($('viatSearch').value);
+  const container = $('localGrid');
   const matchesQ = v => !q || normalizeStr(v.prefixo).includes(q) || normalizeStr(v.gbm).includes(q);
 
   if(activeFilter === 'baixadas'){
@@ -1754,7 +1987,7 @@ function renderLocalGridViaturas(){
 }
 
 function bindActionsViaturas(){
-  if(!isAdmin()) return;
+  if(!temPermissao('viat_gerenciar')) return;
   document.querySelectorAll('#view-viaturas [data-action="mudar"]').forEach(b => b.addEventListener('click', () => abrirModalMudarLocal(b.dataset.prefixo)));
   document.querySelectorAll('#view-viaturas [data-action="permutar"]').forEach(b => b.addEventListener('click', () => abrirModalPermutar(b.dataset.prefixo, b.dataset.origem, b.dataset.gbm)));
   document.querySelectorAll('#view-viaturas [data-action="baixar"]').forEach(b => b.addEventListener('click', () => abrirModalBaixar(b.dataset.prefixo, b.dataset.gbm, b.dataset.origem)));
@@ -1770,14 +2003,14 @@ function renderViaturas(){
 
 /* ---- Modal genérico (viaturas) ---- */
 function abrirModal(titulo, camposHtml, onConfirm){
-  if(!isAdmin()){ alert('Acesso negado.'); return; }
-  document.getElementById('modalTitle').textContent = titulo;
-  document.getElementById('modalFields').innerHTML = camposHtml;
-  const modal = document.getElementById('actionModal');
+  if(!temPermissao('viat_gerenciar')){ alert('Acesso negado.'); return; }
+  $('modalTitle').textContent = titulo;
+  $('modalFields').innerHTML = camposHtml;
+  const modal = $('actionModal');
   modal.style.display = 'flex';
 
-  const confirm = document.getElementById('modalConfirm');
-  const cancel = document.getElementById('modalCancel');
+  const confirm = $('modalConfirm');
+  const cancel = $('modalCancel');
 
   function fechar(){
     modal.style.display = 'none';
@@ -1843,7 +2076,7 @@ function abrirModalMudarLocal(prefixo){
     <label>Local atual<input type="text" value="${escapeAttr(v.gbm)}" disabled style="opacity:.6;"></label>
     <label>Novo local<select id="modalGbm" autofocus>${htmlOpcoesLocais(v.gbm)}</select></label>
   `, async () => {
-    const novoGbm = document.getElementById('modalGbm').value;
+    const novoGbm = $('modalGbm').value;
     if(!novoGbm){ alert('Selecione o local.'); return false; }
     if(normalizeStr(novoGbm) === normalizeStr(v.gbm)){ alert('O local é o mesmo. Nada a alterar.'); return false; }
     const r = await apiViaturas('mudarGbm', { prefixo, novoGbm });
@@ -1863,9 +2096,9 @@ function abrirModalPermutar(prefixo, origem, gbm){
   if(origem === 'ativa' && gbm) corpo += `<label>Viatura substituta em ${escapeHtml(gbm)} (opcional)<select id="modalSubstituto">${htmlOpcoesSubstituta(prefixo)}</select></label>`;
 
   abrirModal(titulo, corpo, async () => {
-    const sub = document.getElementById('modalSubstituto');
+    const sub = $('modalSubstituto');
     const substituto = sub ? sub.value : '';
-    const gbmSel = document.getElementById('modalNovoGbm');
+    const gbmSel = $('modalNovoGbm');
     const novoGbm = gbmSel ? gbmSel.value : '';
     if(origem === 'reserva' && !novoGbm){ alert('Selecione o local de destino.'); return false; }
     const r = await apiViaturas('permutarViatura', { prefixo, destino: destinoAPI, substituto, novoGbm });
@@ -1881,9 +2114,9 @@ function abrirModalBaixar(prefixo, gbm, origem){
   if(origem === 'ativa' && gbm) corpo += `<label>Viatura substituta em ${escapeHtml(gbm)} (opcional)<select id="modalSubstituto">${htmlOpcoesSubstituta(prefixo)}</select></label>`;
 
   abrirModal('Baixar viatura · '+prefixo, corpo, async () => {
-    const motivo = document.getElementById('modalMotivo').value;
+    const motivo = $('modalMotivo').value;
     if(!motivo){ alert('Selecione o motivo.'); return false; }
-    const sub = document.getElementById('modalSubstituto');
+    const sub = $('modalSubstituto');
     const substituto = sub ? sub.value : '';
     const r = await apiViaturas('baixarViatura', { prefixo, motivo, substituto });
     if(!r.ok){ alert('Erro: '+r.error); return false; }
@@ -1900,7 +2133,7 @@ function abrirModalReativar(prefixo){
     ${v.gbm ? `<label>Local original<input type="text" value="${escapeAttr(v.gbm)}" disabled style="opacity:.6;"></label>` : ''}
     <label>Novo local<select id="modalGbm" autofocus>${htmlOpcoesLocais(v.gbm)}</select></label>
   `, async () => {
-    const gbm = document.getElementById('modalGbm').value;
+    const gbm = $('modalGbm').value;
     if(!gbm){ alert('Selecione o local.'); return false; }
     const r = await apiViaturas('reativarViatura', { prefixo, gbm });
     if(!r.ok){ alert('Erro: '+r.error); return false; }
@@ -1921,59 +2154,172 @@ function abrirModalMoverReserva(prefixo){
 }
 
 /* ════════════════════════════════════════════════════════════
-   EVENT LISTENERS GLOBAIS
+   ────────  USUÁRIOS  ────────
+   ════════════════════════════════════════════════════════════ */
+let USUARIOS_CACHE = [];
+
+async function carregarUsuarios(){
+  if(!temPermissao('admin_usuarios')) return;
+  const upd = $('usersUpdateStatus');
+  upd.textContent = 'Carregando…';
+
+  const r = await apiOS('listarUsuarios');
+  if(!r.ok){
+    upd.textContent = 'Falha: ' + (r.error || 'desconhecido');
+    $('usersContent').innerHTML = '<div class="empty">Não foi possível carregar os usuários.</div>';
+    return;
+  }
+  USUARIOS_CACHE = Array.isArray(r.usuarios) ? r.usuarios : [];
+  upd.textContent = 'Atualizado em ' + new Date().toLocaleTimeString('pt-BR');
+  renderUsuarios();
+}
+
+function renderUsuarios(){
+  const q = normalizeStr($('usersSearch').value);
+  const filtrados = USUARIOS_CACHE.filter(u => {
+    if(!q) return true;
+    return normalizeStr(u.usuario).includes(q) || normalizeStr(u.nome).includes(q);
+  });
+
+  if(filtrados.length === 0){
+    $('usersContent').innerHTML = '<div class="empty">Nenhum usuário encontrado.</div>';
+    return;
+  }
+
+  $('usersContent').innerHTML = filtrados.map(u => {
+    const ativo = normalizeStr(u.ativo) === 'sim';
+    const perms = u.permissoes || {};
+    const permsHtml = PERMISSOES_LISTA.map(p => {
+      const on = perms[p.key] === true;
+      return `<span class="perm-tag ${on?'on':''}">${on?'✓':'✕'} ${escapeHtml(p.label)}</span>`;
+    }).join('');
+
+    const classes = ['user-card'];
+    classes.push(u.perfil === 'admin' ? 'admin' : 'view');
+    if(!ativo) classes.push('inativo');
+
+    const badges = [
+      `<span class="user-badge ${u.perfil}">${u.perfil === 'admin' ? 'ADMIN' : 'VISUALIZAÇÃO'}</span>`,
+      `<span class="user-badge ${ativo?'ativo':'inativo'}">${ativo ? 'ATIVO' : 'INATIVO'}</span>`
+    ];
+    if(u.primeiroAcesso) badges.push(`<span class="user-badge primeiro">1º ACESSO PENDENTE</span>`);
+    if(u.usuario === ROOT_LOGIN) badges.push(`<span class="user-badge admin">ROOT</span>`);
+
+    return `<div class="${classes.join(' ')}" data-user="${escapeAttr(u.usuario)}">
+      <div class="user-card-head">
+        <div>
+          <div class="user-card-name">${escapeHtml(u.nome || u.usuario)}</div>
+          <div class="user-card-login">@${escapeHtml(u.usuario)}</div>
+        </div>
+        <div class="user-badges">${badges.join('')}</div>
+      </div>
+      <div class="user-perms">${permsHtml}</div>
+      <div class="user-meta">Criado em: ${escapeHtml(u.criadoEm || '—')}</div>
+      ${u.usuario === ROOT_LOGIN ? '' : `<div class="user-actions">
+        <button class="btn ghost" data-action="editar" data-user="${escapeAttr(u.usuario)}">Editar</button>
+        <button class="btn ghost" data-action="toggleAtivo" data-user="${escapeAttr(u.usuario)}" data-ativo="${ativo?'sim':'nao'}">${ativo ? 'Desativar' : 'Ativar'}</button>
+        <button class="btn ghost danger" data-action="resetar" data-user="${escapeAttr(u.usuario)}">Resetar senha</button>
+      </div>`}
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('#view-usuarios [data-action="editar"]').forEach(b => {
+    b.addEventListener('click', () => {
+      const u = USUARIOS_CACHE.find(x => x.usuario === b.dataset.user);
+      if(u) abrirUserModal('edit', u);
+    });
+  });
+  document.querySelectorAll('#view-usuarios [data-action="toggleAtivo"]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const user = b.dataset.user;
+      const ativoAtual = b.dataset.ativo === 'sim';
+      const novoAtivo = ativoAtual ? 'nao' : 'sim';
+      if(!confirm(`Confirma ${ativoAtual?'desativar':'ativar'} o usuário "${user}"?`)) return;
+      const r = await apiOS('atualizarUsuario', { usuarioAlvo:user, ativo:novoAtivo });
+      if(!r.ok){ alert('Erro: ' + r.error); return; }
+      await carregarUsuarios();
+    });
+  });
+  document.querySelectorAll('#view-usuarios [data-action="resetar"]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const user = b.dataset.user;
+      if(!confirm(`Resetar a senha de "${user}" para a padrão?`)) return;
+      const r = await apiOS('resetarSenha', { usuarioAlvo:user });
+      if(!r.ok){ alert('Erro: ' + r.error); return; }
+      alert('Senha resetada.');
+      await carregarUsuarios();
+    });
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   EVENT LISTENERS
    ════════════════════════════════════════════════════════════ */
 
-/* Menu lateral */
-document.getElementById('menuToggle').addEventListener('click', () => {
-  const app = document.getElementById('app');
+/* Menu */
+$('menuToggle').addEventListener('click', () => {
+  const app = $('app');
   if(isMobile()){ app.classList.toggle('sidebar-open'); }
   else {
     app.classList.toggle('sidebar-collapsed');
     try{ localStorage.setItem('deman_sidebar_collapsed', app.classList.contains('sidebar-collapsed') ? '1' : '0'); }catch(e){}
   }
 });
-document.getElementById('sidebarBackdrop').addEventListener('click', () => {
-  document.getElementById('app').classList.remove('sidebar-open');
-});
+$('sidebarBackdrop').addEventListener('click', () => $('app').classList.remove('sidebar-open'));
 document.querySelectorAll('.sidebar-link[data-view]').forEach(btn => {
   btn.addEventListener('click', () => showView(btn.dataset.view));
 });
-document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+$('logoutBtn').addEventListener('click', handleLogout);
 
 /* Login */
-document.getElementById('loginBtn').addEventListener('click', handleLogin);
-document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
-document.getElementById('loginUser').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+$('loginBtn').addEventListener('click', handleLogin);
+$('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+$('loginUser').addEventListener('keydown', e => { if(e.key==='Enter') $('loginPass').focus(); });
+$('createAccountLink').addEventListener('click', e => { e.preventDefault(); abrirUserModal('create'); });
 
-/* Criar conta */
-document.getElementById('createAccountLink').addEventListener('click', e => { e.preventDefault(); openCreateAccountModal(); });
-document.getElementById('ca-cancel').addEventListener('click', closeCreateAccountModal);
-document.getElementById('ca-save').addEventListener('click', handleCreateAccount);
-document.getElementById('createAccountModal').addEventListener('click', e => { if(e.target.id === 'createAccountModal') closeCreateAccountModal(); });
+/* Trocar senha */
+$('cp-save').addEventListener('click', salvarNovaSenha);
+$('cp-confirm').addEventListener('keydown', e => { if(e.key==='Enter') salvarNovaSenha(); });
+
+/* Modal usuário */
+$('um-cancel').addEventListener('click', fecharUserModal);
+$('um-save').addEventListener('click', salvarUserModal);
+$('um-reset').addEventListener('click', resetarSenhaUsuario);
+$('um-perfil').addEventListener('change', () => aplicarDefaultsPorPerfil($('um-perfil').value));
+document.querySelectorAll('#permGrid .perm-check').forEach(label => {
+  label.addEventListener('click', e => {
+    if(e.target.tagName !== 'INPUT'){ e.preventDefault(); label.querySelector('input').click(); }
+  });
+  label.querySelector('input').addEventListener('change', atualizarEstadoCheckboxes);
+});
+$('userModal').addEventListener('click', e => { if(e.target.id === 'userModal') fecharUserModal(); });
+
+/* Usuários */
+$('newUserBtn').addEventListener('click', () => abrirUserModal('create'));
+$('usersSearch').addEventListener('input', debounce(renderUsuarios, 180));
 
 /* OS — eventos */
-const afStageSel = document.getElementById('af-stage');
+const afStageSel = $('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 
-document.getElementById('osSearch').addEventListener('input', debounce(() => renderOS(), 180));
-document.getElementById('clearFilterBtn').addEventListener('click', () => { activeStatusFilter = null; renderOS(); });
-document.getElementById('addBtn').addEventListener('click', () => {
-  if(!isAdmin()){ alert('Você não tem permissão para adicionar OS.'); return; }
-  document.getElementById('addForm').classList.toggle('open');
+$('osSearch').addEventListener('input', debounce(() => renderOS(), 180));
+$('clearFilterBtn').addEventListener('click', () => { activeStatusFilter = null; renderOS(); });
+$('addBtn').addEventListener('click', () => {
+  if(!temPermissao('os_criar')){ alert('Você não tem permissão para adicionar OS.'); return; }
+  $('addForm').classList.toggle('open');
 });
-document.getElementById('af-cancel').addEventListener('click', () => document.getElementById('addForm').classList.remove('open'));
+$('af-cancel').addEventListener('click', () => $('addForm').classList.remove('open'));
 
-document.getElementById('af-save').addEventListener('click', async () => {
-  if(!isAdmin()){ alert('Você não tem permissão.'); return; }
-  const v = normalizeViatura(document.getElementById('af-v').value);
-  const os = document.getElementById('af-os').value.trim();
-  const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
-  const empresa = document.getElementById('af-empresa').value.trim();
-  const stage = document.getElementById('af-stage').value;
-  const orcada = document.getElementById('af-orcada').value;
-  const qntRaw = document.getElementById('af-qnt').value.trim();
-  const note = document.getElementById('af-note').value.trim();
+$('af-save').addEventListener('click', async () => {
+  if(!temPermissao('os_criar')){ alert('Sem permissão.'); return; }
+  const v = normalizeViatura($('af-v').value);
+  const os = $('af-os').value.trim();
+  const catLabel = $('af-cat').value.trim() || 'Outras';
+  const empresa = $('af-empresa').value.trim();
+  const stage = $('af-stage').value;
+  const orcada = $('af-orcada').value;
+  const qntRaw = $('af-qnt').value.trim();
+  const note = $('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
 
   let orcamentos = 0;
@@ -1996,39 +2342,37 @@ document.getElementById('af-save').addEventListener('click', async () => {
     if(idx > -1) OS_DATA.splice(idx,1);
     alert('A OS não pôde ser adicionada à planilha.');
   } else {
-    document.getElementById('af-v').value=''; document.getElementById('af-os').value='';
-    document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
-    document.getElementById('af-empresa').value='';
-    document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
-    document.getElementById('addForm').classList.remove('open');
+    ['af-v','af-os','af-cat','af-note','af-empresa','af-qnt'].forEach(id => $(id).value = '');
+    $('af-orcada').value = 'Não';
+    $('addForm').classList.remove('open');
   }
   renderOS();
 });
 
-document.getElementById('csvFileInput').addEventListener('change', e => {
+$('csvFileInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = ev => { processCsvText(ev.target.result); document.getElementById('errorArea').style.display='none'; renderOS(); };
+  reader.onload = ev => { processCsvText(ev.target.result); $('errorArea').style.display='none'; renderOS(); };
   reader.readAsText(file);
 });
 
 /* OS — modal edição */
-document.getElementById('ed-cancel').addEventListener('click', closeEditModal);
-document.getElementById('editModal').addEventListener('click', e => { if(e.target.id === 'editModal') closeEditModal(); });
-document.getElementById('ed-save').addEventListener('click', async () => {
-  if(!isAdmin()){ alert('Sem permissão.'); return; }
+$('ed-cancel').addEventListener('click', closeEditModal);
+$('editModal').addEventListener('click', e => { if(e.target.id === 'editModal') closeEditModal(); });
+$('ed-save').addEventListener('click', async () => {
+  if(!temPermissao('os_editar')){ alert('Sem permissão.'); return; }
   const rec = OS_DATA.find(r => r.id === editingRecordId);
   if(!rec){ closeEditModal(); return; }
 
-  const newV = normalizeViatura(document.getElementById('ed-v').value);
-  const newOs = document.getElementById('ed-os').value.trim();
-  const newCat = document.getElementById('ed-cat').value.trim() || 'Outras';
-  const newEmpresa = document.getElementById('ed-empresa').value.trim();
-  const newStage = document.getElementById('ed-stage').value;
-  const newOrcada = document.getElementById('ed-orcada').value;
-  const newQntRaw = document.getElementById('ed-qnt').value.trim();
-  const newNote = document.getElementById('ed-note').value.trim();
+  const newV = normalizeViatura($('ed-v').value);
+  const newOs = $('ed-os').value.trim();
+  const newCat = $('ed-cat').value.trim() || 'Outras';
+  const newEmpresa = $('ed-empresa').value.trim();
+  const newStage = $('ed-stage').value;
+  const newOrcada = $('ed-orcada').value;
+  const newQntRaw = $('ed-qnt').value.trim();
+  const newNote = $('ed-note').value.trim();
 
   if(!newV || !newOs){ alert('Preencha a viatura e o número da OS.'); return; }
 
@@ -2061,20 +2405,20 @@ document.getElementById('ed-save').addEventListener('click', async () => {
 });
 
 /* OS — relatório */
-document.getElementById('reportBtn').addEventListener('click', abrirRelatorioOS);
-document.getElementById('reportClose').addEventListener('click', () => { document.getElementById('reportModal').style.display = 'none'; });
-document.getElementById('reportPrint').addEventListener('click', () => window.print());
-document.getElementById('reportModal').addEventListener('click', e => { if(e.target.id === 'reportModal') document.getElementById('reportModal').style.display='none'; });
+$('reportBtn').addEventListener('click', abrirRelatorioOS);
+$('reportClose').addEventListener('click', () => { $('reportModal').style.display = 'none'; });
+$('reportPrint').addEventListener('click', () => window.print());
+$('reportModal').addEventListener('click', e => { if(e.target.id === 'reportModal') $('reportModal').style.display='none'; });
 
 /* Viaturas — busca e filtro */
-document.getElementById('viatSearch').addEventListener('input', debounce(() => renderViaturas(), 180));
-document.getElementById('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'; renderViaturas(); });
+$('viatSearch').addEventListener('input', debounce(() => renderViaturas(), 180));
+$('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'; renderViaturas(); });
 
-/* ESC fecha modais */
+/* ESC fecha modais (exceto troca de senha obrigatória) */
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
-  ['createAccountModal','editModal','reportModal','actionModal'].forEach(id => {
-    const el = document.getElementById(id);
+  ['editModal','reportModal','actionModal','userModal'].forEach(id => {
+    const el = $(id);
     if(el && el.style.display === 'flex') el.style.display = 'none';
   });
 });
@@ -2084,55 +2428,61 @@ document.addEventListener('keydown', e => {
    ════════════════════════════════════════════════════════════ */
 function startApp(){
   hideLogin();
-  document.getElementById('app').classList.add('is-ready');
+  $('app').classList.add('is-ready');
 
   currentUser = sessionStorage.getItem('deman_user_nome') || '';
   currentPerfil = sessionStorage.getItem('deman_user_perfil') || 'view';
   currentLogin = sessionStorage.getItem('deman_user_login') || '';
+  try{ currentPermissoes = JSON.parse(sessionStorage.getItem('deman_user_permissoes') || '{}'); }catch(e){ currentPermissoes = {}; }
 
-  document.getElementById('currentUserName').textContent = currentUser || '—';
-  const perfilEl = document.getElementById('currentUserPerfil');
+  $('currentUserName').textContent = currentUser || '—';
+  const perfilEl = $('currentUserPerfil');
   if(perfilEl){
     perfilEl.textContent = isAdmin() ? 'ADMIN' : 'VISUALIZAÇÃO';
     perfilEl.className = 'badge-perfil ' + (isAdmin() ? 'admin' : 'view');
     perfilEl.style.display = 'inline-block';
   }
 
-  /* Restaura estado do sidebar (desktop) */
   try{
     if(localStorage.getItem('deman_sidebar_collapsed') === '1' && !isMobile()){
-      document.getElementById('app').classList.add('sidebar-collapsed');
+      $('app').classList.add('sidebar-collapsed');
     }
   }catch(e){}
 
-  /* Oculta botões admin */
-  if(!isAdmin()){
-    const addBtn = document.getElementById('addBtn');
-    if(addBtn) addBtn.style.display = 'none';
-  }
+  // Aplica permissões na UI
+  aplicarPermissoesUI();
 
-  /* Cache de viaturas */
-  if(carregarCache()){ renderViaturas(); renderHome(); }
+  // Cache
+  if(carregarCache() && temPermissao('ver_viaturas')){ renderViaturas(); }
 
-  /* Carrega ambos em paralelo */
-  loadDataOS();
-  loadDataViaturas();
+  // Carrega em paralelo
+  if(temPermissao('ver_os')) loadDataOS();
+  if(temPermissao('ver_viaturas')) loadDataViaturas();
 
-  showView('home');
+  // Se não tem permissão de ver nada, redireciona pra primeira permitida
+  if(temPermissao('ver_os')) showView('os');
+  else if(temPermissao('ver_viaturas')) showView('viaturas');
+  else if(temPermissao('admin_usuarios')) showView('usuarios');
+  else showView('home');
 
-  /* Polling */
+  // Polling
   setInterval(() => {
-    const modalOpen = ['editModal','reportModal','createAccountModal','actionModal']
-      .some(id => document.getElementById(id).style.display === 'flex');
+    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal']
+      .some(id => $(id).style.display === 'flex');
     const selFocused = document.activeElement && document.activeElement.tagName === 'SELECT';
     if(modalOpen || selFocused) return;
-    loadDataOS();
-    loadDataViaturas();
+    if(temPermissao('ver_os')) loadDataOS();
+    if(temPermissao('ver_viaturas')) loadDataViaturas();
   }, POLLING_INTERVAL);
 }
 
-/* Auto-restore de sessão */
+/* Restaura sessão se já logado */
 if(isLoggedIn()){
+  // Se tem sessão mas está no meio de primeiro acesso, mostra troca de senha
+  currentLogin = sessionStorage.getItem('deman_user_login') || '';
+  currentUser = sessionStorage.getItem('deman_user_nome') || '';
+  currentPerfil = sessionStorage.getItem('deman_user_perfil') || 'view';
+  try{ currentPermissoes = JSON.parse(sessionStorage.getItem('deman_user_permissoes') || '{}'); }catch(e){ currentPermissoes = {}; }
   startApp();
 } else {
   showLogin();
