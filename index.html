@@ -754,7 +754,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <span class="icon">🚗</span><span class="label">Viaturas</span>
       </button>
 
-      <!-- Grupo: Movimentação + sub-itens -->
       <div class="sidebar-group" id="sidebarMovGroup" data-perm="ver_manutencao">
         <button class="sidebar-link expanded" data-view="manutencao" id="sidebarMovParent">
           <span class="icon">🛠</span>
@@ -765,13 +764,13 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
           <button class="sidebar-sublink active" data-manut-tab="registros">
             <span class="icon">📋</span><span class="label">Registros</span>
           </button>
-          <button class="sidebar-sublink" data-manut-tab="novo" data-perm="manut_editar">
+          <button class="sidebar-sublink" data-manut-tab="novo" data-perm="manut_criar">
             <span class="icon">📝</span><span class="label">Novo registro</span>
           </button>
         </div>
       </div>
 
-      <button class="sidebar-link" data-view="usuarios" data-perm="admin_usuarios">
+      <button class="sidebar-link" data-view="usuarios" id="sidebarUsuariosBtn">
         <span class="icon">👥</span><span class="label">Usuários</span>
       </button>
     </nav>
@@ -1015,17 +1014,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;">
         Permissões
       </div>
-      <div class="perm-grid" id="permGrid">
-        <label class="perm-check" data-perm="ver_os"><input type="checkbox" id="pm-ver_os"><span class="perm-label">Ver OS-BAMEX</span></label>
-        <label class="perm-check" data-perm="os_criar"><input type="checkbox" id="pm-os_criar"><span class="perm-label">Criar OS</span></label>
-        <label class="perm-check" data-perm="os_editar"><input type="checkbox" id="pm-os_editar"><span class="perm-label">Editar OS</span></label>
-        <label class="perm-check" data-perm="os_status"><input type="checkbox" id="pm-os_status"><span class="perm-label">Alterar status de OS</span></label>
-        <label class="perm-check" data-perm="ver_viaturas"><input type="checkbox" id="pm-ver_viaturas"><span class="perm-label">Ver Viaturas</span></label>
-        <label class="perm-check" data-perm="viat_gerenciar"><input type="checkbox" id="pm-viat_gerenciar"><span class="perm-label">Gerenciar viaturas</span></label>
-        <label class="perm-check" data-perm="ver_manutencao"><input type="checkbox" id="pm-ver_manutencao"><span class="perm-label">Ver Movimentação</span></label>
-        <label class="perm-check" data-perm="manut_editar"><input type="checkbox" id="pm-manut_editar"><span class="perm-label">Editar movimentação</span></label>
-        <label class="perm-check" data-perm="admin_usuarios"><input type="checkbox" id="pm-admin_usuarios"><span class="perm-label">Gerenciar usuários</span></label>
-      </div>
+      <div id="permGrid"></div>
     </div>
     <p id="um-error" class="modal-error"></p>
     <div class="modal-actions left">
@@ -1119,19 +1108,41 @@ const USERS_FALLBACK = {
 };
 
 const PERMISSOES_LISTA = [
-  { key:'ver_os',         label:'Ver OS-BAMEX' },
-  { key:'os_criar',       label:'Criar OS' },
-  { key:'os_editar',      label:'Editar OS' },
-  { key:'os_status',      label:'Alterar status de OS' },
-  { key:'ver_viaturas',   label:'Ver Viaturas' },
-  { key:'viat_gerenciar', label:'Gerenciar viaturas' },
-  { key:'ver_manutencao', label:'Ver Movimentação' },
-  { key:'manut_editar',   label:'Editar movimentação' },
-  { key:'admin_usuarios', label:'Gerenciar usuários' }
+  { key:'ver_os',           label:'Ver OS-BAMEX',                grupo:'OS' },
+  { key:'os_criar',         label:'Criar OS',                    grupo:'OS' },
+  { key:'os_editar',        label:'Editar OS',                   grupo:'OS' },
+  { key:'os_status',        label:'Alterar status de OS',        grupo:'OS' },
+  { key:'os_relatorio',     label:'Gerar relatório de OS',       grupo:'OS' },
+  { key:'ver_viaturas',     label:'Ver Viaturas',                grupo:'Viaturas' },
+  { key:'viat_gerenciar',   label:'Gerenciar viaturas (tudo)',   grupo:'Viaturas' },
+  { key:'viat_mudar',       label:'· Mudar local',               grupo:'Viaturas' },
+  { key:'viat_permutar',    label:'· Permutar / Ativar',         grupo:'Viaturas' },
+  { key:'viat_baixar',      label:'· Baixar',                    grupo:'Viaturas' },
+  { key:'viat_reativar',    label:'· Reativar',                  grupo:'Viaturas' },
+  { key:'ver_manutencao',   label:'Ver Movimentação',            grupo:'Movimentação' },
+  { key:'manut_editar',     label:'Editar movimentação (tudo)',  grupo:'Movimentação' },
+  { key:'manut_criar',      label:'· Criar registro',            grupo:'Movimentação' },
+  { key:'manut_excluir',    label:'· Excluir registro',          grupo:'Movimentação' },
+  { key:'admin_usuarios',   label:'Gerenciar usuários (tudo)',   grupo:'Usuários' },
+  { key:'usuarios_criar',   label:'· Criar contas',              grupo:'Usuários' },
+  { key:'usuarios_editar',  label:'· Editar contas',             grupo:'Usuários' },
+  { key:'usuarios_resetar', label:'· Resetar senha',             grupo:'Usuários' }
 ];
 
+const PERM_GRUPOS = {
+  viat_mudar:       'viat_gerenciar',
+  viat_permutar:    'viat_gerenciar',
+  viat_baixar:      'viat_gerenciar',
+  viat_reativar:    'viat_gerenciar',
+  manut_criar:      'manut_editar',
+  manut_excluir:    'manut_editar',
+  usuarios_criar:   'admin_usuarios',
+  usuarios_editar:  'admin_usuarios',
+  usuarios_resetar: 'admin_usuarios'
+};
+
 /* ════════════════════════════════════════════════════════════
-   WARM-UP — aquece os 3 backends em background
+   WARM-UP
    ════════════════════════════════════════════════════════════ */
 (function warmUp(){
   [OS_APPS_SCRIPT_URL, VIATURAS_APPS_SCRIPT_URL, MANUT_APPS_SCRIPT_URL]
@@ -1169,12 +1180,15 @@ let primeiraSenhaUsada = '';
 function isLoggedIn(){ return sessionStorage.getItem('deman_auth') === 'ok'; }
 function temPermissao(p){
   if(currentLogin === ROOT_LOGIN) return true;
-  return currentPermissoes[p] === true;
+  if(currentPermissoes[p] === true) return true;
+  const guarda = PERM_GRUPOS[p];
+  if(guarda && currentPermissoes[guarda] === true) return true;
+  return false;
 }
 function isAdmin(){ return currentPerfil === 'admin'; }
 
 /* ════════════════════════════════════════════════════════════
-   API — timeout de 15s
+   API
    ════════════════════════════════════════════════════════════ */
 async function apiCall(url, action, payload){
   const ctrl = new AbortController();
@@ -1219,10 +1233,11 @@ async function handleLogin(){
   let r = await apiOS('autenticar', { login:u, senha:p });
 
   if(!r.ok && USERS_FALLBACK[u] && USERS_FALLBACK[u].senha === p){
+    const perms = {};
+    PERMISSOES_LISTA.forEach(x => perms[x.key] = true);
     r = {
       ok:true, usuario:u, nome:USERS_FALLBACK[u].nome, perfil:USERS_FALLBACK[u].perfil,
-      permissoes:{ver_os:true,os_criar:true,os_editar:true,os_status:true,ver_viaturas:true,viat_gerenciar:true,ver_manutencao:true,manut_editar:true,admin_usuarios:true},
-      primeiroAcesso:false
+      permissoes: perms, primeiroAcesso:false
     };
   }
 
@@ -1292,6 +1307,42 @@ async function salvarNovaSenha(){
 let modoUserModal = 'create';
 let editUserLogin = '';
 
+function renderPermissoesNoModal(){
+  const container = $('permGrid');
+  if(!container) return;
+
+  const grupos = {};
+  PERMISSOES_LISTA.forEach(p => {
+    const g = p.grupo || 'Outras';
+    if(!grupos[g]) grupos[g] = [];
+    grupos[g].push(p);
+  });
+
+  container.innerHTML = Object.keys(grupos).map(g => `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">
+        ${escapeHtml(g)}
+      </div>
+      <div class="perm-grid">
+        ${grupos[g].map(p => `
+          <label class="perm-check" data-perm="${escapeAttr(p.key)}">
+            <input type="checkbox" id="pm-${escapeAttr(p.key)}">
+            <span class="perm-label">${escapeHtml(p.label)}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.perm-check').forEach(label => {
+    label.addEventListener('click', e => {
+      if(e.target.tagName !== 'INPUT'){ e.preventDefault(); label.querySelector('input').click(); }
+    });
+    label.querySelector('input').addEventListener('change', atualizarEstadoCheckboxes);
+  });
+  atualizarEstadoCheckboxes();
+}
+
 function setPermissoesNoForm(perms){
   PERMISSOES_LISTA.forEach(p => { const cb = $('pm-'+p.key); if(cb) cb.checked = !!perms[p.key]; });
   atualizarEstadoCheckboxes();
@@ -1303,13 +1354,17 @@ function atualizarEstadoCheckboxes(){
   });
 }
 function aplicarDefaultsPorPerfil(perfil){
-  const ad = {ver_os:true,os_criar:true,os_editar:true,os_status:true,ver_viaturas:true,viat_gerenciar:true,ver_manutencao:true,manut_editar:true,admin_usuarios:true};
-  const vw = {ver_os:true,os_criar:false,os_editar:false,os_status:false,ver_viaturas:true,viat_gerenciar:false,ver_manutencao:true,manut_editar:false,admin_usuarios:false};
-  setPermissoesNoForm(perfil === 'admin' ? ad : vw);
+  const admin = {};
+  const view = {};
+  PERMISSOES_LISTA.forEach(p => { admin[p.key] = true; view[p.key] = false; });
+  view.ver_os = true;
+  view.ver_viaturas = true;
+  view.ver_manutencao = true;
+  setPermissoesNoForm(perfil === 'admin' ? admin : view);
 }
 function lerPermissoesDoForm(){
   const out = {};
-  PERMISSOES_LISTA.forEach(p => { out[p.key] = $('pm-'+p.key).checked; });
+  PERMISSOES_LISTA.forEach(p => { const cb = $('pm-'+p.key); out[p.key] = cb ? cb.checked : false; });
   return out;
 }
 
@@ -1405,9 +1460,17 @@ const VIEW_PERMS = {
 
 const isMobile = () => window.matchMedia('(max-width:900px)').matches;
 
+function podeVerUsuarios(){
+  return temPermissao('admin_usuarios') || temPermissao('usuarios_criar') || temPermissao('usuarios_editar') || temPermissao('usuarios_resetar');
+}
+
 function showView(name){
   if(!VIEW_TITLES[name]) return;
-  if(VIEW_PERMS[name] && !temPermissao(VIEW_PERMS[name])) name = 'home';
+  if(name === 'usuarios'){
+    if(!podeVerUsuarios()) name = 'home';
+  } else if(VIEW_PERMS[name] && !temPermissao(VIEW_PERMS[name])){
+    name = 'home';
+  }
 
   activeView = name;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
@@ -1439,6 +1502,12 @@ function aplicarPermissoesUI(){
   $('homeOSSection').style.display     = temPermissao('ver_os')         ? '' : 'none';
   $('homeViatSection').style.display   = temPermissao('ver_viaturas')   ? '' : 'none';
   $('homeManutSection').style.display  = temPermissao('ver_manutencao') ? '' : 'none';
+
+  const uBtn = $('sidebarUsuariosBtn');
+  if(uBtn) uBtn.style.display = podeVerUsuarios() ? '' : 'none';
+
+  const movGroup = $('sidebarMovGroup');
+  if(movGroup) movGroup.style.display = temPermissao('ver_manutencao') ? '' : 'none';
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -1638,7 +1707,6 @@ async function fetchCsv(url){
   return await response.text();
 }
 
-/* ── loadDataOS com lerCSV interno + cache ── */
 async function loadDataOS(){
   if(isLoadingOS) return;
   isLoadingOS = true;
@@ -1672,11 +1740,9 @@ async function loadDataOS(){
       });
       OS_DATA = mapRowsToData(rows);
       saveLocalDataOS();
-
       try{
         sessionStorage.setItem(CACHE_KEY_OS, JSON.stringify({ ts: Date.now(), data: OS_DATA }));
       }catch(e){}
-
       const errorArea = $('errorArea');
       if(errorArea) errorArea.style.display = 'none';
     } else {
@@ -2101,7 +2167,11 @@ function renderSummaryViaturas(){
 }
 
 function htmlVehRow(v){
-  const podeGerenciar = temPermissao('viat_gerenciar');
+  const podeMudar    = temPermissao('viat_mudar');
+  const podePermutar = temPermissao('viat_permutar');
+  const podeBaixar   = temPermissao('viat_baixar');
+  const podeReativar = temPermissao('viat_reativar');
+
   if(v.origem === 'baixada'){
     return `<div class="veh-row">
       <div class="veh-row-top">
@@ -2110,27 +2180,27 @@ function htmlVehRow(v){
       </div>
       ${v.motivo ? `<div class="veh-row-info" style="text-align:left;">Motivo: ${escapeHtml(v.motivo)}</div>` : ''}
       ${v.data ? `<div class="veh-row-info" style="text-align:left;">${escapeHtml(v.data)}</div>` : ''}
-      ${podeGerenciar ? `<div class="veh-row-actions">
-        <button class="btn ghost" data-action="reativar" data-prefixo="${escapeAttr(v.prefixo)}">Reativar</button>
-        <button class="btn ghost" data-action="moverReserva" data-prefixo="${escapeAttr(v.prefixo)}">→ Reserva</button>
+      ${(podeReativar || podePermutar) ? `<div class="veh-row-actions">
+        ${podeReativar ? `<button class="btn ghost" data-action="reativar" data-prefixo="${escapeAttr(v.prefixo)}">Reativar</button>` : ''}
+        ${podePermutar ? `<button class="btn ghost" data-action="moverReserva" data-prefixo="${escapeAttr(v.prefixo)}">→ Reserva</button>` : ''}
       </div>` : ''}
     </div>`;
   }
   if(v.origem === 'reserva'){
     return `<div class="veh-row">
       <div class="veh-row-top"><span class="veh-row-prefix">${escapeHtml(v.prefixo)}</span></div>
-      ${podeGerenciar ? `<div class="veh-row-actions">
-        <button class="btn ghost" data-action="permutar" data-prefixo="${escapeAttr(v.prefixo)}" data-origem="reserva" data-gbm="">→ Ativa</button>
-        <button class="btn ghost danger" data-action="baixar" data-prefixo="${escapeAttr(v.prefixo)}" data-gbm="" data-origem="reserva">Baixar</button>
+      ${(podePermutar || podeBaixar) ? `<div class="veh-row-actions">
+        ${podePermutar ? `<button class="btn ghost" data-action="permutar" data-prefixo="${escapeAttr(v.prefixo)}" data-origem="reserva" data-gbm="">→ Ativa</button>` : ''}
+        ${podeBaixar ? `<button class="btn ghost danger" data-action="baixar" data-prefixo="${escapeAttr(v.prefixo)}" data-gbm="" data-origem="reserva">Baixar</button>` : ''}
       </div>` : ''}
     </div>`;
   }
   return `<div class="veh-row">
     <div class="veh-row-top"><span class="veh-row-prefix">${escapeHtml(v.prefixo)}</span></div>
-    ${podeGerenciar ? `<div class="veh-row-actions">
-      <button class="btn ghost" data-action="mudar" data-prefixo="${escapeAttr(v.prefixo)}">Mudar local</button>
-      <button class="btn ghost" data-action="permutar" data-prefixo="${escapeAttr(v.prefixo)}" data-origem="ativa" data-gbm="${escapeAttr(v.gbm||'')}">→ Reserva</button>
-      <button class="btn ghost danger" data-action="baixar" data-prefixo="${escapeAttr(v.prefixo)}" data-gbm="${escapeAttr(v.gbm||'')}" data-origem="ativa">Baixar</button>
+    ${(podeMudar || podePermutar || podeBaixar) ? `<div class="veh-row-actions">
+      ${podeMudar ? `<button class="btn ghost" data-action="mudar" data-prefixo="${escapeAttr(v.prefixo)}">Mudar local</button>` : ''}
+      ${podePermutar ? `<button class="btn ghost" data-action="permutar" data-prefixo="${escapeAttr(v.prefixo)}" data-origem="ativa" data-gbm="${escapeAttr(v.gbm||'')}">→ Reserva</button>` : ''}
+      ${podeBaixar ? `<button class="btn ghost danger" data-action="baixar" data-prefixo="${escapeAttr(v.prefixo)}" data-gbm="${escapeAttr(v.gbm||'')}" data-origem="ativa">Baixar</button>` : ''}
     </div>` : ''}
   </div>`;
 }
@@ -2232,7 +2302,6 @@ function renderLocalGridViaturas(){
 }
 
 function bindActionsViaturas(){
-  if(!temPermissao('viat_gerenciar')) return;
   document.querySelectorAll('#view-viaturas [data-action="mudar"]').forEach(b => b.addEventListener('click', () => abrirModalMudarLocal(b.dataset.prefixo)));
   document.querySelectorAll('#view-viaturas [data-action="permutar"]').forEach(b => b.addEventListener('click', () => abrirModalPermutar(b.dataset.prefixo, b.dataset.origem, b.dataset.gbm)));
   document.querySelectorAll('#view-viaturas [data-action="baixar"]').forEach(b => b.addEventListener('click', () => abrirModalBaixar(b.dataset.prefixo, b.dataset.gbm, b.dataset.origem)));
@@ -2246,8 +2315,8 @@ function renderViaturas(){
   renderLocalGridViaturas();
 }
 
-function abrirModal(titulo, camposHtml, onConfirm){
-  if(!temPermissao('viat_gerenciar')){ alert('Acesso negado.'); return; }
+function abrirModal(titulo, camposHtml, onConfirm, permissaoNecessaria){
+  if(permissaoNecessaria && !temPermissao(permissaoNecessaria)){ alert('Acesso negado.'); return; }
   $('modalTitle').textContent = titulo;
   $('modalFields').innerHTML = camposHtml;
   const modal = $('actionModal');
@@ -2325,7 +2394,7 @@ function abrirModalMudarLocal(prefixo){
     if(!r.ok){ alert('Erro: '+r.error); return false; }
     await loadDataViaturas();
     return true;
-  });
+  }, 'viat_mudar');
 }
 
 function abrirModalPermutar(prefixo, origem, gbm){
@@ -2347,7 +2416,7 @@ function abrirModalPermutar(prefixo, origem, gbm){
     if(!r.ok){ alert('Erro: '+r.error); return false; }
     await loadDataViaturas();
     return true;
-  });
+  }, 'viat_permutar');
 }
 
 function abrirModalBaixar(prefixo, gbm, origem){
@@ -2364,7 +2433,7 @@ function abrirModalBaixar(prefixo, gbm, origem){
     if(!r.ok){ alert('Erro: '+r.error); return false; }
     await loadDataViaturas();
     return true;
-  });
+  }, 'viat_baixar');
 }
 
 function abrirModalReativar(prefixo){
@@ -2381,7 +2450,7 @@ function abrirModalReativar(prefixo){
     if(!r.ok){ alert('Erro: '+r.error); return false; }
     await loadDataViaturas();
     return true;
-  });
+  }, 'viat_reativar');
 }
 
 function abrirModalMoverReserva(prefixo){
@@ -2392,7 +2461,7 @@ function abrirModalMoverReserva(prefixo){
     if(!r.ok){ alert('Erro: '+r.error); return false; }
     await loadDataViaturas();
     return true;
-  });
+  }, 'viat_permutar');
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -2437,7 +2506,6 @@ function toDatetimeLocalManut(str){
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-/* ── loadDataManut com cache ── */
 async function loadDataManut(){
   const upd = $('manutUpdateStatus');
   const CACHE_KEY_MANUT = 'deman_cache_manut_v1';
@@ -2546,12 +2614,12 @@ function renderSummaryManut(){
   });
 }
 
-function htmlEventoManut(r, podeEditar){
+function htmlEventoManut(r, podeEditar, podeExcluir){
   const btnEditar = podeEditar
     ? `<button class="btn ghost" data-manut-edit-viatura="${escapeAttr(r.viatura)}" data-manut-edit-entrada="${escapeAttr(r.entrada)}" data-manut-edit-local="${escapeAttr(r.local)}" title="Editar">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
        </button>` : '';
-  const btnRemover = podeEditar
+  const btnRemover = podeExcluir
     ? `<button class="btn ghost danger" data-manut-del-viatura="${escapeAttr(r.viatura)}" data-manut-del-entrada="${escapeAttr(r.entrada)}" data-manut-del-local="${escapeAttr(r.local)}" title="Excluir">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
        </button>` : '';
@@ -2573,6 +2641,7 @@ function renderManutGrid(){
   const container = $('manutContent');
   const grupos = agruparManutPorViatura();
   const podeEditar = temPermissao('manut_editar');
+  const podeExcluir = temPermissao('manut_excluir');
 
   let prefixos = Object.keys(grupos).sort((a,b)=>a.localeCompare(b));
 
@@ -2615,7 +2684,7 @@ function renderManutGrid(){
     const statusClass = emManut ? 'em-manutencao' : 'ativa';
     const localAtual = ultimo ? escapeHtml(ultimo.local || '—') : '—';
 
-    const eventosHtml = eventos.map(r => htmlEventoManut(r, podeEditar)).join('');
+    const eventosHtml = eventos.map(r => htmlEventoManut(r, podeEditar, podeExcluir)).join('');
 
     return `<div class="manut-veh-card ${emManut?'em-manutencao':''}">
       <div class="manut-veh-head">
@@ -2631,32 +2700,30 @@ function renderManutGrid(){
     </div>`;
   }).join('');
 
-  if(podeEditar){
-    document.querySelectorAll('#view-manutencao [data-manut-edit-viatura]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const rec = MANUT_REGISTROS.find(r =>
-          r.viatura === btn.dataset.manutEditViatura &&
-          r.entrada === btn.dataset.manutEditEntrada &&
-          r.local === btn.dataset.manutEditLocal
-        );
-        if(rec) preencherFormManut(rec);
-      });
+  document.querySelectorAll('#view-manutencao [data-manut-edit-viatura]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rec = MANUT_REGISTROS.find(r =>
+        r.viatura === btn.dataset.manutEditViatura &&
+        r.entrada === btn.dataset.manutEditEntrada &&
+        r.local === btn.dataset.manutEditLocal
+      );
+      if(rec) preencherFormManut(rec);
     });
-    document.querySelectorAll('#view-manutencao [data-manut-del-viatura]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const v = btn.dataset.manutDelViatura;
-        const e = btn.dataset.manutDelEntrada;
-        const l = btn.dataset.manutDelLocal;
-        if(!confirm(`Excluir o registro de ${v} (${e})?`)) return;
-        btn.disabled = true;
-        const resp = await apiManut('removerManutencao', { viatura: v, entrada: e, local: l });
-        btn.disabled = false;
-        if(!resp.ok){ alert('Erro: ' + resp.error); return; }
-        try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
-        await loadDataManut();
-      });
+  });
+  document.querySelectorAll('#view-manutencao [data-manut-del-viatura]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const v = btn.dataset.manutDelViatura;
+      const e = btn.dataset.manutDelEntrada;
+      const l = btn.dataset.manutDelLocal;
+      if(!confirm(`Excluir o registro de ${v} (${e})?`)) return;
+      btn.disabled = true;
+      const resp = await apiManut('removerManutencao', { viatura: v, entrada: e, local: l });
+      btn.disabled = false;
+      if(!resp.ok){ alert('Erro: ' + resp.error); return; }
+      try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
+      await loadDataManut();
     });
-  }
+  });
 }
 
 function renderManut(){
@@ -2669,7 +2736,7 @@ function renderManut(){
 
 function showManutTab(name){
   if(name !== 'registros' && name !== 'novo') return;
-  if(name === 'novo' && !temPermissao('manut_editar')) name = 'registros';
+  if(name === 'novo' && !temPermissao('manut_criar')) name = 'registros';
 
   activeManutTab = name;
 
@@ -2786,7 +2853,7 @@ async function excluirManutAtual(){
 let USUARIOS_CACHE = [];
 
 async function carregarUsuarios(){
-  if(!temPermissao('admin_usuarios')) return;
+  if(!podeVerUsuarios()) return;
   const upd = $('usersUpdateStatus');
   upd.textContent = 'Carregando…';
   const r = await apiOS('listarUsuarios');
@@ -2806,6 +2873,13 @@ function renderUsuarios(){
     if(!q) return true;
     return normalizeStr(u.usuario).includes(q) || normalizeStr(u.nome).includes(q);
   });
+
+  const podeCriar   = temPermissao('usuarios_criar');
+  const podeEditar  = temPermissao('usuarios_editar');
+  const podeResetar = temPermissao('usuarios_resetar');
+
+  const newBtn = $('newUserBtn');
+  if(newBtn) newBtn.style.display = podeCriar ? '' : 'none';
 
   if(filtrados.length === 0){
     $('usersContent').innerHTML = '<div class="empty">Nenhum usuário encontrado.</div>';
@@ -2831,6 +2905,11 @@ function renderUsuarios(){
     if(u.primeiroAcesso) badges.push(`<span class="user-badge primeiro">1º ACESSO PENDENTE</span>`);
     if(u.usuario === ROOT_LOGIN) badges.push(`<span class="user-badge admin">ROOT</span>`);
 
+    const acoes = [];
+    if(podeEditar)  acoes.push(`<button class="btn ghost" data-action="editar" data-user="${escapeAttr(u.usuario)}">Editar</button>`);
+    if(podeEditar)  acoes.push(`<button class="btn ghost" data-action="toggleAtivo" data-user="${escapeAttr(u.usuario)}" data-ativo="${ativo?'sim':'nao'}">${ativo ? 'Desativar' : 'Ativar'}</button>`);
+    if(podeResetar) acoes.push(`<button class="btn ghost danger" data-action="resetar" data-user="${escapeAttr(u.usuario)}">Resetar senha</button>`);
+
     return `<div class="${classes.join(' ')}" data-user="${escapeAttr(u.usuario)}">
       <div class="user-card-head">
         <div>
@@ -2841,11 +2920,7 @@ function renderUsuarios(){
       </div>
       <div class="user-perms">${permsHtml}</div>
       <div class="user-meta">Criado em: ${escapeHtml(u.criadoEm || '—')}</div>
-      ${u.usuario === ROOT_LOGIN ? '' : `<div class="user-actions">
-        <button class="btn ghost" data-action="editar" data-user="${escapeAttr(u.usuario)}">Editar</button>
-        <button class="btn ghost" data-action="toggleAtivo" data-user="${escapeAttr(u.usuario)}" data-ativo="${ativo?'sim':'nao'}">${ativo ? 'Desativar' : 'Ativar'}</button>
-        <button class="btn ghost danger" data-action="resetar" data-user="${escapeAttr(u.usuario)}">Resetar senha</button>
-      </div>`}
+      ${u.usuario === ROOT_LOGIN || acoes.length === 0 ? '' : `<div class="user-actions">${acoes.join('')}</div>`}
     </div>`;
   }).join('');
 
@@ -2954,15 +3029,12 @@ $('um-cancel').addEventListener('click', fecharUserModal);
 $('um-save').addEventListener('click', salvarUserModal);
 $('um-reset').addEventListener('click', resetarSenhaUsuario);
 $('um-perfil').addEventListener('change', () => aplicarDefaultsPorPerfil($('um-perfil').value));
-document.querySelectorAll('#permGrid .perm-check').forEach(label => {
-  label.addEventListener('click', e => {
-    if(e.target.tagName !== 'INPUT'){ e.preventDefault(); label.querySelector('input').click(); }
-  });
-  label.querySelector('input').addEventListener('change', atualizarEstadoCheckboxes);
-});
 $('userModal').addEventListener('click', e => { if(e.target.id === 'userModal') fecharUserModal(); });
 
-$('newUserBtn').addEventListener('click', () => abrirUserModal('create'));
+$('newUserBtn').addEventListener('click', () => {
+  if(!temPermissao('usuarios_criar')){ alert('Você não tem permissão para criar contas.'); return; }
+  abrirUserModal('create');
+});
 $('usersSearch').addEventListener('input', debounce(renderUsuarios, 180));
 
 const afStageSel = $('af-stage');
@@ -3067,7 +3139,10 @@ $('ed-save').addEventListener('click', async () => {
   }
 });
 
-$('reportBtn').addEventListener('click', abrirRelatorioOS);
+$('reportBtn').addEventListener('click', () => {
+  if(!temPermissao('os_relatorio')){ alert('Você não tem permissão para gerar relatórios.'); return; }
+  abrirRelatorioOS();
+});
 $('reportClose').addEventListener('click', () => { $('reportModal').style.display = 'none'; });
 $('reportPrint').addEventListener('click', () => window.print());
 $('reportModal').addEventListener('click', e => { if(e.target.id === 'reportModal') $('reportModal').style.display='none'; });
@@ -3116,6 +3191,7 @@ function startApp(){
     }
   }catch(e){}
 
+  renderPermissoesNoModal();
   aplicarPermissoesUI();
 
   if(carregarCache() && temPermissao('ver_viaturas')){ renderViaturas(); }
@@ -3124,11 +3200,7 @@ function startApp(){
   if(temPermissao('ver_viaturas'))   loadDataViaturas();
   if(temPermissao('ver_manutencao')) loadDataManut();
 
-  if(temPermissao('ver_os'))              showView('os');
-  else if(temPermissao('ver_viaturas'))   showView('viaturas');
-  else if(temPermissao('ver_manutencao')) showView('manutencao');
-  else if(temPermissao('admin_usuarios')) showView('usuarios');
-  else showView('home');
+  showView('home');
 
   iniciarPolling();
 }
