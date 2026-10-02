@@ -38,8 +38,7 @@ html,body{
   margin:0;padding:0;min-height:100%;
   background:var(--bg);color:var(--text);
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
   overscroll-behavior-y:contain;
 }
 button{font:inherit;}
@@ -54,13 +53,11 @@ button{font:inherit;}
   position:fixed;top:0;left:0;right:0;height:var(--topbar-h);
   background:linear-gradient(90deg,var(--bg-elev),var(--surface));
   border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:14px;
-  padding:0 16px;z-index:100;
+  display:flex;align-items:center;gap:14px;padding:0 16px;z-index:100;
 }
 .topbar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber);}
 .menu-toggle{
-  width:38px;height:38px;flex:none;
-  display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;
   background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);
   cursor:pointer;font-size:18px;padding:0;-webkit-tap-highlight-color:transparent;
 }
@@ -88,13 +85,11 @@ button{font:inherit;}
   position:fixed;top:var(--topbar-h);bottom:0;left:0;
   width:var(--sidebar-w);background:var(--bg-elev);border-right:1px solid var(--border);
   display:flex;flex-direction:column;
-  transition:width .2s ease, transform .2s ease;
-  z-index:90;overflow:hidden;
+  transition:width .2s ease, transform .2s ease;z-index:90;overflow:hidden;
 }
 .sidebar-nav{flex:1;padding:14px 8px;display:flex;flex-direction:column;gap:4px;}
 .sidebar-link{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 12px;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;
   color:var(--text-dim);text-decoration:none;font-size:14px;font-weight:500;
   border:none;background:transparent;text-align:left;width:100%;
   -webkit-tap-highlight-color:transparent;transition:background .15s, color .15s;
@@ -110,10 +105,7 @@ button{font:inherit;}
 #app.sidebar-collapsed .sidebar-footer .label{opacity:0;pointer-events:none;}
 #app.sidebar-collapsed .sidebar-link{justify-content:center;padding:10px 0;}
 
-.main{
-  margin-left:var(--sidebar-w);padding-top:var(--topbar-h);
-  min-height:100vh;transition:margin-left .2s ease;
-}
+.main{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh;transition:margin-left .2s ease;}
 #app.sidebar-collapsed .main{margin-left:var(--sidebar-w-collapsed);}
 
 .view{display:none;padding:20px 22px 60px;max-width:1400px;margin:0 auto;}
@@ -147,8 +139,7 @@ button{font:inherit;}
 .login-box p.sub{font-size:12px;color:var(--text-dim);margin:0 0 8px;}
 .login-box input{
   background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-  border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:16px;
-  -webkit-appearance:none;
+  border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:16px;-webkit-appearance:none;
 }
 .login-box input:focus{outline:1px solid var(--amber);}
 .login-box .btn{width:100%;justify-content:center;padding:11px;font-size:15px;}
@@ -180,11 +171,16 @@ button{font:inherit;}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
 input[type=text], input[type=password], input[type=file], select, textarea{
   background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
-  padding:8px 10px;font-family:'Inter',sans-serif;font-size:16px;min-width:0;
-  -webkit-appearance:none;
+  padding:8px 10px;font-family:'Inter',sans-serif;font-size:16px;min-width:0;-webkit-appearance:none;
 }
 input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus{outline:1px solid var(--amber);}
 input[type=file]{font-size:13px;}
+input[type=datetime-local]{
+  background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+  border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:16px;
+  width:100%;min-width:0;-webkit-appearance:none;
+}
+input[type=datetime-local]:focus{outline:1px solid var(--amber);}
 
 .modal-overlay{
   position:fixed;inset:0;background:rgba(16,20,26,.85);
@@ -210,12 +206,13 @@ input[type=file]{font-size:13px;}
   font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;
 }
 .modal-grid label.full{grid-column:span 2;}
-.modal-grid input, .modal-grid select{
+.modal-grid input, .modal-grid select, .modal-grid textarea{
   background:var(--surface-2);border:1px solid var(--border);color:var(--text);
   border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:16px;
   width:100%;min-width:0;text-transform:none;letter-spacing:0;-webkit-appearance:none;
 }
-.modal-grid input:focus, .modal-grid select:focus{outline:1px solid var(--amber);}
+.modal-grid textarea{resize:vertical;min-height:70px;}
+.modal-grid input:focus, .modal-grid select:focus, .modal-grid textarea:focus{outline:1px solid var(--amber);}
 .modal-grid input:disabled{opacity:.55;}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap;}
 .modal-actions.left{justify-content:space-between;}
@@ -225,15 +222,13 @@ input[type=file]{font-size:13px;}
   .modal-grid label.full{grid-column:span 1;}
 }
 
-/* Checkboxes de permissão */
 .perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
 @media (max-width:560px){ .perm-grid{grid-template-columns:1fr;} }
 .perm-check{
   display:flex;align-items:center;gap:10px;padding:9px 11px;
   background:var(--surface-2);border:1px solid var(--border);border-radius:8px;
   cursor:pointer;font-size:12px;color:var(--text-dim);
-  transition:border-color .15s, color .15s, background .15s;
-  -webkit-tap-highlight-color:transparent;
+  transition:border-color .15s, color .15s, background .15s;-webkit-tap-highlight-color:transparent;
 }
 .perm-check:hover{border-color:var(--amber);color:var(--text);}
 .perm-check.checked{border-color:var(--amber);color:var(--text);background:rgba(232,169,58,.08);}
@@ -260,8 +255,7 @@ input[type=file]{font-size:13px;}
 .home-card{
   background:var(--surface);border:1px solid var(--border);border-radius:12px;
   padding:16px 18px;cursor:pointer;position:relative;overflow:hidden;
-  transition:border-color .15s, background .15s, transform .12s;
-  -webkit-tap-highlight-color:transparent;
+  transition:border-color .15s, background .15s, transform .12s;-webkit-tap-highlight-color:transparent;
 }
 .home-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber);}
 .home-card:hover{border-color:var(--amber);transform:translateY(-2px);}
@@ -272,6 +266,10 @@ input[type=file]{font-size:13px;}
 .home-card.viaturas::before{background:var(--verde);}
 .home-card.viat-baix::before{background:var(--vermelho);}
 .home-card.viat-dir::before{background:var(--roxo);}
+.home-card.manut::before{background:var(--roxo);}
+.home-card.manut-em::before{background:var(--amber);}
+.home-card.manut-dias::before{background:var(--vermelho);}
+.home-card.manut-vtrs::before{background:var(--azul);}
 .home-card .label{
   font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;
   margin-bottom:6px;font-family:'IBM Plex Mono',monospace;
@@ -283,6 +281,10 @@ input[type=file]{font-size:13px;}
 .home-card.viaturas .value{color:var(--verde);}
 .home-card.viat-baix .value{color:var(--vermelho);}
 .home-card.viat-dir .value{color:var(--roxo);}
+.home-card.manut .value{color:var(--roxo);}
+.home-card.manut-em .value{color:var(--amber);}
+.home-card.manut-dias .value{color:var(--vermelho);}
+.home-card.manut-vtrs .value{color:var(--azul);}
 
 /* ════════════════════════════════════════════
    6. OS-BAMEX
@@ -339,8 +341,7 @@ input[type=file]{font-size:13px;}
 
 .svc-row{
   display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
-  padding:6px 28px 6px 8px;
-  border-top:1px solid var(--border);border-left:3px solid transparent;
+  padding:6px 28px 6px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;
   flex-wrap:wrap;position:relative;
 }
 .svc-row:first-of-type{border-top:none;}
@@ -363,13 +364,11 @@ select.stage-select{
 }
 .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
 .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
-
 .svc-row.orc-alto{background:linear-gradient(90deg, rgba(232,169,58,.14), transparent 70%);}
 .badge-orc{
   display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;
   font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;
-  margin-left:6px;background:rgba(232,169,58,.18);color:var(--amber);
-  border:1px solid rgba(232,169,58,.55);
+  margin-left:6px;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);
 }
 .edit-btn{
   position:absolute;top:4px;right:2px;width:22px;height:22px;padding:0;border-radius:50%;
@@ -395,14 +394,8 @@ select.stage-select{
 .addform input::placeholder{color:var(--text-faint);}
 .addform #af-note{grid-column:span 3;}
 .addform .btn{width:100%;justify-content:center;padding:9px 12px;}
-@media (max-width:900px){
-  .addform{grid-template-columns:repeat(3, 1fr);}
-  .addform #af-note{grid-column:span 2;}
-}
-@media (max-width:560px){
-  .addform{grid-template-columns:1fr 1fr;}
-  .addform #af-note{grid-column:span 2;}
-}
+@media (max-width:900px){ .addform{grid-template-columns:repeat(3, 1fr);} .addform #af-note{grid-column:span 2;} }
+@media (max-width:560px){ .addform{grid-template-columns:1fr 1fr;} .addform #af-note{grid-column:span 2;} }
 
 .skeleton-wrap{display:grid;gap:10px;padding:14px;}
 .skel{
@@ -431,6 +424,10 @@ select.stage-select{
 .summary-card.reservas::before{background:var(--roxo);}
 .summary-card.baixadas::before{background:var(--vermelho);}
 .summary-card.diretorias::before{background:var(--verde);}
+.summary-card.manut-total::before{background:var(--roxo);}
+.summary-card.manut-vtrs::before{background:var(--azul);}
+.summary-card.manut-em::before{background:var(--amber);}
+.summary-card.manut-dias::before{background:var(--vermelho);}
 .summary-card .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
 .summary-card .value{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;line-height:1;}
 .summary-card.total .value{color:var(--amber);}
@@ -438,6 +435,10 @@ select.stage-select{
 .summary-card.reservas .value{color:var(--roxo);}
 .summary-card.baixadas .value{color:var(--vermelho);}
 .summary-card.diretorias .value{color:var(--verde);}
+.summary-card.manut-total .value{color:var(--roxo);}
+.summary-card.manut-vtrs .value{color:var(--azul);}
+.summary-card.manut-em .value{color:var(--amber);}
+.summary-card.manut-dias .value{color:var(--vermelho);}
 .summary-card.active-filter{border-color:var(--amber);background:linear-gradient(135deg, rgba(232,169,58,.12), transparent);}
 .summary-card.active-filter .label{color:var(--amber);}
 .summary-card.active-filter::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:14px;font-weight:700;}
@@ -468,7 +469,85 @@ select.stage-select{
 }
 
 /* ════════════════════════════════════════════
-   8. USUÁRIOS
+   8. MANUTENÇÃO
+   ════════════════════════════════════════════ */
+.manut-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;
+}
+@media (max-width:600px){ .manut-grid{grid-template-columns:1fr;} }
+
+.manut-veh-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;display:flex;flex-direction:column;
+}
+.manut-veh-card.em-manutencao{border-color:rgba(232,169,58,.45);}
+.manut-veh-card.em-manutencao .manut-veh-head{background:linear-gradient(135deg, rgba(232,169,58,.12), var(--surface-2));}
+.manut-veh-head{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);
+}
+.manut-veh-prefix{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:var(--text);letter-spacing:.02em;
+}
+.manut-veh-card.em-manutencao .manut-veh-prefix{color:var(--amber);}
+.manut-veh-total{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  background:rgba(232,169,58,.12);color:var(--amber);
+  border:1px solid rgba(232,169,58,.5);border-radius:20px;padding:3px 10px;white-space:nowrap;
+}
+.manut-veh-meta{
+  padding:9px 16px;font-size:11px;color:var(--text-dim);
+  border-bottom:1px solid rgba(48,58,71,.4);
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+}
+.manut-pill{
+  display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;
+  font-size:10px;padding:2px 8px;border-radius:20px;
+  background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;
+}
+.manut-pill.em-manutencao{background:rgba(232,169,58,.12);border-color:rgba(232,169,58,.5);color:var(--amber);}
+.manut-pill.ativa{background:rgba(61,220,132,.12);border-color:rgba(61,220,132,.5);color:var(--verde);}
+.manut-pill .dot{width:6px;height:6px;}
+
+.manut-timeline{padding:4px 12px 12px;flex:1;}
+.manut-event{
+  padding:12px 4px 12px 8px;border-bottom:1px solid rgba(48,58,71,.4);
+  display:flex;flex-direction:column;gap:4px;position:relative;
+}
+.manut-event:last-child{border-bottom:none;}
+.manut-event-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
+  padding-right:56px;
+}
+.manut-event-date{
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text);font-weight:600;
+}
+.manut-event-dias{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);white-space:nowrap;
+}
+.manut-event-line{font-size:11px;color:var(--text-dim);display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.manut-event-line b{color:var(--text);font-weight:600;}
+.manut-event-informante{
+  font-size:10.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;
+}
+.manut-event-detail{
+  font-size:11.5px;color:var(--text-dim);line-height:1.4;
+  margin-top:3px;overflow-wrap:break-word;
+}
+.manut-event-actions{
+  position:absolute;top:10px;right:2px;display:flex;gap:4px;
+}
+.manut-event-actions .btn{
+  width:24px;height:24px;padding:0;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+}
+.manut-event-actions .btn svg{width:11px;height:11px;display:block;}
+.manut-empty{
+  text-align:center;color:var(--text-faint);padding:40px 20px;font-size:14px;grid-column:1/-1;
+}
+
+/* ════════════════════════════════════════════
+   9. USUÁRIOS
    ════════════════════════════════════════════ */
 .users-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .users-toolbar input{min-width:220px;}
@@ -495,12 +574,10 @@ select.stage-select{
 .user-badge.ativo{background:rgba(61,220,132,.12);color:var(--verde);border-color:var(--verde);}
 .user-badge.inativo{background:rgba(239,83,80,.12);color:var(--vermelho);border-color:var(--vermelho);}
 .user-badge.primeiro{background:rgba(177,140,255,.12);color:var(--roxo);border-color:var(--roxo);}
-
 .user-perms{display:flex;flex-wrap:wrap;gap:5px;}
 .perm-tag{
   font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:10px;
-  background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);
-  white-space:nowrap;
+  background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);white-space:nowrap;
 }
 .perm-tag.on{color:var(--amber);border-color:rgba(232,169,58,.5);}
 .user-meta{font-size:10.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
@@ -508,7 +585,7 @@ select.stage-select{
 .user-actions .btn{font-size:12px;padding:7px 12px;flex:1;min-width:0;text-align:center;}
 
 /* ════════════════════════════════════════════
-   9. RELATÓRIO (impressão)
+   10. RELATÓRIO
    ════════════════════════════════════════════ */
 .report-box{
   background:var(--surface);border:1px solid var(--border);border-radius:14px;
@@ -601,6 +678,9 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <button class="sidebar-link" data-view="viaturas" data-perm="ver_viaturas">
         <span class="icon">🚗</span><span class="label">Viaturas</span>
       </button>
+      <button class="sidebar-link" data-view="manutencao" data-perm="ver_manutencao">
+        <span class="icon">🛠</span><span class="label">Manutenção</span>
+      </button>
       <button class="sidebar-link" data-view="usuarios" data-perm="admin_usuarios">
         <span class="icon">👥</span><span class="label">Usuários</span>
       </button>
@@ -643,6 +723,16 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         </div>
       </div>
 
+      <div id="homeManutSection">
+        <div class="home-section-title">Manutenção</div>
+        <div class="home-grid">
+          <div class="home-card manut"><div class="label">Registros</div><div class="value" id="h-m-total">—</div></div>
+          <div class="home-card manut-vtrs"><div class="label">Viaturas</div><div class="value" id="h-m-vtrs">—</div></div>
+          <div class="home-card manut-em"><div class="label">Em manutenção</div><div class="value" id="h-m-em">—</div></div>
+          <div class="home-card manut-dias"><div class="label">Dias acumulados</div><div class="value" id="h-m-dias">—</div></div>
+        </div>
+      </div>
+
       <div class="last-change" id="homeLastChange" style="margin-top:22px;">Última alteração registrada: —</div>
       <footer class="page-footer">Dados carregados das planilhas Google Sheets.</footer>
     </section>
@@ -651,20 +741,17 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <section class="view" id="view-os">
       <div class="update-indicator" id="updateStatus">Aguardando primeira carga…</div>
       <div class="last-change" id="lastChange">Última alteração registrada: —</div>
-
       <div class="stats" id="stats"></div>
       <div class="legend" id="legend"></div>
-
       <div class="toolbar">
         <div class="tabs" id="tabsContainer"></div>
         <div class="right-tools">
-          <input type="text" id="osSearch" placeholder="Buscar viatura ou OS" aria-label="Buscar">
+          <input type="text" id="osSearch" placeholder="Buscar viatura ou OS">
           <button class="btn ghost" id="clearFilterBtn" style="display:none;">Limpar filtro</button>
           <button class="btn report" id="reportBtn">📄 Relatório</button>
-          <button class="btn" id="addBtn" data-perm="os_criar" aria-label="Nova OS">+ Nova OS</button>
+          <button class="btn" id="addBtn" data-perm="os_criar">+ Nova OS</button>
         </div>
       </div>
-
       <div class="addform" id="addForm">
         <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)">
         <input type="text" id="af-os" placeholder="Nº da OS">
@@ -677,21 +764,17 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <button class="btn primary" id="af-save">Salvar</button>
         <button class="btn ghost" id="af-cancel">Cancelar</button>
       </div>
-
-      <div id="osSkeleton" class="skeleton-wrap" aria-hidden="true" style="display:none;">
+      <div id="osSkeleton" class="skeleton-wrap" style="display:none;">
         <div class="skel skel-rect" style="height:120px"></div>
         <div class="skel skel-text"></div>
         <div class="skel skel-text" style="width:60%"></div>
       </div>
-
       <div id="osContent"></div>
-
       <div id="errorArea" class="error-box" style="display:none;">
         <p><strong>Não foi possível carregar os dados automaticamente.</strong></p>
         <p>Baixe o CSV da planilha e carregue manualmente:</p>
         <input type="file" id="csvFileInput" accept=".csv">
       </div>
-
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
@@ -709,6 +792,21 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
+    <!-- ══════ MANUTENÇÃO ══════ -->
+    <section class="view" id="view-manutencao">
+      <div class="update-indicator" id="manutUpdateStatus">Carregando dados…</div>
+      <div class="summary" id="manutSummary"></div>
+      <div class="toolbar">
+        <div class="right-tools">
+          <input type="text" id="manutSearch" placeholder="Buscar viatura, local ou informante" autocapitalize="characters" autocorrect="off" spellcheck="false">
+          <button class="btn ghost" id="manutClearFilterBtn" style="display:none;">Limpar filtro</button>
+          <button class="btn primary" id="manutAddBtn" data-perm="manut_editar">+ Nova entrada</button>
+        </div>
+      </div>
+      <div id="manutContent" class="manut-grid"></div>
+      <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
+    </section>
+
     <!-- ══════ USUÁRIOS ══════ -->
     <section class="view" id="view-usuarios">
       <div class="users-toolbar">
@@ -723,7 +821,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </main>
 </div>
 
-<!-- ═══════════════ MODAL: TROCAR SENHA (1º ACESSO) ═══════════════ -->
+<!-- ═══════════════ MODAL: TROCAR SENHA ═══════════════ -->
 <div id="changePassModal" class="modal-overlay" style="display:none;">
   <div class="modal-box" style="max-width:440px;">
     <h2>🔐 Defina sua nova senha</h2>
@@ -771,7 +869,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <input type="password" id="um-root-pass" placeholder="Senha ROOT" autocomplete="off">
       </label>
     </div>
-
     <div>
       <div style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;">
         Permissões
@@ -783,10 +880,11 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <label class="perm-check" data-perm="os_status"><input type="checkbox" id="pm-os_status"><span class="perm-label">Alterar status de OS</span></label>
         <label class="perm-check" data-perm="ver_viaturas"><input type="checkbox" id="pm-ver_viaturas"><span class="perm-label">Ver Viaturas</span></label>
         <label class="perm-check" data-perm="viat_gerenciar"><input type="checkbox" id="pm-viat_gerenciar"><span class="perm-label">Gerenciar viaturas</span></label>
+        <label class="perm-check" data-perm="ver_manutencao"><input type="checkbox" id="pm-ver_manutencao"><span class="perm-label">Ver Manutenção</span></label>
+        <label class="perm-check" data-perm="manut_editar"><input type="checkbox" id="pm-manut_editar"><span class="perm-label">Editar manutenção</span></label>
         <label class="perm-check" data-perm="admin_usuarios"><input type="checkbox" id="pm-admin_usuarios"><span class="perm-label">Gerenciar usuários</span></label>
       </div>
     </div>
-
     <p id="um-error" class="modal-error"></p>
     <div class="modal-actions left">
       <button class="btn danger" id="um-reset" style="display:none;">Resetar senha</button>
@@ -815,6 +913,50 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <div class="modal-actions">
       <button class="btn ghost" id="ed-cancel">Cancelar</button>
       <button class="btn primary" id="ed-save">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: MANUTENÇÃO (criar/editar) ═══════════════ -->
+<div id="manutModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box wide">
+    <h2 id="manutModalTitle">🛠 Nova entrada</h2>
+    <p class="help" id="manutModalHelp">
+      Registre a entrada ou saída da viatura. Os campos <b style="color:var(--amber);">Dias</b> e <b style="color:var(--amber);">Total acumulado</b> são calculados automaticamente.
+    </p>
+    <div class="modal-grid">
+      <label>Viatura
+        <input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters">
+      </label>
+      <label>Status
+        <select id="mm-status">
+          <option value="Em Manutenção">Em Manutenção</option>
+          <option value="Ativa">Ativa</option>
+        </select>
+      </label>
+      <label>Entrada
+        <input type="datetime-local" id="mm-entrada">
+      </label>
+      <label>Saída (opcional)
+        <input type="datetime-local" id="mm-saida">
+      </label>
+      <label class="full">Local
+        <input type="text" id="mm-local" placeholder="ex: Fix Car, 1° GBM, DEMAN, Arcon">
+      </label>
+      <label class="full">Informante
+        <input type="text" id="mm-informante" placeholder="ex: Capitão Bita">
+      </label>
+      <label class="full">Detalhes da ação
+        <textarea id="mm-detalhes" rows="3" placeholder="Descreva a ação realizada ou o problema identificado…"></textarea>
+      </label>
+    </div>
+    <p id="mm-error" class="modal-error"></p>
+    <div class="modal-actions left">
+      <button class="btn danger" id="mm-delete" style="display:none;">Excluir registro</button>
+      <div style="display:flex;gap:8px;margin-left:auto;">
+        <button class="btn ghost" id="mm-cancel">Cancelar</button>
+        <button class="btn primary" id="mm-save">Salvar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -863,14 +1005,17 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
    ════════════════════════════════════════════════════════════ */
 const OS_APPS_SCRIPT_URL       = 'https://script.google.com/macros/s/AKfycbzMVSQtq7RSHFRnzRPFQgV-_YQ-TCWId3XrXiynaZ6gajqwKhaMZxe7ISRqAM8PTqyP3g/exec';
 const VIATURAS_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTBLYK1DGYKjndJZYt2mm03aLiuwyamzc4s2dDsYY_YJpj3fh0CaptQGG1hMReJhqG/exec';
+const MANUT_APPS_SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbySCsyvti0wJQdkt1IxoSBOmi3sHpFF6uPwOF9smssIihF7rb3GFlpFXfjh7EN2gf8m/exec';
+
 const DIRECT_SHEET_CSV_URL     = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
+const MANUT_CSV_URL            = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQIRgIpd5ZsU5gkfE933LQD7vBYbqC9bbJESZqWWNEHKJPljLxNSVS78LTF8sH9zO_KzGvPe4W2mV1F/pub?output=csv';
+
 const STORAGE_KEY_OS    = 'deman_data_os_v1';
 const STORAGE_KEY_VIAT  = 'deman_cache_viaturas_v1';
 const POLLING_INTERVAL  = 180000;
 const SENHA_PADRAO      = 'Bamex@2026';
 const ROOT_LOGIN        = 'deman';
 
-// Fallback local: SOMENTE ROOT. Todas as demais contas vêm da planilha.
 const USERS_FALLBACK = {
   'deman': { senha:'Bamex@2026', nome:'DEMAN (ROOT)', perfil:'admin' }
 };
@@ -882,6 +1027,8 @@ const PERMISSOES_LISTA = [
   { key:'os_status',      label:'Alterar status de OS' },
   { key:'ver_viaturas',   label:'Ver Viaturas' },
   { key:'viat_gerenciar', label:'Gerenciar viaturas' },
+  { key:'ver_manutencao', label:'Ver Manutenção' },
+  { key:'manut_editar',   label:'Editar manutenção' },
   { key:'admin_usuarios', label:'Gerenciar usuários' }
 ];
 
@@ -897,16 +1044,15 @@ function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setT
 function $(id){ return document.getElementById(id); }
 
 /* ════════════════════════════════════════════════════════════
-   ESTADO / SESSÃO
+   SESSÃO
    ════════════════════════════════════════════════════════════ */
 let currentUser = '';
 let currentPerfil = 'view';
 let currentLogin = '';
 let currentPermissoes = {};
-let primeiraSenhaUsada = ''; // guarda a senha digitada no login p/ primeiro acesso
+let primeiraSenhaUsada = '';
 
 function isLoggedIn(){ return sessionStorage.getItem('deman_auth') === 'ok'; }
-
 function temPermissao(p){
   if(currentLogin === ROOT_LOGIN) return true;
   return currentPermissoes[p] === true;
@@ -939,6 +1085,7 @@ async function apiCall(url, action, payload){
 }
 const apiOS       = (action, payload) => apiCall(OS_APPS_SCRIPT_URL, action, payload);
 const apiViaturas = (action, payload) => apiCall(VIATURAS_APPS_SCRIPT_URL, action, payload);
+const apiManut    = (action, payload) => apiCall(MANUT_APPS_SCRIPT_URL, action, payload);
 
 /* ════════════════════════════════════════════════════════════
    LOGIN
@@ -953,32 +1100,22 @@ async function handleLogin(){
   const btn = $('loginBtn');
 
   if(!u || !p){ err.textContent = 'Preencha usuário e senha.'; err.style.display='block'; return; }
-
   btn.disabled = true; btn.textContent = 'Entrando…'; err.style.display = 'none';
 
   let r = await apiOS('autenticar', { login:u, senha:p });
 
-  // Fallback local (só ROOT)
   if(!r.ok && USERS_FALLBACK[u] && USERS_FALLBACK[u].senha === p){
     r = {
       ok:true, usuario:u, nome:USERS_FALLBACK[u].nome, perfil:USERS_FALLBACK[u].perfil,
-      permissoes:{ver_os:true,os_criar:true,os_editar:true,os_status:true,ver_viaturas:true,viat_gerenciar:true,admin_usuarios:true},
+      permissoes:{ver_os:true,os_criar:true,os_editar:true,os_status:true,ver_viaturas:true,viat_gerenciar:true,ver_manutencao:true,manut_editar:true,admin_usuarios:true},
       primeiroAcesso:false
     };
   }
 
   btn.disabled = false; btn.textContent = 'Entrar';
+  if(!r.ok){ err.textContent = r.error || 'Usuário ou senha inválidos.'; err.style.display = 'block'; return; }
 
-  if(!r.ok){
-    err.textContent = r.error || 'Usuário ou senha inválidos.';
-    err.style.display = 'block';
-    return;
-  }
-
-  // Guarda senha usada (necessária para troca no 1º acesso)
   primeiraSenhaUsada = p;
-
-  // Persiste sessão
   sessionStorage.setItem('deman_auth','ok');
   sessionStorage.setItem('deman_user_login', u);
   sessionStorage.setItem('deman_user_nome', r.nome || u);
@@ -990,13 +1127,7 @@ async function handleLogin(){
   currentPerfil = r.perfil || 'view';
   currentPermissoes = r.permissoes || {};
 
-  // Primeiro acesso → força troca de senha
-  if(r.primeiroAcesso === true){
-    hideLogin();
-    abrirTrocarSenha(true);
-    return;
-  }
-
+  if(r.primeiroAcesso === true){ hideLogin(); abrirTrocarSenha(true); return; }
   startApp();
 }
 
@@ -1007,18 +1138,15 @@ function handleLogout(){
 }
 
 /* ════════════════════════════════════════════════════════════
-   TROCA DE SENHA (1º acesso)
+   TROCA DE SENHA
    ════════════════════════════════════════════════════════════ */
-let modoTrocaSenha = 'primeiro'; // 'primeiro' | 'voluntario'
+let modoTrocaSenha = 'primeiro';
 
 function abrirTrocarSenha(obrigatorio){
   modoTrocaSenha = obrigatorio ? 'primeiro' : 'voluntario';
-  $('cp-new').value = '';
-  $('cp-confirm').value = '';
-  $('cp-error').style.display = 'none';
-  $('cp-error').textContent = '';
-  $('changePassModal').style.display = 'flex';
-  $('cp-new').focus();
+  $('cp-new').value = ''; $('cp-confirm').value = '';
+  $('cp-error').style.display = 'none'; $('cp-error').textContent = '';
+  $('changePassModal').style.display = 'flex'; $('cp-new').focus();
 }
 
 async function salvarNovaSenha(){
@@ -1026,7 +1154,6 @@ async function salvarNovaSenha(){
   const conf = $('cp-confirm').value;
   const err = $('cp-error');
   const btn = $('cp-save');
-
   err.style.display = 'none'; err.textContent = '';
 
   if(nova.length < 6){ err.textContent = 'A senha deve ter pelo menos 6 caracteres.'; err.style.display='block'; return; }
@@ -1034,41 +1161,25 @@ async function salvarNovaSenha(){
   if(nova !== conf){ err.textContent = 'As senhas não coincidem.'; err.style.display='block'; return; }
 
   btn.disabled = true; btn.textContent = 'Salvando…';
-
   const r = await apiCall(OS_APPS_SCRIPT_URL, 'trocarSenha', {
     login: currentLogin, senhaAtual: primeiraSenhaUsada, senhaNova: nova
   });
-
   btn.disabled = false; btn.textContent = 'Salvar e entrar';
 
-  if(!r.ok){
-    err.textContent = r.error || 'Não foi possível trocar a senha.';
-    err.style.display = 'block';
-    return;
-  }
-
+  if(!r.ok){ err.textContent = r.error || 'Não foi possível trocar a senha.'; err.style.display = 'block'; return; }
   $('changePassModal').style.display = 'none';
-
-  // Se foi 1º acesso, agora segue para o app
-  if(modoTrocaSenha === 'primeiro'){
-    primeiraSenhaUsada = nova;
-    startApp();
-  } else {
-    alert('Senha alterada com sucesso.');
-  }
+  if(modoTrocaSenha === 'primeiro'){ primeiraSenhaUsada = nova; startApp(); }
+  else alert('Senha alterada com sucesso.');
 }
 
 /* ════════════════════════════════════════════════════════════
-   MODAL DE USUÁRIO (criar / editar)
+   MODAL USUÁRIO
    ════════════════════════════════════════════════════════════ */
-let modoUserModal = 'create';  // 'create' | 'edit'
+let modoUserModal = 'create';
 let editUserLogin = '';
 
 function setPermissoesNoForm(perms){
-  PERMISSOES_LISTA.forEach(p => {
-    const cb = $('pm-' + p.key);
-    if(cb) cb.checked = !!perms[p.key];
-  });
+  PERMISSOES_LISTA.forEach(p => { const cb = $('pm-'+p.key); if(cb) cb.checked = !!perms[p.key]; });
   atualizarEstadoCheckboxes();
 }
 function atualizarEstadoCheckboxes(){
@@ -1078,56 +1189,43 @@ function atualizarEstadoCheckboxes(){
   });
 }
 function aplicarDefaultsPorPerfil(perfil){
-  const adminDefaults = { ver_os:true, os_criar:true, os_editar:true, os_status:true, ver_viaturas:true, viat_gerenciar:true, admin_usuarios:true };
-  const viewDefaults  = { ver_os:true, os_criar:false, os_editar:false, os_status:false, ver_viaturas:true, viat_gerenciar:false, admin_usuarios:false };
-  setPermissoesNoForm(perfil === 'admin' ? adminDefaults : viewDefaults);
+  const ad = {ver_os:true,os_criar:true,os_editar:true,os_status:true,ver_viaturas:true,viat_gerenciar:true,ver_manutencao:true,manut_editar:true,admin_usuarios:true};
+  const vw = {ver_os:true,os_criar:false,os_editar:false,os_status:false,ver_viaturas:true,viat_gerenciar:false,ver_manutencao:true,manut_editar:false,admin_usuarios:false};
+  setPermissoesNoForm(perfil === 'admin' ? ad : vw);
 }
 function lerPermissoesDoForm(){
   const out = {};
-  PERMISSOES_LISTA.forEach(p => { out[p.key] = $('pm-' + p.key).checked; });
+  PERMISSOES_LISTA.forEach(p => { out[p.key] = $('pm-'+p.key).checked; });
   return out;
 }
 
 function abrirUserModal(modo, user){
-  modoUserModal = modo;
-  editUserLogin = '';
-
-  const title = modo === 'create' ? 'Criar nova conta' : 'Editar usuário';
-  $('userModalTitle').textContent = title;
+  modoUserModal = modo; editUserLogin = '';
+  $('userModalTitle').textContent = modo === 'create' ? 'Criar nova conta' : 'Editar usuário';
 
   if(modo === 'create'){
     $('userModalHelp').style.display = '';
-    $('um-user').value = '';
-    $('um-user').disabled = false;
-    $('um-nome').value = '';
-    $('um-perfil').value = 'view';
-    $('um-root-label').style.display = '';
-    $('um-root-pass').value = '';
+    $('um-user').value = ''; $('um-user').disabled = false;
+    $('um-nome').value = ''; $('um-perfil').value = 'view';
+    $('um-root-label').style.display = ''; $('um-root-pass').value = '';
     $('um-reset').style.display = 'none';
     aplicarDefaultsPorPerfil('view');
   } else {
     editUserLogin = user.usuario;
     $('userModalHelp').style.display = 'none';
-    $('um-user').value = user.usuario;
-    $('um-user').disabled = true;
+    $('um-user').value = user.usuario; $('um-user').disabled = true;
     $('um-nome').value = user.nome || '';
     $('um-perfil').value = user.perfil || 'view';
     $('um-root-label').style.display = 'none';
     $('um-reset').style.display = 'inline-block';
     setPermissoesNoForm(user.permissoes || {});
   }
-
-  $('um-error').style.display = 'none';
-  $('um-error').textContent = '';
+  $('um-error').style.display = 'none'; $('um-error').textContent = '';
   $('userModal').style.display = 'flex';
   setTimeout(() => { (modo==='create' ? $('um-user') : $('um-nome')).focus(); }, 60);
 }
 
-function fecharUserModal(){
-  $('userModal').style.display = 'none';
-  modoUserModal = 'create';
-  editUserLogin = '';
-}
+function fecharUserModal(){ $('userModal').style.display = 'none'; modoUserModal = 'create'; editUserLogin = ''; }
 
 async function salvarUserModal(){
   const err = $('um-error');
@@ -1137,47 +1235,35 @@ async function salvarUserModal(){
   const nome = $('um-nome').value.trim();
   const perfil = $('um-perfil').value;
   const permissoes = lerPermissoesDoForm();
-
   if(!nome){ err.textContent = 'Informe o nome de exibição.'; err.style.display = 'block'; return; }
 
   btn.disabled = true; btn.textContent = 'Salvando…';
-
   let r;
+
   if(modoUserModal === 'create'){
     const user = $('um-user').value.trim().toLowerCase();
     const senhaRoot = $('um-root-pass').value;
     if(!user){ err.textContent = 'Informe o usuário.'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
-    if(!/^[a-z0-9._-]{3,}$/.test(user)){ err.textContent = 'Usuário inválido (mín. 3 caracteres: a-z, 0-9, . _ -).'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
+    if(!/^[a-z0-9._-]{3,}$/.test(user)){ err.textContent = 'Usuário inválido (mín. 3 caracteres).'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
     if(!senhaRoot){ err.textContent = 'Informe a senha do administrador.'; err.style.display='block'; btn.disabled=false; btn.textContent='Salvar'; return; }
-
     r = await apiOS('criarUsuario', { novoUsuario:user, novoNome:nome, perfil, permissoes, senhaRoot });
   } else {
     r = await apiOS('atualizarUsuario', { usuarioAlvo: editUserLogin, perfil, permissoes });
   }
 
   btn.disabled = false; btn.textContent = 'Salvar';
-
-  if(!r.ok){
-    err.textContent = r.error || 'Não foi possível salvar.';
-    err.style.display = 'block';
-    return;
-  }
-
+  if(!r.ok){ err.textContent = r.error || 'Não foi possível salvar.'; err.style.display = 'block'; return; }
   fecharUserModal();
   await carregarUsuarios();
 }
 
 async function resetarSenhaUsuario(){
   if(!editUserLogin) return;
-  if(!confirm('Resetar a senha de "'+editUserLogin+'" para a padrão? O usuário será forçado a trocá-la no próximo login.')) return;
-
+  if(!confirm('Resetar a senha de "'+editUserLogin+'" para a padrão?')) return;
   const btn = $('um-reset');
   btn.disabled = true; btn.textContent = 'Resetando…';
-
   const r = await apiOS('resetarSenha', { usuarioAlvo: editUserLogin });
-
   btn.disabled = false; btn.textContent = 'Resetar senha';
-
   if(!r.ok){ alert('Erro: ' + r.error); return; }
   alert('Senha resetada com sucesso.');
   fecharUserModal();
@@ -1192,12 +1278,14 @@ const VIEW_TITLES = {
   home:'Início',
   os:'Status das OS-BAMEX',
   viaturas:'Painel de Viaturas por Local',
+  manutencao:'Painel de Manutenção',
   usuarios:'Gerenciamento de Usuários'
 };
 const VIEW_PERMS = {
   home: null,
   os: 'ver_os',
   viaturas: 'ver_viaturas',
+  manutencao: 'ver_manutencao',
   usuarios: 'admin_usuarios'
 };
 
@@ -1205,7 +1293,7 @@ const isMobile = () => window.matchMedia('(max-width:900px)').matches;
 
 function showView(name){
   if(!VIEW_TITLES[name]) return;
-  if(VIEW_PERMS[name] && !temPermissao(VIEW_PERMS[name])){ name = 'home'; }
+  if(VIEW_PERMS[name] && !temPermissao(VIEW_PERMS[name])) name = 'home';
 
   activeView = name;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
@@ -1214,29 +1302,26 @@ function showView(name){
     b.classList.toggle('active', b.dataset.view === name);
   });
   $('viewTitle').textContent = VIEW_TITLES[name];
-
   if(isMobile()) $('app').classList.remove('sidebar-open');
 
   if(name === 'home') renderHome();
   if(name === 'os' && OS_DATA.length) renderOS();
   if(name === 'viaturas' && VIATURAS.length) renderViaturas();
+  if(name === 'manutencao' && MANUT_REGISTROS.length) renderManut();
   if(name === 'usuarios') carregarUsuarios();
 }
 
-/* Aplica filtro de permissão no sidebar */
 function aplicarPermissoesUI(){
   document.querySelectorAll('.sidebar-link[data-perm]').forEach(b => {
-    const ok = temPermissao(b.dataset.perm);
-    b.style.display = ok ? '' : 'none';
+    b.style.display = temPermissao(b.dataset.perm) ? '' : 'none';
   });
   document.querySelectorAll('[data-perm]').forEach(el => {
     if(el.classList.contains('sidebar-link')) return;
     el.style.display = temPermissao(el.dataset.perm) ? '' : 'none';
   });
-
-  // Home: esconde seções que o usuário não pode ver
-  $('homeOSSection').style.display    = temPermissao('ver_os')       ? '' : 'none';
-  $('homeViatSection').style.display  = temPermissao('ver_viaturas') ? '' : 'none';
+  $('homeOSSection').style.display     = temPermissao('ver_os')         ? '' : 'none';
+  $('homeViatSection').style.display   = temPermissao('ver_viaturas')   ? '' : 'none';
+  $('homeManutSection').style.display  = temPermissao('ver_manutencao') ? '' : 'none';
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -1265,16 +1350,23 @@ function renderHome(){
   $('h-v-dir').textContent     = vDir;
   $('h-v-baix').textContent    = vBaix;
 
+  // Manutenção
+  const mStats = calcularEstatisticasManut();
+  $('h-m-total').textContent = mStats.totalRegistros;
+  $('h-m-vtrs').textContent  = mStats.totalViaturas;
+  $('h-m-em').textContent    = mStats.emManutencao;
+  $('h-m-dias').textContent  = mStats.diasAcumulados;
+
   const ult = getUltimaAlteracaoOS();
   const el = $('homeLastChange');
   el.innerHTML = ult
     ? 'Última alteração registrada: <b>' + ult.toLocaleDateString('pt-BR') + ' às ' + ult.toLocaleTimeString('pt-BR') + '</b>'
     : 'Última alteração registrada: —';
 
-  const upd = $('homeUpdateStatus');
-  const osTxt = $('updateStatus').textContent;
-  const vTxt  = $('viatUpdateStatus').textContent;
-  upd.textContent = 'OS: ' + osTxt + ' · Viaturas: ' + vTxt;
+  $('homeUpdateStatus').textContent =
+    'OS: ' + $('updateStatus').textContent +
+    ' · Viaturas: ' + $('viatUpdateStatus').textContent +
+    ' · Manutenção: ' + $('manutUpdateStatus').textContent;
 }
 
 document.querySelectorAll('#view-home .home-card').forEach(card => {
@@ -1282,11 +1374,12 @@ document.querySelectorAll('#view-home .home-card').forEach(card => {
     const id = card.querySelector('.value').id;
     if(id.startsWith('h-os-') && temPermissao('ver_os')) showView('os');
     else if(id.startsWith('h-v-') && temPermissao('ver_viaturas')) showView('viaturas');
+    else if(id.startsWith('h-m-') && temPermissao('ver_manutencao')) showView('manutencao');
   });
 });
 
 /* ════════════════════════════════════════════════════════════
-   ────────  PAINEL OS-BAMEX  ────────
+   ────────  OS-BAMEX (inalterado)  ────────
    ════════════════════════════════════════════════════════════ */
 const TAB_GERAL = 'geral';
 const TAB_MANUTENCAO = '__manutencao__';
@@ -1738,7 +1831,6 @@ function abrirRelatorioOS(){
   $('reportModal').style.display = 'flex';
 }
 
-/* ---- Modal de edição OS ---- */
 const edStageSel = $('ed-stage');
 edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 
@@ -1761,7 +1853,7 @@ function openEditModal(recordId){
 function closeEditModal(){ editingRecordId = null; $('editModal').style.display = 'none'; }
 
 /* ════════════════════════════════════════════════════════════
-   ────────  PAINEL VIATURAS  ────────
+   ────────  VIATURAS (inalterado)  ────────
    ════════════════════════════════════════════════════════════ */
 const MOTIVOS_BAIXA = ['Sinistro','Manutenção'];
 const CACHE_KEY = 'deman_cache_viaturas_v1';
@@ -1964,7 +2056,6 @@ function renderLocalGridViaturas(){
     container.innerHTML = html;
     bindActionsViaturas(); return;
   }
-  // TODAS
   const ativas = VIATURAS.filter(v => v.origem === 'ativa' && !ehDiretoria(v.gbm));
   const porLocal = {};
   LOCAIS.forEach(l => porLocal[l] = []);
@@ -2001,7 +2092,6 @@ function renderViaturas(){
   renderLocalGridViaturas();
 }
 
-/* ---- Modal genérico (viaturas) ---- */
 function abrirModal(titulo, camposHtml, onConfirm){
   if(!temPermissao('viat_gerenciar')){ alert('Acesso negado.'); return; }
   $('modalTitle').textContent = titulo;
@@ -2047,9 +2137,7 @@ function htmlOpcoesLocais(selecionado){
   if(LOCAIS_DIRETORIAS.length > 0) html += `<optgroup label="Diretorias">${LOCAIS_DIRETORIAS.map(opt).join('')}</optgroup>`;
   return html;
 }
-function htmlOpcoesMotivo(){
-  return MOTIVOS_BAIXA.map(m => `<option value="${escapeAttr(m)}">${escapeHtml(m)}</option>`).join('');
-}
+function htmlOpcoesMotivo(){ return MOTIVOS_BAIXA.map(m => `<option value="${escapeAttr(m)}">${escapeHtml(m)}</option>`).join(''); }
 function htmlOpcoesSubstituta(prefixoExcluido){
   const outras = VIATURAS.filter(v => v.prefixo !== prefixoExcluido && v.origem !== 'baixada');
   if(outras.length === 0) return `<option value="">— Nenhuma outra viatura disponível —</option>`;
@@ -2154,6 +2242,359 @@ function abrirModalMoverReserva(prefixo){
 }
 
 /* ════════════════════════════════════════════════════════════
+   ────────  MANUTENÇÃO  ────────
+   ════════════════════════════════════════════════════════════ */
+let MANUT_REGISTROS = [];
+let MANUT_FILTRO_STATUS = 'todas'; // 'todas' | 'em' | 'ativa'
+let modoManutModal = 'create';
+let manutEditKey = null;
+
+function parseDataManut(str){
+  if(!str) return null;
+  const s = String(str).trim();
+  if(s === '--' || s === '') return null;
+  // dd/mm/aaaa hh:mm | dd/mm/aaaa
+  let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+  if(m) return new Date(+m[3], +m[2]-1, +m[1], +(m[4]||0), +(m[5]||0));
+  // aaaa-mm-ddThh:mm | aaaa-mm-dd hh:mm | aaaa-mm-dd
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
+  if(m) return new Date(+m[1], +m[2]-1, +m[3], +(m[4]||0), +(m[5]||0));
+  return null;
+}
+
+function normalizarPrefixoManut(v){
+  const t = String(v||'').trim().toUpperCase();
+  const m = t.match(/^([A-Z]+)[\s-]*(\d+)$/);
+  if(m){ const num = m[2].length === 1 ? '0'+m[2] : m[2]; return m[1]+'-'+num; }
+  return t.replace(/\s+/g,' ');
+}
+
+async function loadDataManut(){
+  const upd = $('manutUpdateStatus');
+  upd.textContent = 'Carregando…';
+  try{
+    const cacheBust = 'ts=' + Date.now();
+    const url = MANUT_CSV_URL + (MANUT_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
+    const resp = await fetch(url, { cache:'no-store' });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const csv = await resp.text();
+    const parsed = Papa.parse(csv, { header:true, skipEmptyLines:true });
+    MANUT_REGISTROS = (parsed.data || []).map(r => ({
+      viatura:    normalizarPrefixoManut(r['Viatura'] || r['VIATURA'] || ''),
+      status:     String(r['Status'] || '').trim(),
+      entrada:    String(r['Entrada'] || '').trim(),
+      saida:      String(r['Saída'] || r['Saida'] || '').trim(),
+      local:      String(r['LOCAL'] || r['Local'] || '').trim(),
+      dias:       String(r['DIAS'] || r['Dias'] || '').trim(),
+      informante: String(r['Informante'] || '').trim(),
+      detalhes:   String(r['Detalhes da Ação'] || r['Detalhes da Acao'] || r['Detalhes'] || '').trim(),
+      total:      Number(r['TOTAL DE DIAS'] || r['Total de Dias'] || 0) || 0
+    })).filter(r => r.viatura);
+
+    upd.textContent = 'Atualizado em ' + new Date().toLocaleTimeString('pt-BR');
+    if(activeView === 'manutencao') renderManut();
+    if(activeView === 'home') renderHome();
+  }catch(err){
+    console.error(err);
+    upd.textContent = 'Erro: ' + err.message;
+  }
+}
+
+function agruparManutPorViatura(){
+  const grupos = {};
+  MANUT_REGISTROS.forEach(r => {
+    if(!grupos[r.viatura]) grupos[r.viatura] = [];
+    grupos[r.viatura].push(r);
+  });
+  return grupos;
+}
+
+function calcularEstatisticasManut(){
+  const grupos = agruparManutPorViatura();
+  const totalViaturas = Object.keys(grupos).length;
+  const totalRegistros = MANUT_REGISTROS.length;
+  let emManutencao = 0;
+  let diasAcumulados = 0;
+
+  Object.keys(grupos).forEach(pfx => {
+    const eventos = grupos[pfx].slice().sort((a,b) => {
+      const da = parseDataManut(a.entrada);
+      const db = parseDataManut(b.entrada);
+      return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+    });
+    const ultimo = eventos[eventos.length-1];
+    if(ultimo && normalizeStr(ultimo.status).includes('manut')) emManutencao++;
+    // Total acumulado = maior valor da coluna "total" nessa viatura
+    const maxTotal = eventos.reduce((m, e) => Math.max(m, Number(e.total) || 0), 0);
+    diasAcumulados += maxTotal;
+  });
+
+  return { totalViaturas, totalRegistros, emManutencao, diasAcumulados };
+}
+
+function renderSummaryManut(){
+  const st = calcularEstatisticasManut();
+  const cards = [
+    { key:'todas', label:'Total de registros', value: st.totalRegistros, cls:'manut-total' },
+    { key:'vtrs',  label:'Viaturas',           value: st.totalViaturas,  cls:'manut-vtrs'  },
+    { key:'em',    label:'Em manutenção',      value: st.emManutencao,   cls:'manut-em'    },
+    { key:'dias',  label:'Dias acumulados',    value: st.diasAcumulados, cls:'manut-dias'  }
+  ];
+  $('manutSummary').innerHTML = cards.map(c => `
+    <div class="summary-card ${c.cls}" data-filter="${c.key}">
+      <div class="label">${c.label}</div>
+      <div class="value">${c.value}</div>
+    </div>`).join('');
+
+  document.querySelectorAll('#view-manutencao .summary-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const k = card.dataset.filter;
+      if(k === 'todas' || k === 'dias'){ MANUT_FILTRO_STATUS = 'todas'; }
+      else if(k === 'em'){ MANUT_FILTRO_STATUS = (MANUT_FILTRO_STATUS === 'em') ? 'todas' : 'em'; }
+      else if(k === 'vtrs'){ MANUT_FILTRO_STATUS = 'todas'; }
+      renderManut();
+    });
+  });
+}
+
+function htmlEventoManut(r, idx, podeEditar){
+  const btnEditar = podeEditar
+    ? `<button class="btn ghost" data-manut-edit-idx="${idx}" title="Editar">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+       </button>` : '';
+  const btnRemover = podeEditar
+    ? `<button class="btn ghost danger" data-manut-del-idx="${idx}" title="Excluir">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+       </button>` : '';
+
+  const entrada = escapeHtml(r.entrada || '—');
+  const saida = escapeHtml(r.saida || '--');
+  const local = escapeHtml(r.local || '—');
+  const informante = escapeHtml(r.informante || '—');
+  const detalhes = escapeHtml(r.detalhes || '');
+  const diasTxt = escapeHtml(r.dias || '—');
+
+  return `<div class="manut-event">
+    <div class="manut-event-head">
+      <div class="manut-event-date">${entrada} <span style="color:var(--text-faint);font-weight:400;">→</span> ${saida}</div>
+      <div class="manut-event-dias">${diasTxt}</div>
+    </div>
+    <div class="manut-event-line"><b>${local}</b></div>
+    <div class="manut-event-informante">${informante}</div>
+    ${detalhes ? `<div class="manut-event-detail">${detalhes}</div>` : ''}
+    <div class="manut-event-actions">${btnEditar}${btnRemover}</div>
+  </div>`;
+}
+
+function renderManutGrid(){
+  const q = normalizeStr($('manutSearch').value);
+  const container = $('manutContent');
+  const grupos = agruparManutPorViatura();
+  const podeEditar = temPermissao('manut_editar');
+
+  let prefixos = Object.keys(grupos).sort((a,b)=>a.localeCompare(b));
+
+  // Filtro por busca
+  if(q){
+    prefixos = prefixos.filter(pfx => {
+      if(normalizeStr(pfx).includes(q)) return true;
+      return grupos[pfx].some(r =>
+        normalizeStr(r.local).includes(q) ||
+        normalizeStr(r.informante).includes(q) ||
+        normalizeStr(r.detalhes).includes(q)
+      );
+    });
+  }
+
+  // Filtro por status atual
+  if(MANUT_FILTRO_STATUS === 'em'){
+    prefixos = prefixos.filter(pfx => {
+      const eventos = grupos[pfx].slice().sort((a,b) => {
+        const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada);
+        return (da?da.getTime():0) - (db?db.getTime():0);
+      });
+      const ult = eventos[eventos.length-1];
+      return ult && normalizeStr(ult.status).includes('manut');
+    });
+  }
+
+  if(prefixos.length === 0){
+    container.innerHTML = '<div class="manut-empty">Nenhuma viatura encontrada.</div>';
+    return;
+  }
+
+  container.innerHTML = prefixos.map(pfx => {
+    const eventos = grupos[pfx].slice().sort((a,b) => {
+      const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada);
+      return (db?db.getTime():0) - (da?da.getTime():0); // mais recente primeiro
+    });
+    const ultimo = eventos[0];
+    const total = eventos.reduce((m, e) => Math.max(m, Number(e.total) || 0), 0);
+    const emManut = ultimo && normalizeStr(ultimo.status).includes('manut');
+    const statusLabel = emManut ? 'Em Manutenção' : (ultimo ? ultimo.status : '—');
+    const statusClass = emManut ? 'em-manutencao' : 'ativa';
+    const localAtual = ultimo ? escapeHtml(ultimo.local || '—') : '—';
+
+    const eventosHtml = eventos.map((r) => {
+      const idx = MANUT_REGISTROS.indexOf(r);
+      return htmlEventoManut(r, idx, podeEditar);
+    }).join('');
+
+    return `<div class="manut-veh-card ${emManut?'em-manutencao':''}">
+      <div class="manut-veh-head">
+        <div class="manut-veh-prefix">${escapeHtml(pfx)}</div>
+        <div class="manut-veh-total">${total}d acumulados</div>
+      </div>
+      <div class="manut-veh-meta">
+        <span class="manut-pill ${statusClass}"><span class="dot" style="background:${emManut?'var(--amber)':'var(--verde)'}"></span>${escapeHtml(statusLabel)}</span>
+        <span>${localAtual}</span>
+        <span style="color:var(--text-faint);">· ${eventos.length} evento${eventos.length>1?'s':''}</span>
+      </div>
+      <div class="manut-timeline">${eventosHtml}</div>
+    </div>`;
+  }).join('');
+
+  if(podeEditar){
+    document.querySelectorAll('#view-manutencao [data-manut-edit-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = +btn.dataset.manutEditIdx;
+        const r = MANUT_REGISTROS[idx];
+        if(r) abrirManutModal('edit', r);
+      });
+    });
+    document.querySelectorAll('#view-manutencao [data-manut-del-idx]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = +btn.dataset.manutDelIdx;
+        const r = MANUT_REGISTROS[idx];
+        if(!r) return;
+        if(!confirm(`Excluir o registro de ${r.viatura} (${r.entrada})?`)) return;
+        btn.disabled = true;
+        const resp = await apiManut('removerManutencao', {
+          viatura: r.viatura, entrada: r.entrada, local: r.local
+        });
+        btn.disabled = false;
+        if(!resp.ok){ alert('Erro: ' + resp.error); return; }
+        await loadDataManut();
+      });
+    });
+  }
+}
+
+function renderManut(){
+  if(activeView !== 'manutencao') return;
+  renderSummaryManut();
+  renderManutGrid();
+  const clearBtn = $('manutClearFilterBtn');
+  if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas') ? 'inline-block' : 'none';
+}
+
+/* -------- Modal Manutenção -------- */
+function toDatetimeLocal(str){
+  const d = parseDataManut(str);
+  if(!d) return '';
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function abrirManutModal(modo, registro){
+  if(!temPermissao('manut_editar')){ alert('Você não tem permissão para editar manutenções.'); return; }
+  modoManutModal = modo;
+  manutEditKey = null;
+  $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
+
+  if(modo === 'edit' && registro){
+    manutEditKey = { viatura: registro.viatura, entrada: registro.entrada, local: registro.local };
+    $('manutModalTitle').textContent = '✎ Editar registro';
+    $('manutModalHelp').style.display = 'none';
+    $('mm-viatura').value = registro.viatura || '';
+    $('mm-status').value = normalizeStr(registro.status).includes('manut') ? 'Em Manutenção' : 'Ativa';
+    $('mm-entrada').value = toDatetimeLocal(registro.entrada);
+    $('mm-saida').value = registro.saida && registro.saida !== '--' ? toDatetimeLocal(registro.saida) : '';
+    $('mm-local').value = registro.local || '';
+    $('mm-informante').value = registro.informante || '';
+    $('mm-detalhes').value = registro.detalhes || '';
+    $('mm-delete').style.display = 'inline-block';
+  } else {
+    $('manutModalTitle').textContent = '🛠 Nova entrada';
+    $('manutModalHelp').style.display = '';
+    $('mm-viatura').value = '';
+    $('mm-status').value = 'Em Manutenção';
+    const agora = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    $('mm-entrada').value = `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
+    $('mm-saida').value = '';
+    $('mm-local').value = '';
+    $('mm-informante').value = '';
+    $('mm-detalhes').value = '';
+    $('mm-delete').style.display = 'none';
+  }
+
+  $('manutModal').style.display = 'flex';
+  setTimeout(() => { (modo === 'edit' ? $('mm-viatura') : $('mm-viatura')).focus(); }, 60);
+}
+
+function fecharManutModal(){
+  $('manutModal').style.display = 'none';
+  modoManutModal = 'create';
+  manutEditKey = null;
+}
+
+async function salvarManut(){
+  const err = $('mm-error');
+  const btn = $('mm-save');
+  err.style.display = 'none'; err.textContent = '';
+
+  const viatura    = $('mm-viatura').value.trim().toUpperCase();
+  const status     = $('mm-status').value;
+  const entrada    = $('mm-entrada').value;
+  const saida      = $('mm-saida').value || '--';
+  const local      = $('mm-local').value.trim();
+  const informante = $('mm-informante').value.trim();
+  const detalhes   = $('mm-detalhes').value.trim();
+
+  if(!viatura){ err.textContent = 'Informe a viatura.'; err.style.display='block'; return; }
+  if(!entrada){ err.textContent = 'Informe a data de entrada.'; err.style.display='block'; return; }
+  if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = 'Salvando…';
+
+  let r;
+  if(modoManutModal === 'edit' && manutEditKey){
+    r = await apiManut('atualizarManutencao', {
+      viaturaAntiga: manutEditKey.viatura,
+      entradaAntiga: manutEditKey.entrada,
+      localAntigo:   manutEditKey.local,
+      viatura, status, entrada, saida, local, informante, detalhes
+    });
+  } else {
+    r = await apiManut('adicionarManutencao', {
+      viatura, status, entrada, saida, local, informante, detalhes
+    });
+  }
+
+  btn.disabled = false; btn.textContent = 'Salvar';
+
+  if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
+
+  fecharManutModal();
+  await loadDataManut();
+}
+
+async function excluirManutAtual(){
+  if(!manutEditKey) return;
+  if(!confirm(`Excluir o registro de ${manutEditKey.viatura} (${manutEditKey.entrada})?`)) return;
+  const btn = $('mm-delete');
+  btn.disabled = true; btn.textContent = 'Excluindo…';
+  const r = await apiManut('removerManutencao', {
+    viatura: manutEditKey.viatura, entrada: manutEditKey.entrada, local: manutEditKey.local
+  });
+  btn.disabled = false; btn.textContent = 'Excluir registro';
+  if(!r.ok){ alert('Erro: ' + r.error); return; }
+  fecharManutModal();
+  await loadDataManut();
+}
+
+/* ════════════════════════════════════════════════════════════
    ────────  USUÁRIOS  ────────
    ════════════════════════════════════════════════════════════ */
 let USUARIOS_CACHE = [];
@@ -2162,7 +2603,6 @@ async function carregarUsuarios(){
   if(!temPermissao('admin_usuarios')) return;
   const upd = $('usersUpdateStatus');
   upd.textContent = 'Carregando…';
-
   const r = await apiOS('listarUsuarios');
   if(!r.ok){
     upd.textContent = 'Falha: ' + (r.error || 'desconhecido');
@@ -2298,10 +2738,9 @@ $('userModal').addEventListener('click', e => { if(e.target.id === 'userModal') 
 $('newUserBtn').addEventListener('click', () => abrirUserModal('create'));
 $('usersSearch').addEventListener('input', debounce(renderUsuarios, 180));
 
-/* OS — eventos */
+/* OS */
 const afStageSel = $('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
-
 $('osSearch').addEventListener('input', debounce(() => renderOS(), 180));
 $('clearFilterBtn').addEventListener('click', () => { activeStatusFilter = null; renderOS(); });
 $('addBtn').addEventListener('click', () => {
@@ -2357,7 +2796,6 @@ $('csvFileInput').addEventListener('change', e => {
   reader.readAsText(file);
 });
 
-/* OS — modal edição */
 $('ed-cancel').addEventListener('click', closeEditModal);
 $('editModal').addEventListener('click', e => { if(e.target.id === 'editModal') closeEditModal(); });
 $('ed-save').addEventListener('click', async () => {
@@ -2375,7 +2813,6 @@ $('ed-save').addEventListener('click', async () => {
   const newNote = $('ed-note').value.trim();
 
   if(!newV || !newOs){ alert('Preencha a viatura e o número da OS.'); return; }
-
   let newOrcamentos = 0;
   if(newOrcada === 'Sim'){
     newOrcamentos = parseInt(newQntRaw, 10);
@@ -2404,20 +2841,31 @@ $('ed-save').addEventListener('click', async () => {
   }
 });
 
-/* OS — relatório */
 $('reportBtn').addEventListener('click', abrirRelatorioOS);
 $('reportClose').addEventListener('click', () => { $('reportModal').style.display = 'none'; });
 $('reportPrint').addEventListener('click', () => window.print());
 $('reportModal').addEventListener('click', e => { if(e.target.id === 'reportModal') $('reportModal').style.display='none'; });
 
-/* Viaturas — busca e filtro */
+/* Viaturas */
 $('viatSearch').addEventListener('input', debounce(() => renderViaturas(), 180));
 $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'; renderViaturas(); });
 
-/* ESC fecha modais (exceto troca de senha obrigatória) */
+/* Manutenção */
+$('manutSearch').addEventListener('input', debounce(renderManut, 180));
+$('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
+$('manutAddBtn').addEventListener('click', () => {
+  if(!temPermissao('manut_editar')){ alert('Você não tem permissão para editar manutenções.'); return; }
+  abrirManutModal('create');
+});
+$('mm-cancel').addEventListener('click', fecharManutModal);
+$('mm-save').addEventListener('click', salvarManut);
+$('mm-delete').addEventListener('click', excluirManutAtual);
+$('manutModal').addEventListener('click', e => { if(e.target.id === 'manutModal') fecharManutModal(); });
+
+/* ESC fecha modais */
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
-  ['editModal','reportModal','actionModal','userModal'].forEach(id => {
+  ['editModal','reportModal','actionModal','userModal','manutModal'].forEach(id => {
     const el = $(id);
     if(el && el.style.display === 'flex') el.style.display = 'none';
   });
@@ -2449,36 +2897,32 @@ function startApp(){
     }
   }catch(e){}
 
-  // Aplica permissões na UI
   aplicarPermissoesUI();
 
-  // Cache
   if(carregarCache() && temPermissao('ver_viaturas')){ renderViaturas(); }
 
-  // Carrega em paralelo
-  if(temPermissao('ver_os')) loadDataOS();
-  if(temPermissao('ver_viaturas')) loadDataViaturas();
+  if(temPermissao('ver_os'))         loadDataOS();
+  if(temPermissao('ver_viaturas'))   loadDataViaturas();
+  if(temPermissao('ver_manutencao')) loadDataManut();
 
-  // Se não tem permissão de ver nada, redireciona pra primeira permitida
-  if(temPermissao('ver_os')) showView('os');
-  else if(temPermissao('ver_viaturas')) showView('viaturas');
+  if(temPermissao('ver_os'))              showView('os');
+  else if(temPermissao('ver_viaturas'))   showView('viaturas');
+  else if(temPermissao('ver_manutencao')) showView('manutencao');
   else if(temPermissao('admin_usuarios')) showView('usuarios');
   else showView('home');
 
-  // Polling
   setInterval(() => {
-    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal']
+    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal','manutModal']
       .some(id => $(id).style.display === 'flex');
-    const selFocused = document.activeElement && document.activeElement.tagName === 'SELECT';
+    const selFocused = document.activeElement && ['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName);
     if(modalOpen || selFocused) return;
-    if(temPermissao('ver_os')) loadDataOS();
-    if(temPermissao('ver_viaturas')) loadDataViaturas();
+    if(temPermissao('ver_os'))         loadDataOS();
+    if(temPermissao('ver_viaturas'))   loadDataViaturas();
+    if(temPermissao('ver_manutencao')) loadDataManut();
   }, POLLING_INTERVAL);
 }
 
-/* Restaura sessão se já logado */
 if(isLoggedIn()){
-  // Se tem sessão mas está no meio de primeiro acesso, mostra troca de senha
   currentLogin = sessionStorage.getItem('deman_user_login') || '';
   currentUser = sessionStorage.getItem('deman_user_nome') || '';
   currentPerfil = sessionStorage.getItem('deman_user_perfil') || 'view';
