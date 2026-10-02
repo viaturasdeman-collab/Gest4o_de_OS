@@ -545,7 +545,65 @@ select.stage-select{
 .manut-empty{
   text-align:center;color:var(--text-faint);padding:40px 20px;font-size:14px;grid-column:1/-1;
 }
+/* Sub-abas internas da Manutenção */
+.sub-tabs{
+  display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:4px;margin-bottom:16px;
+  width:fit-content;max-width:100%;overflow-x:auto;flex-wrap:nowrap;
+}
+.sub-tab{
+  font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14.5px;letter-spacing:.02em;
+  padding:8px 18px;border-radius:7px;cursor:pointer;color:var(--text-dim);
+  border:none;background:transparent;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.sub-tab:hover{color:var(--text);}
+.sub-tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
 
+.manut-panel{display:none;}
+.manut-panel.active{display:block;animation:fadeSlide .18s ease;}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateY(4px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* Formulário inline da aba "Novo registro" */
+.inline-form{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:22px 24px;max-width:780px;
+}
+.inline-form h2{
+  font-family:'Rajdhani',sans-serif;font-size:20px;color:var(--amber);
+  margin:0 0 4px;letter-spacing:.02em;
+}
+.inline-form p.help{font-size:12px;color:var(--text-dim);margin:0 0 18px;}
+.inline-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media (max-width:600px){ .inline-form-grid{grid-template-columns:1fr;} }
+.inline-form-grid label{
+  display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--text-dim);
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;
+}
+.inline-form-grid label.full{grid-column:span 2;}
+@media (max-width:600px){ .inline-form-grid label.full{grid-column:span 1;} }
+.inline-form-grid input,
+.inline-form-grid select,
+.inline-form-grid textarea{
+  background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:16px;
+  width:100%;min-width:0;text-transform:none;letter-spacing:0;
+  -webkit-appearance:none;
+}
+.inline-form-grid textarea{resize:vertical;min-height:80px;font-size:15px;}
+.inline-form-grid input:focus,
+.inline-form-grid select:focus,
+.inline-form-grid textarea:focus{outline:1px solid var(--amber);}
+.inline-form-actions{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;
+  padding-top:16px;border-top:1px solid var(--border);
+}
+.inline-form-actions .btn{padding:10px 18px;font-size:14px;}
 /* ════════════════════════════════════════════
    9. USUÁRIOS
    ════════════════════════════════════════════ */
@@ -792,18 +850,81 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
-    <!-- ══════ MANUTENÇÃO ══════ -->
+       <!-- ══════ MANUTENÇÃO ══════ -->
     <section class="view" id="view-manutencao">
       <div class="update-indicator" id="manutUpdateStatus">Carregando dados…</div>
-      <div class="summary" id="manutSummary"></div>
-      <div class="toolbar">
-        <div class="right-tools">
-          <input type="text" id="manutSearch" placeholder="Buscar viatura, local ou informante" autocapitalize="characters" autocorrect="off" spellcheck="false">
-          <button class="btn ghost" id="manutClearFilterBtn" style="display:none;">Limpar filtro</button>
-          <button class="btn primary" id="manutAddBtn" data-perm="manut_editar">+ Nova entrada</button>
+
+      <div class="sub-tabs" id="manutTabs">
+        <button class="sub-tab active" data-manut-tab="registros">
+          <span>📋</span> Registros
+        </button>
+        <button class="sub-tab" data-manut-tab="novo" data-perm="manut_editar">
+          <span>📝</span> Novo registro
+        </button>
+      </div>
+
+      <!-- ─── Painel: REGISTROS ─── -->
+      <div class="manut-panel active" id="manutPanel-registros">
+        <div class="summary" id="manutSummary"></div>
+
+        <div class="toolbar">
+          <div class="right-tools">
+            <input type="text" id="manutSearch" placeholder="Buscar viatura, local ou informante" autocapitalize="characters" autocorrect="off" spellcheck="false">
+            <button class="btn ghost" id="manutClearFilterBtn" style="display:none;">Limpar filtro</button>
+          </div>
+        </div>
+
+        <div id="manutContent" class="manut-grid"></div>
+      </div>
+
+      <!-- ─── Painel: NOVO REGISTRO ─── -->
+      <div class="manut-panel" id="manutPanel-novo">
+        <div class="inline-form">
+          <h2 id="manutFormTitle">🛠 Nova entrada</h2>
+          <p class="help" id="manutFormHelp">
+            Preencha os dados. Os campos <b style="color:var(--amber);">Dias</b> e
+            <b style="color:var(--amber);">Total acumulado</b> são calculados automaticamente.
+          </p>
+
+          <div class="inline-form-grid">
+            <label>Viatura
+              <input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters" autocorrect="off" spellcheck="false">
+            </label>
+            <label>Status
+              <select id="mm-status">
+                <option value="Em Manutenção">Em Manutenção</option>
+                <option value="Ativa">Ativa</option>
+              </select>
+            </label>
+            <label>Entrada
+              <input type="datetime-local" id="mm-entrada">
+            </label>
+            <label>Saída (opcional)
+              <input type="datetime-local" id="mm-saida">
+            </label>
+            <label class="full">Local
+              <input type="text" id="mm-local" placeholder="ex: Fix Car, 1° GBM, DEMAN, Arcon">
+            </label>
+            <label class="full">Informante
+              <input type="text" id="mm-informante" placeholder="ex: Capitão Bita">
+            </label>
+            <label class="full">Detalhes da ação
+              <textarea id="mm-detalhes" rows="3" placeholder="Descreva a ação realizada ou o problema identificado…"></textarea>
+            </label>
+          </div>
+
+          <p id="mm-error" class="modal-error"></p>
+
+          <div class="inline-form-actions">
+            <button class="btn danger" id="mm-delete" style="display:none;">Excluir registro</button>
+            <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;">
+              <button class="btn ghost" id="mm-clear">Limpar</button>
+              <button class="btn primary" id="mm-save">Salvar</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div id="manutContent" class="manut-grid"></div>
+
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
@@ -1307,7 +1428,10 @@ function showView(name){
   if(name === 'home') renderHome();
   if(name === 'os' && OS_DATA.length) renderOS();
   if(name === 'viaturas' && VIATURAS.length) renderViaturas();
-  if(name === 'manutencao' && MANUT_REGISTROS.length) renderManut();
+  if(name === 'manutencao'){
+    if(MANUT_REGISTROS.length) renderManut();
+    showManutTab('registros');
+  }
   if(name === 'usuarios') carregarUsuarios();
 }
 
@@ -2245,18 +2369,16 @@ function abrirModalMoverReserva(prefixo){
    ────────  MANUTENÇÃO  ────────
    ════════════════════════════════════════════════════════════ */
 let MANUT_REGISTROS = [];
-let MANUT_FILTRO_STATUS = 'todas'; // 'todas' | 'em' | 'ativa'
-let modoManutModal = 'create';
-let manutEditKey = null;
+let MANUT_FILTRO_STATUS = 'todas';
+let activeManutTab = 'registros';   // 'registros' | 'novo'
+let manutEditKey = null;            // null = criar | {viatura, entrada, local} = editar
 
 function parseDataManut(str){
   if(!str) return null;
   const s = String(str).trim();
   if(s === '--' || s === '') return null;
-  // dd/mm/aaaa hh:mm | dd/mm/aaaa
   let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
   if(m) return new Date(+m[3], +m[2]-1, +m[1], +(m[4]||0), +(m[5]||0));
-  // aaaa-mm-ddThh:mm | aaaa-mm-dd hh:mm | aaaa-mm-dd
   m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
   if(m) return new Date(+m[1], +m[2]-1, +m[3], +(m[4]||0), +(m[5]||0));
   return null;
@@ -2267,6 +2389,13 @@ function normalizarPrefixoManut(v){
   const m = t.match(/^([A-Z]+)[\s-]*(\d+)$/);
   if(m){ const num = m[2].length === 1 ? '0'+m[2] : m[2]; return m[1]+'-'+num; }
   return t.replace(/\s+/g,' ');
+}
+
+function toDatetimeLocalManut(str){
+  const d = parseDataManut(str);
+  if(!d) return '';
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 async function loadDataManut(){
@@ -2324,7 +2453,6 @@ function calcularEstatisticasManut(){
     });
     const ultimo = eventos[eventos.length-1];
     if(ultimo && normalizeStr(ultimo.status).includes('manut')) emManutencao++;
-    // Total acumulado = maior valor da coluna "total" nessa viatura
     const maxTotal = eventos.reduce((m, e) => Math.max(m, Number(e.total) || 0), 0);
     diasAcumulados += maxTotal;
   });
@@ -2349,39 +2477,31 @@ function renderSummaryManut(){
   document.querySelectorAll('#view-manutencao .summary-card').forEach(card => {
     card.addEventListener('click', () => {
       const k = card.dataset.filter;
-      if(k === 'todas' || k === 'dias'){ MANUT_FILTRO_STATUS = 'todas'; }
-      else if(k === 'em'){ MANUT_FILTRO_STATUS = (MANUT_FILTRO_STATUS === 'em') ? 'todas' : 'em'; }
-      else if(k === 'vtrs'){ MANUT_FILTRO_STATUS = 'todas'; }
+      if(k === 'em'){ MANUT_FILTRO_STATUS = (MANUT_FILTRO_STATUS === 'em') ? 'todas' : 'em'; }
+      else { MANUT_FILTRO_STATUS = 'todas'; }
       renderManut();
     });
   });
 }
 
-function htmlEventoManut(r, idx, podeEditar){
+function htmlEventoManut(r, podeEditar){
   const btnEditar = podeEditar
-    ? `<button class="btn ghost" data-manut-edit-idx="${idx}" title="Editar">
+    ? `<button class="btn ghost" data-manut-edit-viatura="${escapeAttr(r.viatura)}" data-manut-edit-entrada="${escapeAttr(r.entrada)}" data-manut-edit-local="${escapeAttr(r.local)}" title="Editar">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
        </button>` : '';
   const btnRemover = podeEditar
-    ? `<button class="btn ghost danger" data-manut-del-idx="${idx}" title="Excluir">
+    ? `<button class="btn ghost danger" data-manut-del-viatura="${escapeAttr(r.viatura)}" data-manut-del-entrada="${escapeAttr(r.entrada)}" data-manut-del-local="${escapeAttr(r.local)}" title="Excluir">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
        </button>` : '';
 
-  const entrada = escapeHtml(r.entrada || '—');
-  const saida = escapeHtml(r.saida || '--');
-  const local = escapeHtml(r.local || '—');
-  const informante = escapeHtml(r.informante || '—');
-  const detalhes = escapeHtml(r.detalhes || '');
-  const diasTxt = escapeHtml(r.dias || '—');
-
   return `<div class="manut-event">
     <div class="manut-event-head">
-      <div class="manut-event-date">${entrada} <span style="color:var(--text-faint);font-weight:400;">→</span> ${saida}</div>
-      <div class="manut-event-dias">${diasTxt}</div>
+      <div class="manut-event-date">${escapeHtml(r.entrada || '—')} <span style="color:var(--text-faint);font-weight:400;">→</span> ${escapeHtml(r.saida || '--')}</div>
+      <div class="manut-event-dias">${escapeHtml(r.dias || '—')}</div>
     </div>
-    <div class="manut-event-line"><b>${local}</b></div>
-    <div class="manut-event-informante">${informante}</div>
-    ${detalhes ? `<div class="manut-event-detail">${detalhes}</div>` : ''}
+    <div class="manut-event-line"><b>${escapeHtml(r.local || '—')}</b></div>
+    <div class="manut-event-informante">${escapeHtml(r.informante || '—')}</div>
+    ${r.detalhes ? `<div class="manut-event-detail">${escapeHtml(r.detalhes)}</div>` : ''}
     <div class="manut-event-actions">${btnEditar}${btnRemover}</div>
   </div>`;
 }
@@ -2394,7 +2514,6 @@ function renderManutGrid(){
 
   let prefixos = Object.keys(grupos).sort((a,b)=>a.localeCompare(b));
 
-  // Filtro por busca
   if(q){
     prefixos = prefixos.filter(pfx => {
       if(normalizeStr(pfx).includes(q)) return true;
@@ -2406,7 +2525,6 @@ function renderManutGrid(){
     });
   }
 
-  // Filtro por status atual
   if(MANUT_FILTRO_STATUS === 'em'){
     prefixos = prefixos.filter(pfx => {
       const eventos = grupos[pfx].slice().sort((a,b) => {
@@ -2426,7 +2544,7 @@ function renderManutGrid(){
   container.innerHTML = prefixos.map(pfx => {
     const eventos = grupos[pfx].slice().sort((a,b) => {
       const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada);
-      return (db?db.getTime():0) - (da?da.getTime():0); // mais recente primeiro
+      return (db?db.getTime():0) - (da?da.getTime():0);
     });
     const ultimo = eventos[0];
     const total = eventos.reduce((m, e) => Math.max(m, Number(e.total) || 0), 0);
@@ -2435,10 +2553,7 @@ function renderManutGrid(){
     const statusClass = emManut ? 'em-manutencao' : 'ativa';
     const localAtual = ultimo ? escapeHtml(ultimo.local || '—') : '—';
 
-    const eventosHtml = eventos.map((r) => {
-      const idx = MANUT_REGISTROS.indexOf(r);
-      return htmlEventoManut(r, idx, podeEditar);
-    }).join('');
+    const eventosHtml = eventos.map(r => htmlEventoManut(r, podeEditar)).join('');
 
     return `<div class="manut-veh-card ${emManut?'em-manutencao':''}">
       <div class="manut-veh-head">
@@ -2455,23 +2570,24 @@ function renderManutGrid(){
   }).join('');
 
   if(podeEditar){
-    document.querySelectorAll('#view-manutencao [data-manut-edit-idx]').forEach(btn => {
+    document.querySelectorAll('#view-manutencao [data-manut-edit-viatura]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const idx = +btn.dataset.manutEditIdx;
-        const r = MANUT_REGISTROS[idx];
-        if(r) abrirManutModal('edit', r);
+        const rec = MANUT_REGISTROS.find(r =>
+          r.viatura === btn.dataset.manutEditViatura &&
+          r.entrada === btn.dataset.manutEditEntrada &&
+          r.local === btn.dataset.manutEditLocal
+        );
+        if(rec) preencherFormManut(rec);
       });
     });
-    document.querySelectorAll('#view-manutencao [data-manut-del-idx]').forEach(btn => {
+    document.querySelectorAll('#view-manutencao [data-manut-del-viatura]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const idx = +btn.dataset.manutDelIdx;
-        const r = MANUT_REGISTROS[idx];
-        if(!r) return;
-        if(!confirm(`Excluir o registro de ${r.viatura} (${r.entrada})?`)) return;
+        const v = btn.dataset.manutDelViatura;
+        const e = btn.dataset.manutDelEntrada;
+        const l = btn.dataset.manutDelLocal;
+        if(!confirm(`Excluir o registro de ${v} (${e})?`)) return;
         btn.disabled = true;
-        const resp = await apiManut('removerManutencao', {
-          viatura: r.viatura, entrada: r.entrada, local: r.local
-        });
+        const resp = await apiManut('removerManutencao', { viatura: v, entrada: e, local: l });
         btn.disabled = false;
         if(!resp.ok){ alert('Erro: ' + resp.error); return; }
         await loadDataManut();
@@ -2488,55 +2604,54 @@ function renderManut(){
   if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas') ? 'inline-block' : 'none';
 }
 
-/* -------- Modal Manutenção -------- */
-function toDatetimeLocal(str){
-  const d = parseDataManut(str);
-  if(!d) return '';
+/* -------- Sub-abas -------- */
+function showManutTab(name){
+  if(name !== 'registros' && name !== 'novo') return;
+  if(name === 'novo' && !temPermissao('manut_editar')) name = 'registros';
+
+  activeManutTab = name;
+  document.querySelectorAll('#manutTabs .sub-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.manutTab === name);
+  });
+  $('manutPanel-registros').classList.toggle('active', name === 'registros');
+  $('manutPanel-novo').classList.toggle('active', name === 'novo');
+
+  if(name === 'novo') setTimeout(() => $('mm-viatura').focus(), 60);
+}
+
+/* -------- Formulário inline -------- */
+function limparFormManut(){
+  manutEditKey = null;
+  $('manutFormTitle').textContent = '🛠 Nova entrada';
+  $('manutFormHelp').style.display = '';
+  $('mm-viatura').value = '';
+  $('mm-status').value = 'Em Manutenção';
+  const agora = new Date();
   const pad = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  $('mm-entrada').value = `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
+  $('mm-saida').value = '';
+  $('mm-local').value = '';
+  $('mm-informante').value = '';
+  $('mm-detalhes').value = '';
+  $('mm-delete').style.display = 'none';
+  $('mm-error').style.display = 'none';
+  $('mm-error').textContent = '';
 }
 
-function abrirManutModal(modo, registro){
-  if(!temPermissao('manut_editar')){ alert('Você não tem permissão para editar manutenções.'); return; }
-  modoManutModal = modo;
-  manutEditKey = null;
-  $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
-
-  if(modo === 'edit' && registro){
-    manutEditKey = { viatura: registro.viatura, entrada: registro.entrada, local: registro.local };
-    $('manutModalTitle').textContent = '✎ Editar registro';
-    $('manutModalHelp').style.display = 'none';
-    $('mm-viatura').value = registro.viatura || '';
-    $('mm-status').value = normalizeStr(registro.status).includes('manut') ? 'Em Manutenção' : 'Ativa';
-    $('mm-entrada').value = toDatetimeLocal(registro.entrada);
-    $('mm-saida').value = registro.saida && registro.saida !== '--' ? toDatetimeLocal(registro.saida) : '';
-    $('mm-local').value = registro.local || '';
-    $('mm-informante').value = registro.informante || '';
-    $('mm-detalhes').value = registro.detalhes || '';
-    $('mm-delete').style.display = 'inline-block';
-  } else {
-    $('manutModalTitle').textContent = '🛠 Nova entrada';
-    $('manutModalHelp').style.display = '';
-    $('mm-viatura').value = '';
-    $('mm-status').value = 'Em Manutenção';
-    const agora = new Date();
-    const pad = n => String(n).padStart(2,'0');
-    $('mm-entrada').value = `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
-    $('mm-saida').value = '';
-    $('mm-local').value = '';
-    $('mm-informante').value = '';
-    $('mm-detalhes').value = '';
-    $('mm-delete').style.display = 'none';
-  }
-
-  $('manutModal').style.display = 'flex';
-  setTimeout(() => { (modo === 'edit' ? $('mm-viatura') : $('mm-viatura')).focus(); }, 60);
-}
-
-function fecharManutModal(){
-  $('manutModal').style.display = 'none';
-  modoManutModal = 'create';
-  manutEditKey = null;
+function preencherFormManut(r){
+  manutEditKey = { viatura: r.viatura, entrada: r.entrada, local: r.local };
+  $('manutFormTitle').textContent = '✎ Editar registro';
+  $('manutFormHelp').style.display = 'none';
+  $('mm-viatura').value = r.viatura || '';
+  $('mm-status').value = normalizeStr(r.status).includes('manut') ? 'Em Manutenção' : 'Ativa';
+  $('mm-entrada').value = toDatetimeLocalManut(r.entrada);
+  $('mm-saida').value = r.saida && r.saida !== '--' ? toDatetimeLocalManut(r.saida) : '';
+  $('mm-local').value = r.local || '';
+  $('mm-informante').value = r.informante || '';
+  $('mm-detalhes').value = r.detalhes || '';
+  $('mm-delete').style.display = 'inline-block';
+  $('mm-error').style.display = 'none';
+  showManutTab('novo');
 }
 
 async function salvarManut(){
@@ -2559,7 +2674,7 @@ async function salvarManut(){
   btn.disabled = true; btn.textContent = 'Salvando…';
 
   let r;
-  if(modoManutModal === 'edit' && manutEditKey){
+  if(manutEditKey){
     r = await apiManut('atualizarManutencao', {
       viaturaAntiga: manutEditKey.viatura,
       entradaAntiga: manutEditKey.entrada,
@@ -2576,8 +2691,9 @@ async function salvarManut(){
 
   if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
 
-  fecharManutModal();
   await loadDataManut();
+  limparFormManut();
+  showManutTab('registros');
 }
 
 async function excluirManutAtual(){
@@ -2590,8 +2706,9 @@ async function excluirManutAtual(){
   });
   btn.disabled = false; btn.textContent = 'Excluir registro';
   if(!r.ok){ alert('Erro: ' + r.error); return; }
-  fecharManutModal();
   await loadDataManut();
+  limparFormManut();
+  showManutTab('registros');
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -2853,19 +2970,20 @@ $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'
 /* Manutenção */
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
-$('manutAddBtn').addEventListener('click', () => {
-  if(!temPermissao('manut_editar')){ alert('Você não tem permissão para editar manutenções.'); return; }
-  abrirManutModal('create');
+/* Sub-abas da Manutenção */
+document.querySelectorAll('#manutTabs .sub-tab').forEach(tab => {
+  tab.addEventListener('click', () => showManutTab(tab.dataset.manutTab));
 });
-$('mm-cancel').addEventListener('click', fecharManutModal);
+
+/* Formulário inline da Manutenção */
 $('mm-save').addEventListener('click', salvarManut);
 $('mm-delete').addEventListener('click', excluirManutAtual);
-$('manutModal').addEventListener('click', e => { if(e.target.id === 'manutModal') fecharManutModal(); });
+$('mm-clear').addEventListener('click', limparFormManut);
 
 /* ESC fecha modais */
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
-  ['editModal','reportModal','actionModal','userModal','manutModal'].forEach(id => {
+  ['editModal','reportModal','actionModal','userModal'].forEach(id => {
     const el = $(id);
     if(el && el.style.display === 'flex') el.style.display = 'none';
   });
@@ -2912,7 +3030,7 @@ function startApp(){
   else showView('home');
 
   setInterval(() => {
-    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal','manutModal']
+    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal']
       .some(id => $(id).style.display === 'flex');
     const selFocused = document.activeElement && ['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName);
     if(modalOpen || selFocused) return;
