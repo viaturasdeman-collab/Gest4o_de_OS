@@ -104,7 +104,6 @@ button{font:inherit;}
 }
 .sidebar-link.expanded .chevron{transform:rotate(180deg);}
 
-/* Submenu do sidebar (Movimentação) */
 .sidebar-group{display:flex;flex-direction:column;}
 .sidebar-submenu{
   display:none;flex-direction:column;gap:2px;
@@ -587,7 +586,6 @@ select.stage-select{
   to{opacity:1;transform:translateY(0);}
 }
 
-/* Formulário inline da aba "Novo registro" */
 .inline-form{
   background:var(--surface);border:1px solid var(--border);border-radius:14px;
   padding:22px 24px;max-width:780px;
@@ -888,7 +886,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <section class="view" id="view-manutencao">
       <div class="update-indicator" id="manutUpdateStatus">Carregando dados…</div>
 
-      <!-- ─── Painel: REGISTROS ─── -->
       <div class="manut-panel active" id="manutPanel-registros">
         <div class="summary" id="manutSummary"></div>
 
@@ -902,7 +899,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <div id="manutContent" class="manut-grid"></div>
       </div>
 
-      <!-- ─── Painel: NOVO REGISTRO ─── -->
       <div class="manut-panel" id="manutPanel-novo">
         <div class="inline-form">
           <h2 id="manutFormTitle">🛠 Nova entrada</h2>
@@ -1135,6 +1131,22 @@ const PERMISSOES_LISTA = [
 ];
 
 /* ════════════════════════════════════════════════════════════
+   WARM-UP — aquece os 3 backends em background
+   ════════════════════════════════════════════════════════════ */
+(function warmUp(){
+  [OS_APPS_SCRIPT_URL, VIATURAS_APPS_SCRIPT_URL, MANUT_APPS_SCRIPT_URL]
+    .forEach(url => {
+      if(!url || url.includes('COLE_AQUI')) return;
+      fetch(url, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({ action: 'versao' }),
+        cache: 'no-store'
+      }).catch(()=>{});
+    });
+})();
+
+/* ════════════════════════════════════════════════════════════
    HELPERS
    ════════════════════════════════════════════════════════════ */
 function normalizeStr(s){
@@ -1162,11 +1174,11 @@ function temPermissao(p){
 function isAdmin(){ return currentPerfil === 'admin'; }
 
 /* ════════════════════════════════════════════════════════════
-   API
+   API — timeout de 15s
    ════════════════════════════════════════════════════════════ */
 async function apiCall(url, action, payload){
   const ctrl = new AbortController();
-  const to = setTimeout(()=>ctrl.abort(), 25000);
+  const to = setTimeout(()=>ctrl.abort(), 15000);
   try{
     const r = await fetch(url, {
       method:'POST', headers:{'Content-Type':'text/plain'},
@@ -1181,7 +1193,7 @@ async function apiCall(url, action, payload){
     try{ return JSON.parse(txt); } catch(e){ return { ok:false, error:'Resposta inválida' }; }
   }catch(err){
     clearTimeout(to);
-    if(err.name==='AbortError') return { ok:false, error:'A rede está lenta. Tente novamente.' };
+    if(err.name==='AbortError') return { ok:false, error:'Tempo esgotado após 15s. Tente novamente.' };
     return { ok:false, error:'Erro de rede: '+err.message };
   }
 }
@@ -1626,44 +1638,70 @@ async function fetchCsv(url){
   return await response.text();
 }
 
+/* ── loadDataOS com lerCSV interno + cache ── */
 async function loadDataOS(){
   if(isLoadingOS) return;
   isLoadingOS = true;
   showSkeletonOS();
-  const errorArea = $('errorArea');
-  let loadedFromSheet = false;
 
-  const cacheBust = 'ts=' + Date.now();
-  const csvUrl = DIRECT_SHEET_CSV_URL + (DIRECT_SHEET_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
+  const CACHE_KEY_OS = 'deman_cache_os_v2';
+  const CACHE_TTL = 5 * 60 * 1000;
 
   try{
-    const csvText = await fetchCsv(csvUrl);
-    processCsvText(csvText);
-    errorArea.style.display='none';
-    loadedFromSheet = true;
-  }catch(e1){
-    const proxies = ['https://api.allorigins.win/raw?url=','https://corsproxy.io/?','https://api.codetabs.com/v1/proxy?quest='];
-    for(const p of proxies){
-      try{
-        const csvText = await fetchCsv(p + encodeURIComponent(csvUrl));
-        processCsvText(csvText);
-        errorArea.style.display='none';
-        loadedFromSheet = true;
-        break;
-      }catch(e2){}
+    const raw = sessionStorage.getItem(CACHE_KEY_OS);
+    if(raw){
+      const p = JSON.parse(raw);
+      if(p && Array.isArray(p.data) && (Date.now() - p.ts) < CACHE_TTL){
+        OS_DATA = p.data;
+        hideSkeletonOS();
+        isLoadingOS = false;
+        renderLastUpdateOS();
+        if(activeView === 'os') renderOS();
+        if(activeView === 'home') renderHome();
+      }
     }
-  }
+  }catch(e){}
 
-  if(!loadedFromSheet){
-    const loaded = loadLocalDataOS();
-    if(loaded){ errorArea.style.display='none'; }
-    else { OS_DATA=[]; errorArea.style.display='block'; updateIndicatorOS('Falha ao carregar dados'); }
+  try{
+    const r = await apiOS('lerCSV');
+    if(r.ok && r.header && r.linhas){
+      const rows = r.linhas.map(arr => {
+        const o = {};
+        r.header.forEach((h, i) => o[h] = arr[i]);
+        return o;
+      });
+      OS_DATA = mapRowsToData(rows);
+      saveLocalDataOS();
+
+      try{
+        sessionStorage.setItem(CACHE_KEY_OS, JSON.stringify({ ts: Date.now(), data: OS_DATA }));
+      }catch(e){}
+
+      const errorArea = $('errorArea');
+      if(errorArea) errorArea.style.display = 'none';
+    } else {
+      throw new Error(r.error || 'lerCSV falhou');
+    }
+  }catch(err){
+    console.warn('lerCSV indisponível, usando fallback CSV público:', err);
+    try{
+      const cacheBust = 'ts=' + Date.now();
+      const csvUrl = DIRECT_SHEET_CSV_URL + (DIRECT_SHEET_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
+      const csvText = await fetchCsv(csvUrl);
+      processCsvText(csvText);
+    }catch(e2){
+      const loaded = loadLocalDataOS();
+      if(!loaded){
+        OS_DATA = [];
+        const errorArea = $('errorArea');
+        if(errorArea) errorArea.style.display = 'block';
+      }
+    }
   }
 
   hideSkeletonOS();
   isLoadingOS = false;
   renderLastUpdateOS();
-
   if(activeView === 'os') renderOS();
   if(activeView === 'home') renderHome();
 }
@@ -1671,20 +1709,32 @@ async function loadDataOS(){
 async function updateOSStatus(osNumber, newStatus, viatura){
   try{
     const r = await apiOS('atualizarStatus', { os:osNumber, status:newStatus, viatura });
-    if(r && r.ok === true){ saveLocalDataOS(); return true; }
+    if(r && r.ok === true){
+      saveLocalDataOS();
+      try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){}
+      return true;
+    }
     return false;
   }catch(err){ console.error(err); return false; }
 }
 async function createOSInSheet(data){
   try{
     const r = await apiOS('criarOS', data);
-    return r && r.ok === true;
+    if(r && r.ok === true){
+      try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){}
+      return true;
+    }
+    return false;
   }catch(err){ console.error(err); return false; }
 }
 async function editOSInSheet(osOriginal, viaturaOriginal, data){
   try{
     const r = await apiOS('editarOS', Object.assign({ osOriginal, viaturaOriginal }, data));
-    return r && r.ok === true;
+    if(r && r.ok === true){
+      try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){}
+      return true;
+    }
+    return false;
   }catch(err){ console.error(err); return false; }
 }
 
@@ -2387,9 +2437,26 @@ function toDatetimeLocalManut(str){
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+/* ── loadDataManut com cache ── */
 async function loadDataManut(){
   const upd = $('manutUpdateStatus');
-  upd.textContent = 'Carregando…';
+  const CACHE_KEY_MANUT = 'deman_cache_manut_v1';
+  const CACHE_TTL = 5 * 60 * 1000;
+
+  try{
+    const raw = sessionStorage.getItem(CACHE_KEY_MANUT);
+    if(raw){
+      const p = JSON.parse(raw);
+      if(p && Array.isArray(p.registros) && (Date.now() - p.ts) < CACHE_TTL){
+        MANUT_REGISTROS = p.registros;
+        upd.textContent = 'Cache · ' + new Date(p.ts).toLocaleTimeString('pt-BR');
+        if(activeView === 'manutencao') renderManut();
+        if(activeView === 'home') renderHome();
+      }
+    }
+  }catch(e){}
+
+  upd.textContent = 'Atualizando…';
   try{
     const cacheBust = 'ts=' + Date.now();
     const url = MANUT_CSV_URL + (MANUT_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
@@ -2408,6 +2475,12 @@ async function loadDataManut(){
       detalhes:   String(r['Detalhes da Ação'] || r['Detalhes da Acao'] || r['Detalhes'] || '').trim(),
       total:      Number(r['TOTAL DE DIAS'] || r['Total de Dias'] || 0) || 0
     })).filter(r => r.viatura);
+
+    try{
+      sessionStorage.setItem(CACHE_KEY_MANUT, JSON.stringify({
+        ts: Date.now(), registros: MANUT_REGISTROS
+      }));
+    }catch(e){}
 
     upd.textContent = 'Atualizado em ' + new Date().toLocaleTimeString('pt-BR');
     if(activeView === 'manutencao') renderManut();
@@ -2579,6 +2652,7 @@ function renderManutGrid(){
         const resp = await apiManut('removerManutencao', { viatura: v, entrada: e, local: l });
         btn.disabled = false;
         if(!resp.ok){ alert('Erro: ' + resp.error); return; }
+        try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
         await loadDataManut();
       });
     });
@@ -2593,29 +2667,24 @@ function renderManut(){
   if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas') ? 'inline-block' : 'none';
 }
 
-/* -------- Sub-abas (agora no sidebar) -------- */
 function showManutTab(name){
   if(name !== 'registros' && name !== 'novo') return;
   if(name === 'novo' && !temPermissao('manut_editar')) name = 'registros';
 
   activeManutTab = name;
 
-  // Sub-itens do sidebar
   document.querySelectorAll('#sidebarSubMov .sidebar-sublink').forEach(b => {
     b.classList.toggle('active', b.dataset.manutTab === name);
   });
 
-  // Painéis
   $('manutPanel-registros').classList.toggle('active', name === 'registros');
   $('manutPanel-novo').classList.toggle('active', name === 'novo');
 
-  // Garante submenu aberto quando navegamos para esta view
   setSidebarMovExpanded(true);
 
   if(name === 'novo') setTimeout(() => $('mm-viatura').focus(), 60);
 }
 
-/* -------- Formulário inline -------- */
 function limparFormManut(){
   manutEditKey = null;
   $('manutFormTitle').textContent = '🛠 Nova entrada';
@@ -2648,7 +2717,6 @@ function preencherFormManut(r){
   $('mm-delete').style.display = 'inline-block';
   $('mm-error').style.display = 'none';
 
-  // Navega para a view + tab de novo
   showView('manutencao');
   showManutTab('novo');
 }
@@ -2690,6 +2758,7 @@ async function salvarManut(){
 
   if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
 
+  try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
   await loadDataManut();
   limparFormManut();
   showManutTab('registros');
@@ -2705,6 +2774,7 @@ async function excluirManutAtual(){
   });
   btn.disabled = false; btn.textContent = 'Excluir registro';
   if(!r.ok){ alert('Erro: ' + r.error); return; }
+  try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
   await loadDataManut();
   limparFormManut();
   showManutTab('registros');
@@ -2809,10 +2879,35 @@ function renderUsuarios(){
 }
 
 /* ════════════════════════════════════════════════════════════
+   POLLING ADAPTATIVO
+   ════════════════════════════════════════════════════════════ */
+let _pollHandle = null;
+function iniciarPolling(){
+  if(_pollHandle) clearInterval(_pollHandle);
+  _pollHandle = setInterval(async () => {
+    if(document.hidden) return;
+    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal']
+      .some(id => $(id).style.display === 'flex');
+    const selFocused = document.activeElement && ['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName);
+    if(modalOpen || selFocused) return;
+
+    if(activeView === 'os'         && temPermissao('ver_os'))         await loadDataOS();
+    if(activeView === 'viaturas'   && temPermissao('ver_viaturas'))   await loadDataViaturas();
+    if(activeView === 'manutencao' && temPermissao('ver_manutencao')) await loadDataManut();
+  }, POLLING_INTERVAL);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) return;
+  if(activeView === 'os'         && temPermissao('ver_os'))         loadDataOS();
+  if(activeView === 'viaturas'   && temPermissao('ver_viaturas'))   loadDataViaturas();
+  if(activeView === 'manutencao' && temPermissao('ver_manutencao')) loadDataManut();
+});
+
+/* ════════════════════════════════════════════════════════════
    EVENT LISTENERS
    ════════════════════════════════════════════════════════════ */
 
-/* Menu */
 $('menuToggle').addEventListener('click', () => {
   const app = $('app');
   if(isMobile()){ app.classList.toggle('sidebar-open'); }
@@ -2823,13 +2918,11 @@ $('menuToggle').addEventListener('click', () => {
 });
 $('sidebarBackdrop').addEventListener('click', () => $('app').classList.remove('sidebar-open'));
 
-/* Sidebar principal (todos exceto o parent de movimentação) */
 document.querySelectorAll('.sidebar-link[data-view]').forEach(btn => {
   if(btn.id === 'sidebarMovParent') return;
   btn.addEventListener('click', () => showView(btn.dataset.view));
 });
 
-/* Parent de Movimentação: navega + expande/colapsa */
 $('sidebarMovParent').addEventListener('click', () => {
   if(activeView !== 'manutencao'){
     showView('manutencao');
@@ -2839,7 +2932,6 @@ $('sidebarMovParent').addEventListener('click', () => {
   }
 });
 
-/* Sub-itens do sidebar (Registros / Novo registro) */
 document.querySelectorAll('#sidebarSubMov .sidebar-sublink').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2850,17 +2942,14 @@ document.querySelectorAll('#sidebarSubMov .sidebar-sublink').forEach(btn => {
 
 $('logoutBtn').addEventListener('click', handleLogout);
 
-/* Login */
 $('loginBtn').addEventListener('click', handleLogin);
 $('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
 $('loginUser').addEventListener('keydown', e => { if(e.key==='Enter') $('loginPass').focus(); });
 $('createAccountLink').addEventListener('click', e => { e.preventDefault(); abrirUserModal('create'); });
 
-/* Trocar senha */
 $('cp-save').addEventListener('click', salvarNovaSenha);
 $('cp-confirm').addEventListener('keydown', e => { if(e.key==='Enter') salvarNovaSenha(); });
 
-/* Modal usuário */
 $('um-cancel').addEventListener('click', fecharUserModal);
 $('um-save').addEventListener('click', salvarUserModal);
 $('um-reset').addEventListener('click', resetarSenhaUsuario);
@@ -2873,11 +2962,9 @@ document.querySelectorAll('#permGrid .perm-check').forEach(label => {
 });
 $('userModal').addEventListener('click', e => { if(e.target.id === 'userModal') fecharUserModal(); });
 
-/* Usuários */
 $('newUserBtn').addEventListener('click', () => abrirUserModal('create'));
 $('usersSearch').addEventListener('input', debounce(renderUsuarios, 180));
 
-/* OS */
 const afStageSel = $('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 $('osSearch').addEventListener('input', debounce(() => renderOS(), 180));
@@ -2985,20 +3072,16 @@ $('reportClose').addEventListener('click', () => { $('reportModal').style.displa
 $('reportPrint').addEventListener('click', () => window.print());
 $('reportModal').addEventListener('click', e => { if(e.target.id === 'reportModal') $('reportModal').style.display='none'; });
 
-/* Viaturas */
 $('viatSearch').addEventListener('input', debounce(() => renderViaturas(), 180));
 $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'; renderViaturas(); });
 
-/* Movimentação */
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
 
-/* Formulário inline da Movimentação */
 $('mm-save').addEventListener('click', salvarManut);
 $('mm-delete').addEventListener('click', excluirManutAtual);
 $('mm-clear').addEventListener('click', limparFormManut);
 
-/* ESC fecha modais */
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
   ['editModal','reportModal','actionModal','userModal'].forEach(id => {
@@ -3047,15 +3130,7 @@ function startApp(){
   else if(temPermissao('admin_usuarios')) showView('usuarios');
   else showView('home');
 
-  setInterval(() => {
-    const modalOpen = ['editModal','reportModal','actionModal','userModal','changePassModal']
-      .some(id => $(id).style.display === 'flex');
-    const selFocused = document.activeElement && ['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName);
-    if(modalOpen || selFocused) return;
-    if(temPermissao('ver_os'))         loadDataOS();
-    if(temPermissao('ver_viaturas'))   loadDataViaturas();
-    if(temPermissao('ver_manutencao')) loadDataManut();
-  }, POLLING_INTERVAL);
+  iniciarPolling();
 }
 
 if(isLoggedIn()){
