@@ -545,6 +545,7 @@ select.stage-select{
 .manut-empty{
   text-align:center;color:var(--text-faint);padding:40px 20px;font-size:14px;grid-column:1/-1;
 }
+
 /* Sub-abas internas da Manutenção */
 .sub-tabs{
   display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);
@@ -604,6 +605,7 @@ select.stage-select{
   padding-top:16px;border-top:1px solid var(--border);
 }
 .inline-form-actions .btn{padding:10px 18px;font-size:14px;}
+
 /* ════════════════════════════════════════════
    9. USUÁRIOS
    ════════════════════════════════════════════ */
@@ -850,7 +852,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
-       <!-- ══════ MANUTENÇÃO ══════ -->
+    <!-- ══════ MANUTENÇÃO ══════ -->
     <section class="view" id="view-manutencao">
       <div class="update-indicator" id="manutUpdateStatus">Carregando dados…</div>
 
@@ -1034,50 +1036,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <div class="modal-actions">
       <button class="btn ghost" id="ed-cancel">Cancelar</button>
       <button class="btn primary" id="ed-save">Salvar alterações</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════ MODAL: MANUTENÇÃO (criar/editar) ═══════════════ -->
-<div id="manutModal" class="modal-overlay" style="display:none;">
-  <div class="modal-box wide">
-    <h2 id="manutModalTitle">🛠 Nova entrada</h2>
-    <p class="help" id="manutModalHelp">
-      Registre a entrada ou saída da viatura. Os campos <b style="color:var(--amber);">Dias</b> e <b style="color:var(--amber);">Total acumulado</b> são calculados automaticamente.
-    </p>
-    <div class="modal-grid">
-      <label>Viatura
-        <input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters">
-      </label>
-      <label>Status
-        <select id="mm-status">
-          <option value="Em Manutenção">Em Manutenção</option>
-          <option value="Ativa">Ativa</option>
-        </select>
-      </label>
-      <label>Entrada
-        <input type="datetime-local" id="mm-entrada">
-      </label>
-      <label>Saída (opcional)
-        <input type="datetime-local" id="mm-saida">
-      </label>
-      <label class="full">Local
-        <input type="text" id="mm-local" placeholder="ex: Fix Car, 1° GBM, DEMAN, Arcon">
-      </label>
-      <label class="full">Informante
-        <input type="text" id="mm-informante" placeholder="ex: Capitão Bita">
-      </label>
-      <label class="full">Detalhes da ação
-        <textarea id="mm-detalhes" rows="3" placeholder="Descreva a ação realizada ou o problema identificado…"></textarea>
-      </label>
-    </div>
-    <p id="mm-error" class="modal-error"></p>
-    <div class="modal-actions left">
-      <button class="btn danger" id="mm-delete" style="display:none;">Excluir registro</button>
-      <div style="display:flex;gap:8px;margin-left:auto;">
-        <button class="btn ghost" id="mm-cancel">Cancelar</button>
-        <button class="btn primary" id="mm-save">Salvar</button>
-      </div>
     </div>
   </div>
 </div>
@@ -1474,7 +1432,6 @@ function renderHome(){
   $('h-v-dir').textContent     = vDir;
   $('h-v-baix').textContent    = vBaix;
 
-  // Manutenção
   const mStats = calcularEstatisticasManut();
   $('h-m-total').textContent = mStats.totalRegistros;
   $('h-m-vtrs').textContent  = mStats.totalViaturas;
@@ -1503,7 +1460,7 @@ document.querySelectorAll('#view-home .home-card').forEach(card => {
 });
 
 /* ════════════════════════════════════════════════════════════
-   ────────  OS-BAMEX (inalterado)  ────────
+   ────────  OS-BAMEX  ────────
    ════════════════════════════════════════════════════════════ */
 const TAB_GERAL = 'geral';
 const TAB_MANUTENCAO = '__manutencao__';
@@ -1977,7 +1934,7 @@ function openEditModal(recordId){
 function closeEditModal(){ editingRecordId = null; $('editModal').style.display = 'none'; }
 
 /* ════════════════════════════════════════════════════════════
-   ────────  VIATURAS (inalterado)  ────────
+   ────────  VIATURAS  ────────
    ════════════════════════════════════════════════════════════ */
 const MOTIVOS_BAIXA = ['Sinistro','Manutenção'];
 const CACHE_KEY = 'deman_cache_viaturas_v1';
@@ -2370,8 +2327,8 @@ function abrirModalMoverReserva(prefixo){
    ════════════════════════════════════════════════════════════ */
 let MANUT_REGISTROS = [];
 let MANUT_FILTRO_STATUS = 'todas';
-let activeManutTab = 'registros';   // 'registros' | 'novo'
-let manutEditKey = null;            // null = criar | {viatura, entrada, local} = editar
+let activeManutTab = 'registros';
+let manutEditKey = null;
 
 function parseDataManut(str){
   if(!str) return null;
@@ -2970,7 +2927,6 @@ $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'
 /* Manutenção */
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
-/* Sub-abas da Manutenção */
 document.querySelectorAll('#manutTabs .sub-tab').forEach(tab => {
   tab.addEventListener('click', () => showManutTab(tab.dataset.manutTab));
 });
