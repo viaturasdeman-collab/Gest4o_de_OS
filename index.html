@@ -106,8 +106,9 @@ button{font:inherit;}
 .btn.danger:hover{border-color:var(--vermelho);background:rgba(239,83,80,.12);}
 .btn.report{border-color:var(--azul);color:var(--azul);}
 .btn.report:hover{background:rgba(0,171,251,.12);}
-.btn.whatsapp{background:#25D366;color:#0B141A;border-color:#25D366;}
-.btn.whatsapp:hover{background:#1EAE54;border-color:#1EAE54;}
+.btn.whatsapp{background:#25D366;color:#0B141A;border-color:#25D366;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn.whatsapp:hover{background:#1EAE54;border-color:#1EAE54;color:#0B141A;}
+.btn.whatsapp svg{flex:none;display:block;}
 .btn.success{border-color:rgba(61,220,132,.5);color:var(--verde);}
 .btn.success:hover{border-color:var(--verde);background:rgba(61,220,132,.12);}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
@@ -693,7 +694,10 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <div class="resumo-box" id="sucessoResumo"></div>
     <div class="sucesso-actions">
       <button class="btn ghost" id="sucessoVoltar">Voltar</button>
-      <button class="btn whatsapp" id="sucessoWhats">📱 Enviar no WhatsApp</button>
+      <button class="btn whatsapp" id="sucessoWhats">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enviar no WhatsApp
+      </button>
     </div>
   </div>
 </div>
@@ -868,23 +872,19 @@ const PERM_GRUPOS = {
 
 /* ─────────── KEEP-ALIVE FRONTEND (ping periódico) ─────────── */
 setInterval(() => {
-  // Não pinga se a aba está escondida (economiza bateria)
   if (document.hidden) return;
-  // Só pinga se está logado
   if (!isLoggedIn()) return;
-
   const ping = (url) => fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action: 'versao' }),
     cache: 'no-store'
   }).catch(()=>{});
-
   ping(OS_APPS_SCRIPT_URL);
   ping(VIATURAS_APPS_SCRIPT_URL);
   ping(MANUT_APPS_SCRIPT_URL);
-}, 2 * 60 * 1000); // 2 minutos
-  
+}, 2 * 60 * 1000);
+
 function normalizeStr(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
 function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
@@ -1569,11 +1569,11 @@ function abrirModalMoverReserva(prefixo){
 }
 
 /* ═══════ MOVIMENTAÇÃO (v5 — processos com eventos) ═══════ */
-let MANUT_EVENTOS = []; // array plano de eventos
+let MANUT_EVENTOS = [];
 let MANUT_FILTRO_STATUS = 'todas';
 let activeManutTab = 'registros';
-let modoManutForm = 'criar'; // 'criar' | 'evento' | 'finalizar'
-let processoAtual = null; // { id, viatura, eventos, aberto, ... }
+let modoManutForm = 'criar';
+let processoAtual = null;
 let sidebarMovExpanded = true;
 
 function setSidebarMovExpanded(v){ sidebarMovExpanded = !!v; const sub = $('sidebarSubMov'); const parent = $('sidebarMovParent'); if(sub) sub.classList.toggle('open', sidebarMovExpanded); if(parent) parent.classList.toggle('expanded', sidebarMovExpanded); }
@@ -1708,7 +1708,6 @@ function processosFiltrados(){
   const grupos = agruparPorProcesso();
   let ids = Object.keys(grupos);
 
-  // Ordenação: abertos primeiro (último evento mais recente), depois fechados (último evento mais recente)
   ids.sort((a, b) => {
     const ga = grupos[a], gb = grupos[b];
     if(ga.aberto !== gb.aberto) return ga.aberto ? -1 : 1;
@@ -1718,13 +1717,11 @@ function processosFiltrados(){
     return (pb ? pb.getTime() : 0) - (pa ? pa.getTime() : 0);
   });
 
-  // Filtro por status
   if(MANUT_FILTRO_STATUS === 'abertos') ids = ids.filter(id => grupos[id].aberto);
   else if(MANUT_FILTRO_STATUS === 'finalizados') ids = ids.filter(id => !grupos[id].aberto);
   else if(MANUT_FILTRO_STATUS === 'em') ids = ids.filter(id => statusClasseManut(grupos[id].ultimo ? grupos[id].ultimo.status : '') === 'em-manutencao');
   else if(MANUT_FILTRO_STATUS === 'baixadas') ids = ids.filter(id => statusClasseManut(grupos[id].ultimo ? grupos[id].ultimo.status : '') === 'baixada');
 
-  // Busca
   if(q){
     ids = ids.filter(id => {
       const g = grupos[id];
@@ -1752,6 +1749,8 @@ function renderManutGrid(){
     container.innerHTML = '<div class="manut-empty">Nenhum processo encontrado.</div>';
     return;
   }
+
+  const waSvgCard = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
 
   container.innerHTML = procs.map(p => {
     const classe = !p.aberto ? (statusClasseManut(p.ultimo.status) === 'baixada' ? 'baixada' : 'fechado') : 'aberto';
@@ -1781,7 +1780,7 @@ function renderManutGrid(){
       if(podeEditar) acoes += `<button class="btn success" data-action="finalizar" data-id="${escapeAttr(p.id)}">✅ Finalizar</button>`;
       if(podeEditar) acoes += `<button class="btn ghost" data-action="evento" data-id="${escapeAttr(p.id)}">+ Evento</button>`;
     }
-    acoes += `<button class="btn whatsapp" data-action="whats" data-id="${escapeAttr(p.id)}" title="Compartilhar">📱</button>`;
+    acoes += `<button class="btn whatsapp" data-action="whats" data-id="${escapeAttr(p.id)}" title="Compartilhar">${waSvgCard}</button>`;
     if(p.aberto && p.eventos.length > 1 && podeEditar){
       acoes += `<button class="btn ghost" data-action="desfazer" data-id="${escapeAttr(p.id)}" title="Desfazer último evento">↩</button>`;
     }
@@ -1814,7 +1813,6 @@ function renderManutGrid(){
     </div>`;
   }).join('');
 
-  // Bind ações
   container.querySelectorAll('[data-action="finalizar"]').forEach(btn => {
     btn.addEventListener('click', () => {
       const p = procs.find(x => x.id === btn.dataset.id); if(p) abrirFormFinalizar(p);
@@ -1877,7 +1875,6 @@ function showManutTab(name){
   if(name === 'novo' && modoManutForm === 'criar') setTimeout(() => $('mm-viatura').focus(), 60);
 }
 
-/* Formulário */
 function setFormModo(modo){
   modoManutForm = modo;
   $('formCriar').style.display = (modo === 'criar') ? '' : 'none';
@@ -2019,9 +2016,7 @@ async function salvarCriarManut(){
     err.textContent = r.error || 'Erro ao salvar.';
     err.style.display = 'block';
     if(r.idExistente){
-      // Oferece abrir o processo existente
       if(confirm('Já existe um processo aberto para esta viatura (' + r.idExistente + '). Deseja adicionar um evento a ele?')){
-        // Localiza o processo
         const grupos = agruparPorProcesso();
         if(grupos[r.idExistente]) abrirFormEvento(grupos[r.idExistente]);
       }
@@ -2094,7 +2089,6 @@ async function salvarFinalizarManut(){
   try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
   await loadDataManut();
 
-  // Monta mensagem com dados que já temos
   const entradaData = processoAtual.entrada ? processoAtual.entrada.data : '—';
   const entradaInf = processoAtual.entrada ? processoAtual.entrada.informante : '—';
   const dataFimBR = dataFim.split('T')[0].split('-').reverse().join('/');
@@ -2121,7 +2115,6 @@ async function salvarFinalizarManut(){
   limparFormManut();
 }
 
-/* WhatsApp */
 function abrirWhatsApp(texto){ const base = WHATSAPP_DESTINO ? 'https://wa.me/' + WHATSAPP_DESTINO : 'https://wa.me/'; window.open(base + '?text=' + encodeURIComponent(texto), '_blank'); }
 
 function montarMensagemEntrada(p){
@@ -2171,7 +2164,6 @@ function fecharSucesso(){
   showManutTab('registros');
 }
 
-/* Relatório de Movimentação */
 function getMesesDisponiveisManut(){
   const set = new Set();
   MANUT_EVENTOS.forEach(e => {
@@ -2257,7 +2249,6 @@ function renderRelatorioManutPorMes(){
     if(!grupos[ym]) grupos[ym] = {};
     if(!grupos[ym][e.viatura]) grupos[ym][e.viatura] = { eventos: 0, dias: 0 };
     grupos[ym][e.viatura].eventos += 1;
-    // Só soma dias da finalização
     if(normalizeStr(e.evento).indexOf('finaliz') !== -1){
       grupos[ym][e.viatura].dias += extrairDiasNumericos(e.dias);
     }
