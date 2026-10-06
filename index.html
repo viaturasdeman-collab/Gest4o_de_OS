@@ -8,19 +8,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
 <meta name="color-scheme" content="dark">
-
 <link rel="dns-prefetch" href="https://script.google.com">
 <link rel="dns-prefetch" href="https://script.googleusercontent.com">
 <link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.rel='stylesheet'">
-<noscript>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-</noscript>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
 <style>
 :root{
   --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
@@ -113,6 +108,8 @@ button{font:inherit;}
 .btn.report:hover{background:rgba(0,171,251,.12);}
 .btn.whatsapp{background:#25D366;color:#0B141A;border-color:#25D366;}
 .btn.whatsapp:hover{background:#1EAE54;border-color:#1EAE54;}
+.btn.success{border-color:rgba(61,220,132,.5);color:var(--verde);}
+.btn.success:hover{border-color:var(--verde);background:rgba(61,220,132,.12);}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
 input[type=text], input[type=password], input[type=file], select, textarea{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:16px;min-width:0;-webkit-appearance:none;}
 input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus{outline:1px solid var(--amber);}
@@ -123,7 +120,6 @@ input[type=datetime-local]:focus{outline:1px solid var(--amber);}
 .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .modal-box.wide{max-width:640px;}
 .modal-box h2{font-family:'Rajdhani',sans-serif;font-size:20px;margin:0;color:var(--amber);letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
-.modal-box h2 svg{width:16px;height:16px;}
 .modal-box p.help{font-size:12px;color:var(--text-dim);margin:0;}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .modal-grid label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;}
@@ -251,6 +247,8 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .summary-card.manut-vtrs::before{background:var(--azul);}
 .summary-card.manut-em::before{background:var(--amber);}
 .summary-card.manut-dias::before{background:var(--vermelho);}
+.summary-card.manut-abertos::before{background:var(--amber);}
+.summary-card.manut-fechados::before{background:var(--verde);}
 .summary-card .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
 .summary-card .value{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;line-height:1;}
 .summary-card.total .value{color:var(--amber);}
@@ -262,6 +260,8 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .summary-card.manut-vtrs .value{color:var(--azul);}
 .summary-card.manut-em .value{color:var(--amber);}
 .summary-card.manut-dias .value{color:var(--vermelho);}
+.summary-card.manut-abertos .value{color:var(--amber);}
+.summary-card.manut-fechados .value{color:var(--verde);}
 .summary-card.active-filter{border-color:var(--amber);background:linear-gradient(135deg, rgba(232,169,58,.12), transparent);}
 .summary-card.active-filter .label{color:var(--amber);}
 .summary-card.active-filter::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--amber);font-size:14px;font-weight:700;}
@@ -285,22 +285,27 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .local-empty{font-size:12px;color:var(--text-faint);padding:20px;text-align:center;font-style:italic;}
 .empty{text-align:center;color:var(--text-faint);padding:40px 20px;font-size:14px;grid-column:1/-1;}
 @media (max-width: 560px){.local-grid{grid-template-columns:1fr;}.summary{grid-template-columns:repeat(2, 1fr);}.summary-card .value{font-size:26px;}}
-.manut-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;}
+.manut-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;}
 @media (max-width:600px){.manut-grid{grid-template-columns:1fr;}}
-.manut-veh-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
-.manut-veh-card.em-manutencao{border-color:rgba(232,169,58,.45);}
-.manut-veh-card.em-manutencao .manut-veh-head{background:linear-gradient(135deg, rgba(232,169,58,.12), var(--surface-2));}
-.manut-veh-card.reserva{border-color:rgba(177,140,255,.45);}
-.manut-veh-card.reserva .manut-veh-head{background:linear-gradient(135deg, rgba(177,140,255,.12), var(--surface-2));}
-.manut-veh-card.reserva .manut-veh-prefix{color:var(--roxo);}
-.manut-veh-card.baixada{border-color:rgba(239,83,80,.45);}
-.manut-veh-card.baixada .manut-veh-head{background:linear-gradient(135deg, rgba(239,83,80,.12), var(--surface-2));}
-.manut-veh-card.baixada .manut-veh-prefix{color:var(--vermelho);}
-.manut-veh-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);}
-.manut-veh-prefix{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:var(--text);letter-spacing:.02em;}
-.manut-veh-card.em-manutencao .manut-veh-prefix{color:var(--amber);}
-.manut-veh-total{font-family:'IBM Plex Mono',monospace;font-size:11px;background:rgba(232,169,58,.12);color:var(--amber);border:1px solid rgba(232,169,58,.5);border-radius:20px;padding:3px 10px;white-space:nowrap;}
-.manut-veh-meta{padding:9px 16px;font-size:11px;color:var(--text-dim);border-bottom:1px solid rgba(48,58,71,.4);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.manut-proc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+.manut-proc-card.aberto{border-color:rgba(232,169,58,.5);}
+.manut-proc-card.aberto .manut-proc-head{background:linear-gradient(135deg, rgba(232,169,58,.12), var(--surface-2));}
+.manut-proc-card.fechado{border-color:rgba(61,220,132,.35);}
+.manut-proc-card.fechado .manut-proc-head{background:linear-gradient(135deg, rgba(61,220,132,.08), var(--surface-2));}
+.manut-proc-card.baixada{border-color:rgba(239,83,80,.45);}
+.manut-proc-card.baixada .manut-proc-head{background:linear-gradient(135deg, rgba(239,83,80,.12), var(--surface-2));}
+.manut-proc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);}
+.manut-proc-head-left{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.manut-proc-viatura{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;color:var(--text);letter-spacing:.02em;}
+.manut-proc-card.aberto .manut-proc-viatura{color:var(--amber);}
+.manut-proc-card.baixada .manut-proc-viatura{color:var(--vermelho);}
+.manut-proc-id{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);letter-spacing:.04em;}
+.manut-proc-head-right{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex:none;}
+.manut-proc-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:20px;white-space:nowrap;border:1px solid var(--border);}
+.manut-proc-badge.aberto{background:rgba(232,169,58,.12);color:var(--amber);border-color:rgba(232,169,58,.5);}
+.manut-proc-badge.fechado{background:rgba(61,220,132,.12);color:var(--verde);border-color:rgba(61,220,132,.4);}
+.manut-proc-dias{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);}
+.manut-proc-meta{padding:9px 16px;font-size:11px;color:var(--text-dim);border-bottom:1px solid rgba(48,58,71,.4);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .manut-pill{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;}
 .manut-pill.em-manutencao{background:rgba(232,169,58,.12);border-color:rgba(232,169,58,.5);color:var(--amber);}
 .manut-pill.ativa{background:rgba(61,220,132,.12);border-color:rgba(61,220,132,.5);color:var(--verde);}
@@ -308,20 +313,22 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .manut-pill.baixada{background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.5);color:var(--vermelho);}
 .manut-pill .dot{width:6px;height:6px;}
 .manut-timeline{padding:4px 12px 12px;flex:1;}
-.manut-event{padding:12px 4px 12px 8px;border-bottom:1px solid rgba(48,58,71,.4);display:flex;flex-direction:column;gap:4px;position:relative;}
-.manut-event:last-child{border-bottom:none;}
-.manut-event-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding-right:100px;}
-.manut-event-date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text);font-weight:600;}
-.manut-event-dias{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);white-space:nowrap;}
-.manut-event-line{font-size:11px;color:var(--text-dim);display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-.manut-event-line b{color:var(--text);font-weight:600;}
-.manut-event-informante{font-size:10.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
-.manut-event-detail{font-size:11.5px;color:var(--text-dim);line-height:1.4;margin-top:3px;overflow-wrap:break-word;}
-.manut-event-actions{position:absolute;top:10px;right:2px;display:flex;gap:4px;}
-.manut-event-actions .btn{width:24px;height:24px;padding:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;}
-.manut-event-actions .btn svg{width:11px;height:11px;display:block;}
-.manut-event-actions .btn.wa{background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.45);color:#5DE08F;}
-.manut-event-actions .btn.wa:hover{background:rgba(37,211,102,.25);border-color:#25D366;}
+.manut-ev{padding:10px 4px 10px 8px;border-bottom:1px solid rgba(48,58,71,.4);display:flex;flex-direction:column;gap:3px;position:relative;}
+.manut-ev:last-child{border-bottom:none;}
+.manut-ev-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding-right:8px;flex-wrap:wrap;}
+.manut-ev-tipo{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;}
+.manut-ev-tipo.entrada{color:var(--azul);}
+.manut-ev-tipo.movimentacao{color:var(--amber);}
+.manut-ev-tipo.observacao{color:var(--roxo);}
+.manut-ev-tipo.finalizacao{color:var(--verde);}
+.manut-ev-data{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap;}
+.manut-ev-local{font-size:11.5px;color:var(--text);}
+.manut-ev-informante{font-size:10.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+.manut-ev-detalhe{font-size:11.5px;color:var(--text-dim);line-height:1.4;margin-top:2px;overflow-wrap:break-word;}
+.manut-ev-status{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:2px;}
+.manut-proc-actions{padding:10px 16px;border-top:1px solid var(--border);background:var(--bg-elev);display:flex;gap:6px;flex-wrap:wrap;}
+.manut-proc-actions .btn{font-size:12px;padding:7px 12px;flex:1;min-width:0;text-align:center;}
+.manut-proc-actions .btn.icon{flex:0 0 auto;width:auto;padding:7px 10px;}
 .manut-empty{text-align:center;color:var(--text-faint);padding:40px 20px;font-size:14px;grid-column:1/-1;}
 .manut-panel{display:none;}
 .manut-panel.active{display:block;animation:fadeSlide .18s ease;}
@@ -343,15 +350,10 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .inline-form-grid textarea:focus{outline:1px solid var(--amber);}
 .inline-form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
 .inline-form-actions .btn{padding:10px 18px;font-size:14px;}
-.form-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;position:relative;}
-.form-section.travada{background:linear-gradient(135deg, var(--surface-2), var(--surface));border-color:rgba(232,169,58,.35);}
-.form-section-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--amber);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.form-section-title .lock{font-size:10px;color:var(--text-faint);margin-left:auto;font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;}
-.form-section.travada input:disabled,
-.form-section.travada textarea:disabled,
-.form-section.travada select:disabled{opacity:.7;cursor:not-allowed;background:var(--bg-elev);}
-.form-section .inline-form-grid{margin-bottom:0;}
-.form-hint{font-size:11px;color:var(--text-faint);margin-top:6px;font-style:italic;display:flex;align-items:center;gap:5px;}
+.proc-info-box{background:linear-gradient(135deg, rgba(232,169,58,.08), var(--surface-2));border:1px solid rgba(232,169,58,.35);border-radius:10px;padding:12px 16px;margin-bottom:16px;}
+.proc-info-box .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13px;}
+.proc-info-box .row span{color:var(--text-dim);}
+.proc-info-box .row b{color:var(--text);font-weight:600;}
 .users-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .users-toolbar input{min-width:220px;}
 .users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
@@ -391,6 +393,7 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .report-table tr:last-child td{border-bottom:none;}
 .report-table tr:hover td{background:rgba(232,169,58,.05);}
 .report-table td.v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;white-space:nowrap;}
+.report-table td.id{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
 .report-table td.status{font-family:'IBM Plex Mono',monospace;font-size:10px;white-space:nowrap;}
 .report-table td.date{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap;}
 .report-table td.dias{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);white-space:nowrap;text-align:right;}
@@ -476,8 +479,8 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div class="sidebar-group" id="sidebarMovGroup" data-perm="ver_manutencao">
         <button class="sidebar-link expanded" data-view="manutencao" id="sidebarMovParent"><span class="icon">🛠</span><span class="label">Movimentação</span><span class="chevron">▾</span></button>
         <div class="sidebar-submenu open" id="sidebarSubMov">
-          <button class="sidebar-sublink active" data-manut-tab="registros"><span class="icon">📋</span><span class="label">Registros</span></button>
-          <button class="sidebar-sublink" data-manut-tab="novo" data-perm="manut_criar"><span class="icon">📝</span><span class="label">Novo registro</span></button>
+          <button class="sidebar-sublink active" data-manut-tab="registros"><span class="icon">📋</span><span class="label">Processos</span></button>
+          <button class="sidebar-sublink" data-manut-tab="novo" data-perm="manut_criar"><span class="icon">📝</span><span class="label">Nova entrada</span></button>
         </div>
       </div>
       <button class="sidebar-link" data-view="usuarios" id="sidebarUsuariosBtn"><span class="icon">👥</span><span class="label">Usuários</span></button>
@@ -489,7 +492,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 
   <main class="main">
 
-    <!-- HOME -->
     <section class="view is-active" id="view-home">
       <div class="home-welcome"><h2>Bem-vindo, <span id="homeUserName">—</span></h2><p>Resumo em tempo real dos painéis.</p></div>
       <div class="update-indicator" id="homeUpdateStatus">Carregando…</div>
@@ -514,11 +516,9 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div id="homeManutSection">
         <div class="home-section-title">Movimentação</div>
         <div class="home-grid">
-          <div class="home-card manut"><div class="label">Registros</div><div class="value" id="h-m-total">—</div></div>
-          <div class="home-card manut-vtrs"><div class="label">Viaturas</div><div class="value" id="h-m-vtrs">—</div></div>
-          <div class="home-card manut-vtrs"><div class="label">Ativas</div><div class="value" id="h-m-ativas">—</div></div>
-          <div class="home-card manut"><div class="label">Reservas</div><div class="value" id="h-m-reservas">—</div></div>
-          <div class="home-card manut-em"><div class="label">Em manutenção</div><div class="value" id="h-m-em">—</div></div>
+          <div class="home-card manut"><div class="label">Processos</div><div class="value" id="h-m-total">—</div></div>
+          <div class="home-card manut-em"><div class="label">Em andamento</div><div class="value" id="h-m-abertos">—</div></div>
+          <div class="home-card manut-vtrs"><div class="label">Finalizados</div><div class="value" id="h-m-fechados">—</div></div>
           <div class="home-card manut-dias"><div class="label">Baixadas</div><div class="value" id="h-m-baixadas">—</div></div>
         </div>
       </div>
@@ -526,7 +526,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados das planilhas Google Sheets.</footer>
     </section>
 
-    <!-- OS -->
     <section class="view" id="view-os">
       <div class="update-indicator" id="updateStatus">Aguardando primeira carga…</div>
       <div class="last-change" id="lastChange">Última alteração registrada: —</div>
@@ -567,7 +566,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
-    <!-- VIATURAS -->
     <section class="view" id="view-viaturas">
       <div class="update-indicator" id="viatUpdateStatus">Carregando dados…</div>
       <div class="summary" id="summaryCards"></div>
@@ -581,14 +579,13 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
-    <!-- MOVIMENTAÇÃO -->
     <section class="view" id="view-manutencao">
       <div class="update-indicator" id="manutUpdateStatus">Carregando dados…</div>
       <div class="manut-panel active" id="manutPanel-registros">
         <div class="summary" id="manutSummary"></div>
         <div class="toolbar">
           <div class="right-tools">
-            <input type="text" id="manutSearch" placeholder="Buscar viatura, local ou informante">
+            <input type="text" id="manutSearch" placeholder="Buscar viatura, ID, local, informante">
             <button class="btn ghost" id="manutClearFilterBtn" style="display:none;">Limpar filtro</button>
             <button class="btn report" id="manutReportBtn">📄 Relatório</button>
           </div>
@@ -598,54 +595,74 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div class="manut-panel" id="manutPanel-novo">
         <div class="inline-form">
           <h2 id="manutFormTitle">🛠 Nova entrada</h2>
-          <p class="help" id="manutFormHelp">Preencha os dados. Após salvar, a <b style="color:var(--amber);">data de entrada</b> e o <b style="color:var(--amber);">informante da entrada</b> ficam travados.</p>
-          <div class="form-section" id="formSectionEntrada">
-            <div class="form-section-title"><span>📥 Entrada</span><span class="lock" id="lockEntrada" style="display:none;">🔒 Travado</span></div>
-            <div class="inline-form-grid">
-              <label>Viatura<input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters"></label>
-              <label>Status
-                <select id="mm-status">
-                  <option value="Em Manutenção">Em Manutenção</option>
-                  <option value="Reserva">Reserva</option>
-                  <option value="Baixada">Baixada</option>
-                  <option value="Ativa">Ativa</option>
-                </select>
-              </label>
-              <label>Entrada<input type="datetime-local" id="mm-entrada"></label>
-              <label>Local<input type="text" id="mm-local" placeholder="ex: Fix Car, 1° GBM, DEMAN"></label>
-              <label class="full">Informante<input type="text" id="mm-informante" placeholder="ex: Capitão Bita"></label>
-              <label class="full">Motivo / Detalhes da entrada
-                <textarea id="mm-detalhes-entrada" rows="3" placeholder="Descreva o problema identificado…"></textarea>
-              </label>
-            </div>
+          <p class="help" id="manutFormHelp">Ao salvar, um processo com ID único será criado. Depois você pode adicionar eventos e finalizar.</p>
+
+          <div id="procInfoBox" class="proc-info-box" style="display:none;"></div>
+
+          <div class="inline-form-grid" id="formCriar">
+            <label>Viatura<input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters"></label>
+            <label>Status
+              <select id="mm-status">
+                <option value="Em Manutenção">Em Manutenção</option>
+                <option value="Reserva">Reserva</option>
+                <option value="Baixada">Baixada</option>
+                <option value="Ativa">Ativa</option>
+              </select>
+            </label>
+            <label>Entrada<input type="datetime-local" id="mm-entrada"></label>
+            <label>Local<input type="text" id="mm-local" placeholder="ex: Fix Car, 1° GBM, DEMAN"></label>
+            <label class="full">Informante<input type="text" id="mm-informante" placeholder="ex: Capitão Bita"></label>
+            <label class="full">Motivo / Detalhes da entrada
+              <textarea id="mm-detalhes" rows="3" placeholder="Descreva o problema identificado…"></textarea>
+            </label>
           </div>
-          <div class="form-section travada" id="formSectionSaida" style="display:none;">
-            <div class="form-section-title"><span>📤 Saída</span></div>
-            <div class="inline-form-grid">
-              <label>Saída<input type="datetime-local" id="mm-saida"></label>
-              <label>Status final
-                <select id="mm-status-final">
-                  <option value="Ativa">Ativa</option>
-                  <option value="Reserva">Reserva</option>
-                  <option value="Em Manutenção">Em Manutenção</option>
-                  <option value="Baixada">Baixada</option>
-                </select>
-              </label>
-              <label class="full">Novo local (destino)<input type="text" id="mm-novo-local" placeholder="ex: 1° GBM, DEMAN…"></label>
-              <label class="full">Informante da saída
-                <input type="text" id="mm-informante-saida" placeholder="Repita o nome ou informe outro">
-                <span class="form-hint">ⓘ Pré-preenchido com o nome da entrada.</span>
-              </label>
-              <label class="full">O que foi feito (opcional)
-                <textarea id="mm-detalhes-saida" rows="3" placeholder="Descreva o serviço realizado…"></textarea>
-              </label>
-            </div>
+
+          <div class="inline-form-grid" id="formEvento" style="display:none;">
+            <label>Tipo de evento
+              <select id="me-tipo">
+                <option value="Movimentação">Movimentação</option>
+                <option value="Observação">Observação</option>
+              </select>
+            </label>
+            <label>Data do evento<input type="datetime-local" id="me-data"></label>
+            <label>Status (opcional)
+              <select id="me-status">
+                <option value="">— manter atual —</option>
+                <option value="Em Manutenção">Em Manutenção</option>
+                <option value="Reserva">Reserva</option>
+                <option value="Baixada">Baixada</option>
+                <option value="Ativa">Ativa</option>
+              </select>
+            </label>
+            <label>Local (opcional)<input type="text" id="me-local" placeholder="Novo local, se houver"></label>
+            <label class="full">Informante<input type="text" id="me-informante" placeholder="Quem informou este evento"></label>
+            <label class="full">Detalhes
+              <textarea id="me-detalhes" rows="3" placeholder="Descreva o evento…"></textarea>
+            </label>
           </div>
+
+          <div class="inline-form-grid" id="formFinalizar" style="display:none;">
+            <label>Data final<input type="datetime-local" id="mf-data"></label>
+            <label>Status final
+              <select id="mf-status">
+                <option value="Ativa">Ativa</option>
+                <option value="Reserva">Reserva</option>
+                <option value="Em Manutenção">Em Manutenção</option>
+                <option value="Baixada">Baixada</option>
+              </select>
+            </label>
+            <label class="full">Local final<input type="text" id="mf-local" placeholder="Destino da viatura"></label>
+            <label class="full">Informante da saída<input type="text" id="mf-informante" placeholder="Quem liberou a viatura"></label>
+            <label class="full">O que foi feito
+              <textarea id="mf-detalhes" rows="3" placeholder="Descreva o serviço realizado…"></textarea>
+            </label>
+          </div>
+
           <p id="mm-error" class="modal-error"></p>
+
           <div class="inline-form-actions">
-            <button class="btn danger" id="mm-delete" style="display:none;">Excluir registro</button>
+            <button class="btn danger" id="mm-delete" style="display:none;">Excluir processo</button>
             <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;">
-              <button class="btn ghost" id="mm-clear">Limpar</button>
               <button class="btn ghost" id="mm-cancel">Cancelar</button>
               <button class="btn primary" id="mm-save">Salvar</button>
             </div>
@@ -655,7 +672,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <footer class="page-footer">Dados carregados da planilha Google Sheets.</footer>
     </section>
 
-    <!-- USUÁRIOS -->
     <section class="view" id="view-usuarios">
       <div class="users-toolbar">
         <input type="text" id="usersSearch" placeholder="Buscar por nome ou login">
@@ -669,21 +685,19 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </main>
 </div>
 
-<!-- MODAL SUCESSO -->
 <div id="sucessoModal" class="modal-overlay" style="display:none;">
   <div class="modal-box sucesso-box">
     <div class="sucesso-icone">✅</div>
-    <h2 class="sucesso-titulo" id="sucessoTitulo">Movimentação registrada!</h2>
+    <h2 class="sucesso-titulo" id="sucessoTitulo">Processo registrado!</h2>
     <p class="sucesso-sub" id="sucessoSub">Os dados foram salvos com sucesso.</p>
     <div class="resumo-box" id="sucessoResumo"></div>
     <div class="sucesso-actions">
-      <button class="btn ghost" id="sucessoVoltar">Voltar para Registros</button>
+      <button class="btn ghost" id="sucessoVoltar">Voltar</button>
       <button class="btn whatsapp" id="sucessoWhats">📱 Enviar no WhatsApp</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL TROCAR SENHA -->
 <div id="changePassModal" class="modal-overlay" style="display:none;">
   <div class="modal-box" style="max-width:440px;">
     <h2>🔐 Defina sua nova senha</h2>
@@ -697,7 +711,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </div>
 </div>
 
-<!-- MODAL USUÁRIO -->
 <div id="userModal" class="modal-overlay" style="display:none;">
   <div class="modal-box wide">
     <h2 id="userModalTitle">Criar nova conta</h2>
@@ -706,10 +719,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <label>Usuário (login)<input type="text" id="um-user" placeholder="ex: joao" autocapitalize="none"></label>
       <label>Nome de exibição<input type="text" id="um-nome" placeholder="ex: JOÃO SILVA"></label>
       <label>Perfil
-        <select id="um-perfil">
-          <option value="view">Visualização</option>
-          <option value="admin">Administrador</option>
-        </select>
+        <select id="um-perfil"><option value="view">Visualização</option><option value="admin">Administrador</option></select>
       </label>
       <label id="um-root-label">Senha do administrador<input type="password" id="um-root-pass" placeholder="Senha ROOT"></label>
     </div>
@@ -728,7 +738,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </div>
 </div>
 
-<!-- MODAL EDITAR OS -->
 <div id="editModal" class="modal-overlay" style="display:none;">
   <div class="modal-box wide">
     <h2>✎ Editar OS</h2>
@@ -749,7 +758,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </div>
 </div>
 
-<!-- MODAL RELATÓRIO OS -->
 <div id="reportModal" class="modal-overlay" style="display:none;">
   <div class="report-box">
     <div class="report-header"><h2>Relatório de OS-BAMEX</h2><div class="meta" id="reportMeta"></div></div>
@@ -767,7 +775,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </div>
 </div>
 
-<!-- MODAL RELATÓRIO MOVIMENTAÇÃO -->
 <div id="manutReportModal" class="modal-overlay" style="display:none;">
   <div class="report-box">
     <div class="report-header"><h2>Relatório de Movimentação</h2><div class="meta" id="manutReportMeta"></div></div>
@@ -775,7 +782,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <span><b>Modo:</b></span>
         <select id="manutReportMode">
-          <option value="detalhado">Detalhado</option>
+          <option value="detalhado">Processos</option>
           <option value="mes">Por mês (agrupado)</option>
         </select>
         <span id="manutReportPeriodWrap" style="display:flex;gap:8px;align-items:center;">
@@ -787,7 +794,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     </div>
     <div id="manutReportDetalhado" class="report-table-wrap">
       <table class="report-table">
-        <thead><tr><th>Viatura</th><th>Status</th><th>Entrada</th><th>Saída</th><th>Local</th><th style="text-align:right;">Dias</th><th>Informante</th><th>Detalhes</th></tr></thead>
+        <thead><tr><th>ID</th><th>Viatura</th><th>Entrada</th><th>Saída</th><th>Status</th><th style="text-align:right;">Dias</th><th>Eventos</th><th>Informante</th></tr></thead>
         <tbody id="manutReportBody"></tbody>
       </table>
     </div>
@@ -799,7 +806,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   </div>
 </div>
 
-<!-- MODAL AÇÃO VIATURAS -->
 <div id="actionModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
     <h2 id="modalTitle">Ação</h2>
@@ -841,8 +847,8 @@ const PERMISSOES_LISTA = [
   { key:'viat_reativar', label:'· Reativar', grupo:'Viaturas' },
   { key:'ver_manutencao', label:'Ver Movimentação', grupo:'Movimentação' },
   { key:'manut_editar', label:'Editar movimentação (tudo)', grupo:'Movimentação' },
-  { key:'manut_criar', label:'· Criar registro', grupo:'Movimentação' },
-  { key:'manut_excluir', label:'· Excluir registro', grupo:'Movimentação' },
+  { key:'manut_criar', label:'· Criar processo', grupo:'Movimentação' },
+  { key:'manut_excluir', label:'· Excluir processo', grupo:'Movimentação' },
   { key:'admin_usuarios', label:'Gerenciar usuários (tudo)', grupo:'Usuários' },
   { key:'usuarios_criar', label:'· Criar contas', grupo:'Usuários' },
   { key:'usuarios_editar', label:'· Editar contas', grupo:'Usuários' },
@@ -854,28 +860,12 @@ const PERM_GRUPOS = {
   usuarios_criar:'admin_usuarios', usuarios_editar:'admin_usuarios', usuarios_resetar:'admin_usuarios'
 };
 
-/* ═══════ WARM-UP (aquece os 3 backends em paralelo) ═══════ */
 (function warmUp(){
-  // OS: lerCSV é o mais pesado; força o script inteiro a acordar
-  fetch(OS_APPS_SCRIPT_URL, {
-    method:'POST', headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({ action:'lerCSV' }), cache:'no-store'
-  }).catch(()=>{});
-
-  // Viaturas: listarViaturas acorda tudo
-  fetch(VIATURAS_APPS_SCRIPT_URL, {
-    method:'POST', headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({ action:'listarViaturas' }), cache:'no-store'
-  }).catch(()=>{});
-
-  // Manutenção: versao basta
-  fetch(MANUT_APPS_SCRIPT_URL, {
-    method:'POST', headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({ action:'versao' }), cache:'no-store'
-  }).catch(()=>{});
+  fetch(OS_APPS_SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'lerCSV' }), cache:'no-store' }).catch(()=>{});
+  fetch(VIATURAS_APPS_SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'listarViaturas' }), cache:'no-store' }).catch(()=>{});
+  fetch(MANUT_APPS_SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'versao' }), cache:'no-store' }).catch(()=>{});
 })();
 
-/* ═══════ HELPERS ═══════ */
 function normalizeStr(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
 function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
@@ -884,7 +874,6 @@ function $(id){ return document.getElementById(id); }
 const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 function formatarMesAno(ym){ if(!ym) return ''; const p = ym.split('-'); return MESES_PT[parseInt(p[1],10)-1] + '/' + p[0]; }
 
-/* ═══════ SESSÃO ═══════ */
 let currentUser = ''; let currentPerfil = 'view'; let currentLogin = ''; let currentPermissoes = {}; let primeiraSenhaUsada = '';
 function isLoggedIn(){ return sessionStorage.getItem('deman_auth') === 'ok'; }
 function temPermissao(p){
@@ -896,42 +885,28 @@ function temPermissao(p){
 }
 function isAdmin(){ return currentPerfil === 'admin'; }
 
-/* ═══════ API — timeout 25s + retry automático ═══════ */
 async function apiCall(url, action, payload, _tentativa){
   const tentativa = _tentativa || 1;
-  const TIMEOUT_MS = 25000;
   const ctrl = new AbortController();
-  const to = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-
+  const to = setTimeout(() => ctrl.abort(), 25000);
   try{
     const r = await fetch(url, {
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify(Object.assign({
-        action, usuario: currentLogin || '', perfil: currentPerfil || 'view'
-      }, payload || {})),
-      signal: ctrl.signal,
-      cache:'no-store'
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify(Object.assign({ action, usuario: currentLogin || '', perfil: currentPerfil || 'view' }, payload || {})),
+      signal: ctrl.signal, cache:'no-store'
     });
     clearTimeout(to);
-
     if(!r.ok){
-      // Se for erro 5xx e for a 1ª tentativa, tenta de novo (pode ser cold start)
       if(tentativa === 1 && r.status >= 500){
-        console.warn('[apiCall] HTTP ' + r.status + '. Retry em 2s…');
         await new Promise(res => setTimeout(res, 2000));
         return apiCall(url, action, payload, 2);
       }
       return { ok:false, error:'HTTP ' + r.status };
     }
-
     const txt = await r.text();
-    try{
-      return JSON.parse(txt);
-    }catch(e){
-      // Se veio HTML (página de erro do Google), retry 1x
+    try{ return JSON.parse(txt); }
+    catch(e){
       if(tentativa === 1){
-        console.warn('[apiCall] Resposta não-JSON. Retry em 1.5s…');
         await new Promise(res => setTimeout(res, 1500));
         return apiCall(url, action, payload, 2);
       }
@@ -939,9 +914,7 @@ async function apiCall(url, action, payload, _tentativa){
     }
   }catch(err){
     clearTimeout(to);
-    // Timeout ou falha de rede: retry 1x depois de 2s
     if(tentativa === 1){
-      console.warn('[apiCall] tentativa 1 falhou (' + err.name + '). Retry em 2s…');
       await new Promise(res => setTimeout(res, 2000));
       return apiCall(url, action, payload, 2);
     }
@@ -953,7 +926,6 @@ const apiOS       = (a,p) => apiCall(OS_APPS_SCRIPT_URL, a, p);
 const apiViaturas = (a,p) => apiCall(VIATURAS_APPS_SCRIPT_URL, a, p);
 const apiManut    = (a,p) => apiCall(MANUT_APPS_SCRIPT_URL, a, p);
 
-/* ═══════ LOGIN ═══════ */
 function showLogin(){ $('loginOverlay').style.display = 'flex'; $('loginUser').focus(); }
 function hideLogin(){ $('loginOverlay').style.display = 'none'; }
 
@@ -980,14 +952,8 @@ async function handleLogin(){
   if(r.primeiroAcesso === true){ hideLogin(); abrirTrocarSenha(true); return; }
   startApp();
 }
+function handleLogout(){ sessionStorage.clear(); try{ sessionStorage.removeItem(STORAGE_KEY_VIAT); }catch(e){} location.reload(); }
 
-function handleLogout(){
-  sessionStorage.clear();
-  try{ sessionStorage.removeItem(STORAGE_KEY_VIAT); }catch(e){}
-  location.reload();
-}
-
-/* ═══════ TROCAR SENHA ═══════ */
 let modoTrocaSenha = 'primeiro';
 function abrirTrocarSenha(obrigatorio){
   modoTrocaSenha = obrigatorio ? 'primeiro' : 'voluntario';
@@ -1011,7 +977,6 @@ async function salvarNovaSenha(){
   else alert('Senha alterada com sucesso.');
 }
 
-/* ═══════ MODAL USUÁRIO ═══════ */
 let modoUserModal = 'create'; let editUserLogin = '';
 function renderPermissoesNoModal(){
   const container = $('permGrid'); if(!container) return;
@@ -1107,7 +1072,6 @@ async function resetarSenhaUsuario(){
   await carregarUsuarios();
 }
 
-/* ═══════ ROTEADOR ═══════ */
 let activeView = 'home';
 const VIEW_TITLES = { home:'Início', os:'Status das OS-BAMEX', viaturas:'Painel de Viaturas por Local', manutencao:'Painel de Movimentação', usuarios:'Gerenciamento de Usuários' };
 const VIEW_PERMS = { home: null, os: 'ver_os', viaturas: 'ver_viaturas', manutencao: 'ver_manutencao', usuarios: 'admin_usuarios' };
@@ -1127,10 +1091,9 @@ function showView(name){
   if(name === 'home') renderHome();
   if(name === 'os' && OS_DATA.length) renderOS();
   if(name === 'viaturas' && VIATURAS.length) renderViaturas();
-  if(name === 'manutencao'){ if(MANUT_REGISTROS.length) renderManut(); showManutTab(activeManutTab || 'registros'); }
+  if(name === 'manutencao'){ if(MANUT_EVENTOS.length) renderManut(); showManutTab(activeManutTab || 'registros'); }
   if(name === 'usuarios') carregarUsuarios();
 }
-
 function aplicarPermissoesUI(){
   document.querySelectorAll('.sidebar-link[data-perm]').forEach(b => { b.style.display = temPermissao(b.dataset.perm) ? '' : 'none'; });
   document.querySelectorAll('[data-perm]').forEach(el => { if(el.classList.contains('sidebar-link')) return; el.style.display = temPermissao(el.dataset.perm) ? '' : 'none'; });
@@ -1141,7 +1104,6 @@ function aplicarPermissoesUI(){
   const movGroup = $('sidebarMovGroup'); if(movGroup) movGroup.style.display = temPermissao('ver_manutencao') ? '' : 'none';
 }
 
-/* ═══════ HOME ═══════ */
 function renderHome(){
   $('homeUserName').textContent = currentUser || '—';
   const osTotal = OS_DATA.length;
@@ -1155,11 +1117,9 @@ function renderHome(){
   const vBaix = VIATURAS.filter(v => v.origem === 'baixada').length;
   $('h-v-total').textContent = vTotal; $('h-v-ativas').textContent = vNaoBaix; $('h-v-dir').textContent = vDir; $('h-v-baix').textContent = vBaix;
   const mStats = calcularEstatisticasManut();
-  $('h-m-total').textContent = mStats.totalRegistros;
-  $('h-m-vtrs').textContent = mStats.totalViaturas;
-  $('h-m-ativas').textContent = mStats.ativas;
-  $('h-m-reservas').textContent = mStats.reservas;
-  $('h-m-em').textContent = mStats.emManut;
+  $('h-m-total').textContent = mStats.total;
+  $('h-m-abertos').textContent = mStats.abertos;
+  $('h-m-fechados').textContent = mStats.fechados;
   $('h-m-baixadas').textContent = mStats.baixadas;
   const ult = getUltimaAlteracaoOS();
   const el = $('homeLastChange');
@@ -1187,7 +1147,6 @@ const STAGES = [
   {key:'Reavaliar', label:'Reavaliação', color:'var(--Reavaliar)'},
 ];
 let OS_DATA = []; let activeTab = TAB_GERAL; let isLoadingOS = false; let activeStatusFilter = null; let editingRecordId = null;
-
 function normalizeViatura(v){ return String(v||'').trim().toUpperCase().replace(/\s+/g,' ').replace(/\s*-\s*/g,'-').replace(/\s+(?=\d)/g,'-'); }
 function slugify(str){ const n = normalizeStr(str||''); return n.replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'outras'; }
 function findField(row, keywords){ const keys = Object.keys(row||{}); for(const k of keys){ const nk = normalizeStr(k); if(keywords.some(kw => nk.includes(kw))) return row[k]; } return ''; }
@@ -1208,7 +1167,6 @@ function saveLocalDataOS(){ try{ localStorage.setItem(STORAGE_KEY_OS, JSON.strin
 function loadLocalDataOS(){ try{ const raw = localStorage.getItem(STORAGE_KEY_OS); if(raw){ const parsed = JSON.parse(raw); if(Array.isArray(parsed) && parsed.length){ OS_DATA = parsed; return true; } } }catch(e){} return false; }
 function showSkeletonOS(){ const s=$('osSkeleton'); if(s) s.style.display='block'; }
 function hideSkeletonOS(){ const s=$('osSkeleton'); if(s) s.style.display='none'; }
-
 function processCsvText(csvText){
   const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
   let headerIndex = -1;
@@ -1242,8 +1200,7 @@ function mapRowsToData(rows){
 async function fetchCsv(url){ const response = await fetch(url); if(!response.ok) throw new Error('HTTP '+response.status); return await response.text(); }
 async function loadDataOS(){
   if(isLoadingOS) return; isLoadingOS = true; showSkeletonOS();
-  const CACHE_KEY_OS = 'deman_cache_os_v2';
-  const CACHE_TTL = 15 * 60 * 1000;
+  const CACHE_KEY_OS = 'deman_cache_os_v2'; const CACHE_TTL = 15 * 60 * 1000;
   try{ const raw = sessionStorage.getItem(CACHE_KEY_OS); if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.data) && (Date.now() - p.ts) < CACHE_TTL){ OS_DATA = p.data; hideSkeletonOS(); isLoadingOS = false; renderLastUpdateOS(); if(activeView === 'os') renderOS(); if(activeView === 'home') renderHome(); } } }catch(e){}
   try{
     const r = await apiOS('lerCSV');
@@ -1254,17 +1211,15 @@ async function loadDataOS(){
       $('errorArea').style.display = 'none';
     } else { throw new Error(r.error || 'lerCSV falhou'); }
   }catch(err){
-    console.warn('lerCSV indisponível, usando fallback CSV:', err);
     try{ const cb = 'ts=' + Date.now(); const csvUrl = DIRECT_SHEET_CSV_URL + (DIRECT_SHEET_CSV_URL.includes('?') ? '&' : '?') + cb; const csvText = await fetchCsv(csvUrl); processCsvText(csvText); }
     catch(e2){ const loaded = loadLocalDataOS(); if(!loaded){ OS_DATA = []; $('errorArea').style.display = 'block'; } }
   }
   hideSkeletonOS(); isLoadingOS = false; renderLastUpdateOS();
   if(activeView === 'os') renderOS(); if(activeView === 'home') renderHome();
 }
-async function updateOSStatus(osNumber, newStatus, viatura){ try{ const r = await apiOS('atualizarStatus', { os:osNumber, status:newStatus, viatura }); if(r && r.ok === true){ saveLocalDataOS(); try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){} return true; } return false; }catch(err){ console.error(err); return false; } }
-async function createOSInSheet(data){ try{ const r = await apiOS('criarOS', data); if(r && r.ok === true){ try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){} return true; } return false; }catch(err){ console.error(err); return false; } }
-async function editOSInSheet(osOriginal, viaturaOriginal, data){ try{ const r = await apiOS('editarOS', Object.assign({ osOriginal, viaturaOriginal }, data)); if(r && r.ok === true){ try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){} return true; } return false; }catch(err){ console.error(err); return false; } }
-
+async function updateOSStatus(osNumber, newStatus, viatura){ try{ const r = await apiOS('atualizarStatus', { os:osNumber, status:newStatus, viatura }); if(r && r.ok === true){ saveLocalDataOS(); try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){} return true; } return false; }catch(err){ return false; } }
+async function createOSInSheet(data){ try{ const r = await apiOS('criarOS', data); if(r && r.ok === true){ try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){} return true; } return false; }catch(err){ return false; } }
+async function editOSInSheet(osOriginal, viaturaOriginal, data){ try{ const r = await apiOS('editarOS', Object.assign({ osOriginal, viaturaOriginal }, data)); if(r && r.ok === true){ try{ sessionStorage.removeItem('deman_cache_os_v2'); }catch(e){} return true; } return false; }catch(err){ return false; } }
 function getUltimaAlteracaoOS(){
   let maior = null;
   OS_DATA.forEach(r => { if(!r.ultimaAlt) return; const m = String(r.ultimaAlt).match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/); if(!m) return; const d = new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +m[6]); if(!maior || d > maior) maior = d; });
@@ -1419,11 +1374,9 @@ const MOTIVOS_BAIXA = ['Sinistro','Manutenção'];
 const CACHE_KEY = 'deman_cache_viaturas_v1';
 const CACHE_META_KEY = 'deman_cache_viaturas_meta';
 let VIATURAS = []; let LOCAIS = []; let LOCAIS_DIRETORIAS = []; let activeFilter = 'todas';
-
 function ehDiretoria(local){ if(!local) return false; const l = normalizeStr(local); return LOCAIS_DIRETORIAS.some(d => normalizeStr(d) === l); }
 function salvarCache(){ try{ sessionStorage.setItem(CACHE_KEY, JSON.stringify({ viaturas: VIATURAS, locais: LOCAIS, locaisDiretorias: LOCAIS_DIRETORIAS })); sessionStorage.setItem(CACHE_META_KEY, String(Date.now())); }catch(e){} }
 function carregarCache(){ try{ const raw = sessionStorage.getItem(CACHE_KEY); if(!raw) return false; const d = JSON.parse(raw); if(!d || !Array.isArray(d.viaturas)) return false; VIATURAS = d.viaturas; LOCAIS = Array.isArray(d.locais) ? d.locais : []; LOCAIS_DIRETORIAS = Array.isArray(d.locaisDiretorias) ? d.locaisDiretorias : []; return true; }catch(e){ return false; } }
-
 async function loadDataViaturas(){
   const upd = $('viatUpdateStatus');
   try{
@@ -1596,198 +1549,304 @@ function abrirModalMoverReserva(prefixo){
   }, 'viat_permutar');
 }
 
-/* ═══════ MOVIMENTAÇÃO ═══════ */
-let MANUT_REGISTROS = []; let MANUT_FILTRO_STATUS = 'todas'; let activeManutTab = 'registros'; let manutEditKey = null; let modoManutForm = 'criar'; let sidebarMovExpanded = true;
+/* ═══════ MOVIMENTAÇÃO (v5 — processos com eventos) ═══════ */
+let MANUT_EVENTOS = []; // array plano de eventos
+let MANUT_FILTRO_STATUS = 'todas';
+let activeManutTab = 'registros';
+let modoManutForm = 'criar'; // 'criar' | 'evento' | 'finalizar'
+let processoAtual = null; // { id, viatura, eventos, aberto, ... }
+let sidebarMovExpanded = true;
 
 function setSidebarMovExpanded(v){ sidebarMovExpanded = !!v; const sub = $('sidebarSubMov'); const parent = $('sidebarMovParent'); if(sub) sub.classList.toggle('open', sidebarMovExpanded); if(parent) parent.classList.toggle('expanded', sidebarMovExpanded); }
 function parseDataManut(str){
   if(!str) return null; const s = String(str).trim(); if(s === '--' || s === '') return null;
-  let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/); if(m) return new Date(+m[3], +m[2]-1, +m[1], +(m[4]||0), +(m[5]||0));
-  m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/); if(m) return new Date(+m[1], +m[2]-1, +m[3], +(m[4]||0), +(m[5]||0));
+  let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/); if(m) return new Date(+m[3], +m[2]-1, +m[1]);
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return new Date(+m[1], +m[2]-1, +m[3]);
   return null;
 }
 function normalizarPrefixoManut(v){ const t = String(v||'').trim().toUpperCase(); const m = t.match(/^([A-Z]+)[\s-]*(\d+)$/); if(m){ const num = m[2].length === 1 ? '0'+m[2] : m[2]; return m[1]+'-'+num; } return t.replace(/\s+/g,' '); }
-function toDatetimeLocalManut(str){ const d = parseDataManut(str); if(!d) return ''; const pad = n => String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
-function extrairDiasNumericos(diasStr){ if(!diasStr) return 0; const m = String(diasStr).match(/(\d+)/); return m ? parseInt(m[1], 10) : 0; }
-
-function parseDetalhesDetalhado(txt){
-  const s = String(txt||'').trim();
-  if(!s) return { entrada: '', saida: '', temSaida: false, dataEntrada: '', dataSaida: '' };
-  const re = /^ENTRADA\s*\(([^)]+)\):\s*([\s\S]*?)(?:\nSAÍDA\s*\(([^)]+)\):\s*([\s\S]*))?$/;
-  const m = s.match(re);
-  if(m){ return { dataEntrada: (m[1]||'').trim(), entrada: (m[2]||'').trim(), dataSaida: (m[3]||'').trim(), saida: (m[4]||'').trim(), temSaida: !!(m[3] || m[4]) }; }
-  return { entrada: s, saida: '', temSaida: false, dataEntrada: '', dataSaida: '' };
+function toDatetimeLocalManut(str){
+  const d = parseDataManut(str); if(!d) return '';
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-function parseInformanteDetalhado(txt){
-  const s = String(txt||'').trim();
-  if(!s) return { entrada: '', saida: '', temSaida: false };
-  const re = /^ENTRADA:\s*(.+?)(?:\nSAÍDA:\s*(.+))?$/;
-  const m = s.match(re);
-  if(m){ return { entrada: (m[1]||'').trim(), saida: (m[2]||'').trim(), temSaida: !!m[2] }; }
-  return { entrada: s, saida: '', temSaida: false };
+function extrairDiasNumericos(diasStr){ if(!diasStr) return 0; const m = String(diasStr).match(/(\d+)/); return m ? parseInt(m[1], 10) : 0; }
+function statusClasseManut(status){ const s = normalizeStr(status); if(s.indexOf('reserv') !== -1) return 'reserva'; if(s.indexOf('baixa') !== -1 || s.indexOf('inoper') !== -1) return 'baixada'; if(s.indexOf('manut') !== -1 || s.indexOf('quebrada') !== -1 || s.indexOf('oficina') !== -1) return 'em-manutencao'; return 'ativa'; }
+function statusLabelManut(status){ const c = statusClasseManut(status); if(c === 'reserva') return 'Reserva'; if(c === 'baixada') return 'Baixada'; if(c === 'em-manutencao') return 'Em Manutenção'; return 'Ativa'; }
+function corStatus(classe){ if(classe === 'reserva') return 'var(--roxo)'; if(classe === 'baixada') return 'var(--vermelho)'; if(classe === 'em-manutencao') return 'var(--amber)'; return 'var(--verde)'; }
+function iconeEvento(tipo){
+  const t = normalizeStr(tipo);
+  if(t.indexOf('entrada') !== -1) return '📥';
+  if(t.indexOf('moviment') !== -1) return '🔄';
+  if(t.indexOf('observ') !== -1) return '📝';
+  if(t.indexOf('finaliz') !== -1) return '✅';
+  return '📌';
+}
+function classeEvento(tipo){
+  const t = normalizeStr(tipo);
+  if(t.indexOf('entrada') !== -1) return 'entrada';
+  if(t.indexOf('moviment') !== -1) return 'movimentacao';
+  if(t.indexOf('observ') !== -1) return 'observacao';
+  if(t.indexOf('finaliz') !== -1) return 'finalizacao';
+  return 'observacao';
 }
 
 async function loadDataManut(){
-  const upd = $('manutUpdateStatus'); const CACHE_KEY_MANUT = 'deman_cache_manut_v1';
+  const upd = $('manutUpdateStatus');
+  const CACHE_KEY_MANUT = 'deman_cache_manut_v5';
   const CACHE_TTL = 15 * 60 * 1000;
-  try{ const raw = sessionStorage.getItem(CACHE_KEY_MANUT); if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.registros) && (Date.now() - p.ts) < CACHE_TTL){ MANUT_REGISTROS = p.registros; upd.textContent = 'Cache · ' + new Date(p.ts).toLocaleTimeString('pt-BR'); if(activeView === 'manutencao') renderManut(); if(activeView === 'home') renderHome(); } } }catch(e){}
+  try{
+    const raw = sessionStorage.getItem(CACHE_KEY_MANUT);
+    if(raw){
+      const p = JSON.parse(raw);
+      if(p && Array.isArray(p.eventos) && (Date.now() - p.ts) < CACHE_TTL){
+        MANUT_EVENTOS = p.eventos;
+        upd.textContent = 'Cache · ' + new Date(p.ts).toLocaleTimeString('pt-BR');
+        if(activeView === 'manutencao') renderManut();
+        if(activeView === 'home') renderHome();
+      }
+    }
+  }catch(e){}
+
   upd.textContent = 'Atualizando…';
   try{
-    const cacheBust = 'ts=' + Date.now();
-    const url = MANUT_CSV_URL + (MANUT_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
-    const resp = await fetch(url, { cache:'no-store' }); if(!resp.ok) throw new Error('HTTP ' + resp.status);
-    const csv = await resp.text(); const parsed = Papa.parse(csv, { header:true, skipEmptyLines:true });
-    MANUT_REGISTROS = (parsed.data || []).map(r => ({
-      viatura: normalizarPrefixoManut(r['Viatura'] || r['VIATURA'] || ''),
-      status: String(r['Status'] || '').trim(),
-      entrada: String(r['Entrada'] || '').trim(),
-      saida: String(r['Saída'] || r['Saida'] || '').trim(),
-      local: String(r['LOCAL'] || r['Local'] || '').trim(),
-      dias: String(r['DIAS'] || r['Dias'] || '').trim(),
-      informante: String(r['Informante'] || '').trim(),
-      detalhes: String(r['Detalhes da Ação'] || r['Detalhes da Acao'] || r['Detalhes'] || '').trim(),
-      total: Number(r['TOTAL DE DIAS'] || r['Total de Dias'] || 0) || 0
-    })).filter(r => r.viatura);
-    try{ sessionStorage.setItem(CACHE_KEY_MANUT, JSON.stringify({ ts: Date.now(), registros: MANUT_REGISTROS })); }catch(e){}
+    const r = await apiManut('listarManutencao');
+    if(!r.ok){ upd.textContent = 'Falha: ' + (r.error || 'desconhecido'); return; }
+    MANUT_EVENTOS = Array.isArray(r.eventos) ? r.eventos : [];
+    try{ sessionStorage.setItem(CACHE_KEY_MANUT, JSON.stringify({ ts: Date.now(), eventos: MANUT_EVENTOS })); }catch(e){}
     upd.textContent = 'Atualizado em ' + new Date().toLocaleTimeString('pt-BR');
-    if(activeView === 'manutencao') renderManut(); if(activeView === 'home') renderHome();
-  }catch(err){ console.error(err); upd.textContent = 'Erro: ' + err.message; }
+    if(activeView === 'manutencao') renderManut();
+    if(activeView === 'home') renderHome();
+  }catch(err){
+    console.error(err);
+    upd.textContent = 'Erro: ' + err.message;
+  }
 }
-function agruparManutPorViatura(){ const grupos = {}; MANUT_REGISTROS.forEach(r => { if(!grupos[r.viatura]) grupos[r.viatura] = []; grupos[r.viatura].push(r); }); return grupos; }
-function calcularEstatisticasManut(){
-  const grupos = agruparManutPorViatura(); const totalViaturas = Object.keys(grupos).length; const totalRegistros = MANUT_REGISTROS.length;
-  let ativas = 0, reservas = 0, emManut = 0, baixadas = 0, diasAcum = 0;
-  Object.keys(grupos).forEach(pfx => {
-    const eventos = grupos[pfx].slice().sort((a,b) => { const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada); return (da ? da.getTime() : 0) - (db ? db.getTime() : 0); });
-    const ultimo = eventos[eventos.length-1];
-    if(ultimo){ const s = normalizeStr(ultimo.status); if(s.indexOf('reserv') !== -1) reservas++; else if(s.indexOf('baixa') !== -1 || s.indexOf('inoper') !== -1) baixadas++; else if(s.indexOf('manut') !== -1 || s.indexOf('quebrada') !== -1 || s.indexOf('oficina') !== -1) emManut++; else ativas++; }
-    const maxTotal = eventos.reduce((m, e) => Math.max(m, Number(e.total) || 0), 0); diasAcum += maxTotal;
+
+function agruparPorProcesso(){
+  const grupos = {};
+  MANUT_EVENTOS.forEach(e => {
+    if(!grupos[e.id]) grupos[e.id] = { id: e.id, viatura: e.viatura, eventos: [] };
+    grupos[e.id].eventos.push(e);
   });
-  return { totalViaturas, totalRegistros, ativas, reservas, emManut, baixadas, diasAcum };
+  Object.keys(grupos).forEach(id => {
+    const g = grupos[id];
+    g.eventos.sort((a, b) => {
+      const da = parseDataManut(a.data);
+      const db = parseDataManut(b.data);
+      return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+    });
+    g.aberto = !g.eventos.some(e => normalizeStr(e.evento).indexOf('finaliz') !== -1);
+    g.entrada = g.eventos.find(e => normalizeStr(e.evento).indexOf('entrada') !== -1) || g.eventos[0];
+    g.finalizacao = g.eventos.find(e => normalizeStr(e.evento).indexOf('finaliz') !== -1) || null;
+    g.ultimo = g.eventos[g.eventos.length - 1];
+    g.dias = g.finalizacao ? extrairDiasNumericos(g.finalizacao.dias) : 0;
+  });
+  return grupos;
 }
+
+function calcularEstatisticasManut(){
+  const grupos = agruparPorProcesso();
+  const ids = Object.keys(grupos);
+  const total = ids.length;
+  let abertos = 0, fechados = 0, baixadas = 0, emManut = 0, ativas = 0, reservas = 0;
+  let viaturasSet = new Set();
+  ids.forEach(id => {
+    const g = grupos[id];
+    viaturasSet.add(g.viatura);
+    if(g.aberto) abertos++; else fechados++;
+    const classe = statusClasseManut(g.ultimo ? g.ultimo.status : '');
+    if(classe === 'baixada') baixadas++;
+    else if(classe === 'em-manutencao') emManut++;
+    else if(classe === 'reserva') reservas++;
+    else ativas++;
+  });
+  return { total, abertos, fechados, baixadas, emManut, ativas, reservas, viaturas: viaturasSet.size };
+}
+
 function renderSummaryManut(){
   const st = calcularEstatisticasManut();
   const cards = [
-    { key:'todas', label:'Total de registros', value: st.totalRegistros, cls:'manut-total' },
-    { key:'vtrs', label:'Viaturas', value: st.totalViaturas, cls:'manut-vtrs' },
-    { key:'ativas', label:'Ativas', value: st.ativas, cls:'manut-vtrs' },
-    { key:'reservas', label:'Reservas', value: st.reservas, cls:'manut-total' },
-    { key:'em', label:'Em manutenção', value: st.emManut, cls:'manut-em' },
-    { key:'baixadas', label:'Baixadas', value: st.baixadas, cls:'manut-dias' }
+    { key:'todas',       label:'Total de processos', value: st.total,     cls:'manut-total' },
+    { key:'abertos',     label:'Em andamento',       value: st.abertos,   cls:'manut-abertos' },
+    { key:'finalizados', label:'Finalizados',        value: st.fechados,  cls:'manut-fechados' },
+    { key:'em',          label:'Em manutenção',      value: st.emManut,   cls:'manut-em' },
+    { key:'baixadas',    label:'Baixadas',           value: st.baixadas,  cls:'manut-dias' },
+    { key:'vtrs',        label:'Viaturas únicas',    value: st.viaturas,  cls:'manut-vtrs' }
   ];
   $('manutSummary').innerHTML = cards.map(c => `<div class="summary-card ${c.cls}" data-filter="${c.key}"><div class="label">${c.label}</div><div class="value">${c.value}</div></div>`).join('');
   document.querySelectorAll('#view-manutencao .summary-card').forEach(card => {
     card.addEventListener('click', () => {
-      const k = card.dataset.filter; const mapa = { em:'em-manutencao', reservas:'reserva', baixadas:'baixada', ativas:'ativa' };
-      if(mapa[k]){ MANUT_FILTRO_STATUS = (MANUT_FILTRO_STATUS === mapa[k]) ? 'todas' : mapa[k]; } else { MANUT_FILTRO_STATUS = 'todas'; }
+      const k = card.dataset.filter;
+      MANUT_FILTRO_STATUS = (MANUT_FILTRO_STATUS === k) ? 'todas' : k;
       renderManut();
     });
   });
 }
-function statusClasseManut(status){ const s = normalizeStr(status); if(s.indexOf('reserv') !== -1) return 'reserva'; if(s.indexOf('baixa') !== -1 || s.indexOf('inoper') !== -1) return 'baixada'; if(s.indexOf('manut') !== -1 || s.indexOf('quebrada') !== -1 || s.indexOf('oficina') !== -1) return 'em-manutencao'; return 'ativa'; }
-function statusLabelManut(status){ const c = statusClasseManut(status); if(c === 'reserva') return 'Reserva'; if(c === 'baixada') return 'Baixada'; if(c === 'em-manutencao') return 'Em Manutenção'; return 'Ativa'; }
-function corStatus(classe){ if(classe === 'reserva') return 'var(--roxo)'; if(classe === 'baixada') return 'var(--vermelho)'; if(classe === 'em-manutencao') return 'var(--amber)'; return 'var(--verde)'; }
 
-function montarMensagemEntrada(r){
-  const linhas = [];
-  linhas.push('🛠 *Nova Movimentação*'); linhas.push('');
-  linhas.push('*Viatura:* ' + r.viatura); linhas.push('*Status:* ' + statusLabelManut(r.status));
-  linhas.push('*Local:* ' + (r.local || '—')); linhas.push('*Entrada:* ' + (r.entrada || '—'));
-  const inf = parseInformanteDetalhado(r.informante); if(inf.entrada) linhas.push('*Informante:* ' + inf.entrada);
-  const det = parseDetalhesDetalhado(r.detalhes); if(det.entrada){ linhas.push(''); linhas.push('*Detalhes:*'); linhas.push(det.entrada); }
-  linhas.push(''); linhas.push('_Registrado por: ' + (currentUser || 'DEMAN') + '_');
-  linhas.push('_DEMAN · ' + new Date().toLocaleString('pt-BR') + '_');
-  return linhas.join('\n');
-}
-function montarMensagemSaida(r){
-  const linhas = [];
-  linhas.push('✅ *Saída de Manutenção*'); linhas.push('');
-  linhas.push('*Viatura:* ' + r.viatura); linhas.push('*Status:* ' + statusLabelManut(r.status));
-  linhas.push('*Local:* ' + (r.local || '—'));
-  const inf = parseInformanteDetalhado(r.informante);
-  linhas.push('*Entrada:* ' + (r.entrada || '—') + (inf.entrada ? '  (' + inf.entrada + ')' : ''));
-  linhas.push('*Saída:* ' + (r.saida || '—') + (inf.saida ? '  (' + inf.saida + ')' : ''));
-  linhas.push('*Dias:* ' + (r.dias || '—'));
-  const det = parseDetalhesDetalhado(r.detalhes);
-  if(det.saida){ linhas.push(''); linhas.push('*O que foi feito:*'); linhas.push(det.saida); }
-  linhas.push(''); linhas.push('_Registrado por: ' + (currentUser || 'DEMAN') + '_');
-  linhas.push('_DEMAN · ' + new Date().toLocaleString('pt-BR') + '_');
-  return linhas.join('\n');
-}
-function abrirWhatsApp(texto){ const base = WHATSAPP_DESTINO ? 'https://wa.me/' + WHATSAPP_DESTINO : 'https://wa.me/'; const url = base + '?text=' + encodeURIComponent(texto); window.open(url, '_blank'); }
+function processosFiltrados(){
+  const q = normalizeStr($('manutSearch').value);
+  const grupos = agruparPorProcesso();
+  let ids = Object.keys(grupos);
 
-function htmlEventoManut(r, podeEditar, podeExcluir){
-  const temSaida = r.saida && r.saida !== '--' && r.saida.trim() !== '';
-  const classe = statusClasseManut(r.status);
-  let botoesAcao = '';
-  if(temSaida){
-    if(podeEditar){ botoesAcao += `<button class="btn ghost" data-manut-edit-idx title="Editar" data-idx="${escapeAttr(r.id||'')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>`; }
-    if(podeExcluir){ botoesAcao += `<button class="btn ghost danger" data-manut-del title="Excluir" data-idx="${escapeAttr(r.id||'')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>`; }
-  } else {
-    if(podeEditar){ botoesAcao += `<button class="btn ghost" data-manut-fechar title="Registrar saída" data-idx="${escapeAttr(r.id||'')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>`; }
-    if(podeExcluir){ botoesAcao += `<button class="btn ghost danger" data-manut-del title="Excluir" data-idx="${escapeAttr(r.id||'')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>`; }
+  // Ordenação: abertos primeiro (último evento mais recente), depois fechados (último evento mais recente)
+  ids.sort((a, b) => {
+    const ga = grupos[a], gb = grupos[b];
+    if(ga.aberto !== gb.aberto) return ga.aberto ? -1 : 1;
+    const da = ga.ultimo ? ga.ultimo.data : '';
+    const db = gb.ultimo ? gb.ultimo.data : '';
+    const pa = parseDataManut(da), pb = parseDataManut(db);
+    return (pb ? pb.getTime() : 0) - (pa ? pa.getTime() : 0);
+  });
+
+  // Filtro por status
+  if(MANUT_FILTRO_STATUS === 'abertos') ids = ids.filter(id => grupos[id].aberto);
+  else if(MANUT_FILTRO_STATUS === 'finalizados') ids = ids.filter(id => !grupos[id].aberto);
+  else if(MANUT_FILTRO_STATUS === 'em') ids = ids.filter(id => statusClasseManut(grupos[id].ultimo ? grupos[id].ultimo.status : '') === 'em-manutencao');
+  else if(MANUT_FILTRO_STATUS === 'baixadas') ids = ids.filter(id => statusClasseManut(grupos[id].ultimo ? grupos[id].ultimo.status : '') === 'baixada');
+
+  // Busca
+  if(q){
+    ids = ids.filter(id => {
+      const g = grupos[id];
+      if(normalizeStr(g.viatura).includes(q)) return true;
+      if(normalizeStr(g.id).includes(q)) return true;
+      return g.eventos.some(e =>
+        normalizeStr(e.local).includes(q) ||
+        normalizeStr(e.informante).includes(q) ||
+        normalizeStr(e.detalhes).includes(q)
+      );
+    });
   }
-  const btnWhats = `<button class="btn ghost wa" data-manut-whats title="Compartilhar no WhatsApp" data-idx="${escapeAttr(r.id||'')}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button>`;
-  return `<div class="manut-event" data-idx="${escapeAttr(r.id||'')}"><div class="manut-event-head"><div class="manut-event-date">${escapeHtml(r.entrada || '—')} <span style="color:var(--text-faint);font-weight:400;">→</span> ${escapeHtml(r.saida || '--')}</div><div class="manut-event-dias">${escapeHtml(r.dias || '—')}</div></div><div class="manut-event-line"><b>${escapeHtml(r.local || '—')}</b></div><div class="manut-event-informante">${escapeHtml(parseInformanteDetalhado(r.informante).entrada || '—')}</div>${parseDetalhesDetalhado(r.detalhes).entrada ? `<div class="manut-event-detail">${escapeHtml(parseDetalhesDetalhado(r.detalhes).entrada)}</div>` : ''}${temSaida && parseDetalhesDetalhado(r.detalhes).saida ? `<div class="manut-event-detail" style="border-left:2px solid var(--amber);padding-left:8px;margin-top:6px;"><b style="color:var(--amber);">SAÍDA:</b> ${escapeHtml(parseDetalhesDetalhado(r.detalhes).saida)}</div>` : ''}<div class="manut-event-actions">${btnWhats}${botoesAcao}</div></div>`;
+
+  return ids.map(id => grupos[id]);
 }
+
 function renderManutGrid(){
-  const q = normalizeStr($('manutSearch').value); const container = $('manutContent'); const grupos = agruparManutPorViatura();
-  const podeEditar = temPermissao('manut_editar'); const podeExcluir = temPermissao('manut_excluir');
-  let prefixos = Object.keys(grupos).sort((a,b)=>a.localeCompare(b));
-  if(q){ prefixos = prefixos.filter(pfx => { if(normalizeStr(pfx).includes(q)) return true; return grupos[pfx].some(r => normalizeStr(r.local).includes(q) || normalizeStr(r.informante).includes(q) || normalizeStr(r.detalhes).includes(q)); }); }
-  if(MANUT_FILTRO_STATUS !== 'todas'){
-    prefixos = prefixos.filter(pfx => {
-      const eventos = grupos[pfx].slice().sort((a,b) => { const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada); return (da?da.getTime():0) - (db?db.getTime():0); });
-      const ult = eventos[eventos.length-1]; if(!ult) return false;
-      return statusClasseManut(ult.status) === MANUT_FILTRO_STATUS;
-    });
+  const container = $('manutContent');
+  const procs = processosFiltrados();
+  const podeEditar = temPermissao('manut_editar');
+  const podeExcluir = temPermissao('manut_excluir');
+  const podeCriar = temPermissao('manut_criar');
+
+  if(procs.length === 0){
+    container.innerHTML = '<div class="manut-empty">Nenhum processo encontrado.</div>';
+    return;
   }
-  if(prefixos.length === 0){ container.innerHTML = '<div class="manut-empty">Nenhuma viatura encontrada.</div>'; return; }
-  let contador = 0; MANUT_REGISTROS.forEach(r => { if(!r.id) r.id = 'm-' + (contador++); });
-  container.innerHTML = prefixos.map(pfx => {
-    const eventos = grupos[pfx].slice().sort((a,b) => { const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada); return (db?db.getTime():0) - (da?da.getTime():0); });
-    const ultimo = eventos[0]; const total = eventos.reduce((m, e) => Math.max(m, Number(e.total) || 0), 0);
-    const classe = ultimo ? statusClasseManut(ultimo.status) : 'ativa'; const label = ultimo ? statusLabelManut(ultimo.status) : '—';
-    const localAtual = ultimo ? escapeHtml(ultimo.local || '—') : '—';
-    const eventosHtml = eventos.map(r => htmlEventoManut(r, podeEditar, podeExcluir)).join('');
-    return `<div class="manut-veh-card ${classe}"><div class="manut-veh-head"><div class="manut-veh-prefix">${escapeHtml(pfx)}</div><div class="manut-veh-total">${total}d acumulados</div></div><div class="manut-veh-meta"><span class="manut-pill ${classe}"><span class="dot" style="background:${corStatus(classe)}"></span>${escapeHtml(label)}</span><span>${localAtual}</span><span style="color:var(--text-faint);">· ${eventos.length} evento${eventos.length>1?'s':''}</span></div><div class="manut-timeline">${eventosHtml}</div></div>`;
+
+  container.innerHTML = procs.map(p => {
+    const classe = !p.aberto ? (statusClasseManut(p.ultimo.status) === 'baixada' ? 'baixada' : 'fechado') : 'aberto';
+    const ultimoStatusClasse = statusClasseManut(p.ultimo ? p.ultimo.status : '');
+    const statusLabel = statusLabelManut(p.ultimo ? p.ultimo.status : '');
+    const localAtual = p.ultimo ? escapeHtml(p.ultimo.local || '—') : '—';
+
+    const eventosHtml = p.eventos.map(e => {
+      const cls = classeEvento(e.evento);
+      const ico = iconeEvento(e.evento);
+      const statusEv = e.status ? `<div class="manut-ev-status">Status: ${escapeHtml(statusLabelManut(e.status))}</div>` : '';
+      const diasEv = e.dias ? ` · ${escapeHtml(e.dias)}` : '';
+      return `<div class="manut-ev">
+        <div class="manut-ev-head">
+          <span class="manut-ev-tipo ${cls}">${ico} ${escapeHtml(e.evento)}</span>
+          <span class="manut-ev-data">${escapeHtml(e.data || '—')}${diasEv}</span>
+        </div>
+        ${e.local ? `<div class="manut-ev-local">📍 ${escapeHtml(e.local)}</div>` : ''}
+        ${statusEv}
+        ${e.detalhes ? `<div class="manut-ev-detalhe">${escapeHtml(e.detalhes)}</div>` : ''}
+        ${e.informante ? `<div class="manut-ev-informante">👤 ${escapeHtml(e.informante)}</div>` : ''}
+      </div>`;
+    }).join('');
+
+    let acoes = '';
+    if(p.aberto){
+      if(podeEditar) acoes += `<button class="btn success" data-action="finalizar" data-id="${escapeAttr(p.id)}">✅ Finalizar</button>`;
+      if(podeEditar) acoes += `<button class="btn ghost" data-action="evento" data-id="${escapeAttr(p.id)}">+ Evento</button>`;
+    }
+    acoes += `<button class="btn whatsapp" data-action="whats" data-id="${escapeAttr(p.id)}" title="Compartilhar">📱</button>`;
+    if(p.aberto && p.eventos.length > 1 && podeEditar){
+      acoes += `<button class="btn ghost" data-action="desfazer" data-id="${escapeAttr(p.id)}" title="Desfazer último evento">↩</button>`;
+    }
+    if(podeExcluir){
+      acoes += `<button class="btn danger" data-action="excluir" data-id="${escapeAttr(p.id)}" title="Excluir processo">🗑</button>`;
+    }
+
+    const badge = p.aberto ? '<span class="manut-proc-badge aberto">🟡 Aberto</span>' : '<span class="manut-proc-badge fechado">✅ Fechado</span>';
+    const dataBadge = p.aberto ? `Desde ${escapeHtml(p.entrada ? p.entrada.data : '—')}` : `Fechado em ${escapeHtml(p.finalizacao ? p.finalizacao.data : '—')}`;
+    const diasTxt = p.finalizacao ? `${p.dias}d` : '';
+
+    return `<div class="manut-proc-card ${classe}">
+      <div class="manut-proc-head">
+        <div class="manut-proc-head-left">
+          <div class="manut-proc-viatura">${escapeHtml(p.viatura)}</div>
+          <div class="manut-proc-id">${escapeHtml(p.id)}</div>
+        </div>
+        <div class="manut-proc-head-right">
+          ${badge}
+          <div class="manut-proc-dias">${diasTxt}</div>
+        </div>
+      </div>
+      <div class="manut-proc-meta">
+        <span class="manut-pill ${ultimoStatusClasse}"><span class="dot" style="background:${corStatus(ultimoStatusClasse)}"></span>${escapeHtml(statusLabel)}</span>
+        <span>${localAtual}</span>
+        <span style="color:var(--text-faint);">· ${p.eventos.length} evento${p.eventos.length>1?'s':''} · ${dataBadge}</span>
+      </div>
+      <div class="manut-timeline">${eventosHtml}</div>
+      <div class="manut-proc-actions">${acoes}</div>
+    </div>`;
   }).join('');
-  document.querySelectorAll('#view-manutencao [data-manut-whats]').forEach(btn => {
+
+  // Bind ações
+  container.querySelectorAll('[data-action="finalizar"]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const idx = btn.dataset.idx; const rec = MANUT_REGISTROS.find(r => r.id === idx); if(!rec) return;
-      const temSaida = rec.saida && rec.saida !== '--' && rec.saida.trim() !== '';
-      const msg = temSaida ? montarMensagemSaida(rec) : montarMensagemEntrada(rec); abrirWhatsApp(msg);
+      const p = procs.find(x => x.id === btn.dataset.id); if(p) abrirFormFinalizar(p);
     });
   });
-  document.querySelectorAll('#view-manutencao [data-manut-fechar]').forEach(btn => {
-    btn.addEventListener('click', () => { const rec = MANUT_REGISTROS.find(r => r.id === btn.dataset.idx); if(rec) abrirFormFechar(rec); });
+  container.querySelectorAll('[data-action="evento"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = procs.find(x => x.id === btn.dataset.id); if(p) abrirFormEvento(p);
+    });
   });
-  document.querySelectorAll('#view-manutencao [data-manut-edit-idx]').forEach(btn => {
-    btn.addEventListener('click', () => { const rec = MANUT_REGISTROS.find(r => r.id === btn.dataset.idx); if(rec) abrirFormEditarFechado(rec); });
+  container.querySelectorAll('[data-action="whats"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
+      const msg = p.aberto ? montarMensagemEntrada(p) : montarMensagemFinalizacao(p);
+      abrirWhatsApp(msg);
+    });
   });
-  document.querySelectorAll('#view-manutencao [data-manut-del]').forEach(btn => {
+  container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const rec = MANUT_REGISTROS.find(r => r.id === btn.dataset.idx); if(!rec) return;
-      const entradaISO = normalizarDataISOStr(rec.entrada);
-      if(!confirm(`Excluir o registro de ${rec.viatura} (${rec.entrada})?`)) return;
+      const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
+      if(!confirm('Desfazer o último evento de ' + p.id + '?')) return;
       btn.disabled = true;
-      const resp = await apiManut('removerManutencao', { viatura: rec.viatura, entrada: entradaISO, local: rec.local });
+      const r = await apiManut('removerUltimoEvento', { id: p.id });
       btn.disabled = false;
-      if(!resp.ok){ alert('Erro: ' + resp.error); return; }
-      try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
+      if(!r.ok){ alert('Erro: ' + r.error); return; }
+      try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+      await loadDataManut();
+    });
+  });
+  container.querySelectorAll('[data-action="excluir"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
+      if(!confirm('Excluir o processo ' + p.id + ' (' + p.eventos.length + ' eventos)?')) return;
+      btn.disabled = true;
+      const r = await apiManut('removerProcesso', { id: p.id });
+      btn.disabled = false;
+      if(!r.ok){ alert('Erro: ' + r.error); return; }
+      try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
       await loadDataManut();
     });
   });
 }
-function normalizarDataISOStr(str){
-  const s = String(str||'').trim();
-  let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-  if(m) return `${m[3]}-${m[2]}-${m[1]}T${(m[4]||'00')}:${(m[5]||'00')}`;
-  m = s.match(/^(\d{4})-(\d{2})-(\d{2})[T ]?(\d{2})?:?(\d{2})?/);
-  if(m) return `${m[1]}-${m[2]}-${m[3]}T${(m[4]||'00')}:${(m[5]||'00')}`;
-  return s;
+
+function renderManut(){
+  if(activeView !== 'manutencao') return;
+  renderSummaryManut();
+  renderManutGrid();
+  const clearBtn = $('manutClearFilterBtn');
+  if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas') ? 'inline-block' : 'none';
 }
-function renderManut(){ if(activeView !== 'manutencao') return; renderSummaryManut(); renderManutGrid(); const clearBtn = $('manutClearFilterBtn'); if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas') ? 'inline-block' : 'none'; }
+
 function showManutTab(name){
   if(name !== 'registros' && name !== 'novo') return;
   if(name === 'novo' && !temPermissao('manut_criar')) name = 'registros';
@@ -1796,251 +1855,418 @@ function showManutTab(name){
   $('manutPanel-registros').classList.toggle('active', name === 'registros');
   $('manutPanel-novo').classList.toggle('active', name === 'novo');
   setSidebarMovExpanded(true);
-  if(name === 'novo') setTimeout(() => $('mm-viatura').focus(), 60);
+  if(name === 'novo' && modoManutForm === 'criar') setTimeout(() => $('mm-viatura').focus(), 60);
 }
+
+/* Formulário */
+function setFormModo(modo){
+  modoManutForm = modo;
+  $('formCriar').style.display = (modo === 'criar') ? '' : 'none';
+  $('formEvento').style.display = (modo === 'evento') ? '' : 'none';
+  $('formFinalizar').style.display = (modo === 'finalizar') ? '' : 'none';
+
+  if(modo === 'criar'){
+    $('manutFormTitle').textContent = '🛠 Nova entrada';
+    $('manutFormHelp').innerHTML = 'Ao salvar, um processo com ID único será criado. Depois você pode adicionar eventos e finalizar.';
+    $('procInfoBox').style.display = 'none';
+    $('mm-delete').style.display = 'none';
+    $('mm-save').textContent = 'Criar processo';
+  } else if(modo === 'evento'){
+    $('manutFormTitle').textContent = '📝 Adicionar evento';
+    $('manutFormHelp').innerHTML = 'Adicione uma movimentação ou observação a este processo.';
+    $('mm-delete').style.display = 'none';
+    $('mm-save').textContent = 'Salvar evento';
+  } else if(modo === 'finalizar'){
+    $('manutFormTitle').textContent = '✅ Finalizar processo';
+    $('manutFormHelp').innerHTML = 'Ao finalizar, o processo é encerrado e a viatura sai do status atual.';
+    $('mm-delete').style.display = 'none';
+    $('mm-save').textContent = 'Finalizar';
+  }
+}
+
+function preencherProcInfoBox(p){
+  const inf = p.entrada ? p.entrada.informante : '';
+  const det = p.entrada ? p.entrada.detalhes : '';
+  $('procInfoBox').innerHTML = `
+    <div class="row"><span>Processo</span><b>${escapeHtml(p.id)}</b></div>
+    <div class="row"><span>Viatura</span><b>${escapeHtml(p.viatura)}</b></div>
+    <div class="row"><span>Entrada</span><b>${escapeHtml(p.entrada ? p.entrada.data : '—')}</b></div>
+    <div class="row"><span>Local entrada</span><b>${escapeHtml(p.entrada ? p.entrada.local : '—')}</b></div>
+    <div class="row"><span>Informante</span><b>${escapeHtml(inf || '—')}</b></div>
+    ${det ? `<div class="row"><span>Motivo</span><b style="text-align:right;max-width:65%;">${escapeHtml(det)}</b></div>` : ''}
+  `;
+  $('procInfoBox').style.display = '';
+}
+
+function agoraDatetimeLocal(){
+  const agora = new Date(); const pad = n => String(n).padStart(2,'0');
+  return `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
+}
+
 function limparFormManut(){
-  manutEditKey = null; modoManutForm = 'criar';
-  $('manutFormTitle').textContent = '🛠 Nova entrada';
-  $('manutFormHelp').innerHTML = 'Preencha os dados. Após salvar, a <b style="color:var(--amber);">data de entrada</b> e o <b style="color:var(--amber);">informante da entrada</b> ficam travados.';
-  $('formSectionEntrada').classList.remove('travada'); $('lockEntrada').style.display = 'none';
+  processoAtual = null;
+  setFormModo('criar');
+
   $('mm-viatura').value = ''; $('mm-viatura').disabled = false;
   $('mm-status').value = 'Em Manutenção'; $('mm-status').disabled = false;
-  const agora = new Date(); const pad = n => String(n).padStart(2,'0');
-  $('mm-entrada').value = `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`; $('mm-entrada').disabled = false;
+  $('mm-entrada').value = agoraDatetimeLocal(); $('mm-entrada').disabled = false;
   $('mm-local').value = ''; $('mm-local').disabled = false;
   $('mm-informante').value = ''; $('mm-informante').disabled = false;
-  $('mm-detalhes-entrada').value = ''; $('mm-detalhes-entrada').disabled = false;
-  $('formSectionSaida').style.display = 'none'; $('formSectionSaida').classList.remove('travada');
-  $('mm-saida').value = ''; $('mm-novo-local').value = ''; $('mm-informante-saida').value = ''; $('mm-detalhes-saida').value = '';
-  $('mm-delete').style.display = 'none'; $('mm-save').textContent = 'Salvar';
+  $('mm-detalhes').value = ''; $('mm-detalhes').disabled = false;
+
+  $('me-tipo').value = 'Movimentação';
+  $('me-data').value = agoraDatetimeLocal();
+  $('me-status').value = '';
+  $('me-local').value = '';
+  $('me-informante').value = '';
+  $('me-detalhes').value = '';
+
+  $('mf-data').value = agoraDatetimeLocal();
+  $('mf-status').value = 'Ativa';
+  $('mf-local').value = '';
+  $('mf-informante').value = '';
+  $('mf-detalhes').value = '';
+
   $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
+  $('procInfoBox').style.display = 'none';
 }
-function abrirFormFechar(rec){
-  if(!temPermissao('manut_editar')){ alert('Você não tem permissão.'); return; }
-  modoManutForm = 'fechar'; manutEditKey = { viatura: rec.viatura, entrada: rec.entrada, local: rec.local };
-  $('manutFormTitle').textContent = '📤 Registrar saída — ' + rec.viatura;
-  $('manutFormHelp').innerHTML = 'A <b style="color:var(--amber);">entrada</b>, o <b style="color:var(--amber);">informante da entrada</b> e o <b style="color:var(--amber);">motivo da entrada</b> estão travados. Preencha os dados da saída.';
-  $('formSectionEntrada').classList.add('travada'); $('lockEntrada').style.display = '';
-  $('mm-viatura').value = rec.viatura; $('mm-viatura').disabled = true;
-  $('mm-status').value = statusLabelManut(rec.status); $('mm-status').disabled = true;
-  $('mm-entrada').value = toDatetimeLocalManut(rec.entrada); $('mm-entrada').disabled = true;
-  $('mm-local').value = rec.local; $('mm-local').disabled = true;
-  const infE = parseInformanteDetalhado(rec.informante); $('mm-informante').value = infE.entrada || ''; $('mm-informante').disabled = true;
-  const detE = parseDetalhesDetalhado(rec.detalhes); $('mm-detalhes-entrada').value = detE.entrada || ''; $('mm-detalhes-entrada').disabled = true;
-  $('formSectionSaida').style.display = ''; $('formSectionSaida').classList.remove('travada');
-  const agora = new Date(); const pad = n => String(n).padStart(2,'0');
-  $('mm-saida').value = `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`; $('mm-saida').disabled = false;
-  $('mm-status-final').value = 'Ativa'; $('mm-status-final').disabled = false;
-  $('mm-novo-local').value = rec.local || ''; $('mm-novo-local').disabled = false;
-  $('mm-informante-saida').value = infE.entrada || ''; $('mm-informante-saida').disabled = false;
-  $('mm-detalhes-saida').value = ''; $('mm-detalhes-saida').disabled = false;
-  $('mm-delete').style.display = 'none'; $('mm-save').textContent = 'Confirmar saída';
-  $('mm-error').style.display = 'none';
+
+function abrirFormEvento(p){
+  if(!temPermissao('manut_editar')){ alert('Sem permissão.'); return; }
+  processoAtual = p;
+  setFormModo('evento');
+  preencherProcInfoBox(p);
+  $('me-tipo').value = 'Movimentação';
+  $('me-data').value = agoraDatetimeLocal();
+  $('me-status').value = '';
+  $('me-local').value = p.ultimo ? p.ultimo.local : '';
+  $('me-informante').value = '';
+  $('me-detalhes').value = '';
+  $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
   showView('manutencao'); showManutTab('novo');
+  setTimeout(() => $('me-informante').focus(), 60);
 }
-function abrirFormEditarFechado(rec){
-  if(!temPermissao('manut_editar')){ alert('Você não tem permissão.'); return; }
-  modoManutForm = 'editar'; manutEditKey = { viatura: rec.viatura, entrada: rec.entrada, local: rec.local };
-  $('manutFormTitle').textContent = '✎ Editar movimentação — ' + rec.viatura;
-  $('manutFormHelp').innerHTML = 'Datas, informantes e detalhes estão <b style="color:var(--amber);">travados</b>. Só é possível ajustar o <b style="color:var(--amber);">status</b> e o <b style="color:var(--amber);">local</b>.';
-  $('formSectionEntrada').classList.add('travada'); $('lockEntrada').style.display = '';
-  $('mm-viatura').value = rec.viatura; $('mm-viatura').disabled = true;
-  $('mm-status').value = statusLabelManut(rec.status); $('mm-status').disabled = false;
-  $('mm-entrada').value = toDatetimeLocalManut(rec.entrada); $('mm-entrada').disabled = true;
-  $('mm-local').value = rec.local; $('mm-local').disabled = false;
-  const infE = parseInformanteDetalhado(rec.informante); $('mm-informante').value = infE.entrada || ''; $('mm-informante').disabled = true;
-  const detE = parseDetalhesDetalhado(rec.detalhes); $('mm-detalhes-entrada').value = detE.entrada || ''; $('mm-detalhes-entrada').disabled = true;
-  $('formSectionSaida').style.display = ''; $('formSectionSaida').classList.add('travada');
-  $('mm-saida').value = toDatetimeLocalManut(rec.saida); $('mm-saida').disabled = true;
-  $('mm-status-final').value = statusLabelManut(rec.status); $('mm-status-final').disabled = true;
-  $('mm-novo-local').value = rec.local; $('mm-novo-local').disabled = true;
-  $('mm-informante-saida').value = infE.saida || ''; $('mm-informante-saida').disabled = true;
-  $('mm-detalhes-saida').value = detE.saida || ''; $('mm-detalhes-saida').disabled = true;
-  $('mm-delete').style.display = 'inline-block'; $('mm-save').textContent = 'Salvar alterações';
-  $('mm-error').style.display = 'none';
+
+function abrirFormFinalizar(p){
+  if(!temPermissao('manut_editar')){ alert('Sem permissão.'); return; }
+  processoAtual = p;
+  setFormModo('finalizar');
+  preencherProcInfoBox(p);
+  $('mf-data').value = agoraDatetimeLocal();
+  $('mf-status').value = 'Ativa';
+  $('mf-local').value = p.ultimo ? p.ultimo.local : '';
+  $('mf-informante').value = p.entrada ? p.entrada.informante : '';
+  $('mf-detalhes').value = '';
+  $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
   showView('manutencao'); showManutTab('novo');
+  setTimeout(() => $('mf-detalhes').focus(), 60);
 }
+
 function cancelarFormManut(){
-  const temDados = $('mm-viatura').value.trim() !== '' || $('mm-local').value.trim() !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes-entrada').value.trim() !== '' || (modoManutForm === 'fechar' && ($('mm-saida').value || $('mm-detalhes-saida').value));
-  if((temDados && modoManutForm === 'criar') && !confirm('Descartar o que foi digitado?')) return;
-  limparFormManut(); showManutTab('registros');
+  let temDados = false;
+  if(modoManutForm === 'criar'){
+    temDados = $('mm-viatura').value.trim() !== '' || $('mm-local').value.trim() !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
+  } else if(modoManutForm === 'evento'){
+    temDados = $('me-detalhes').value.trim() !== '' || $('me-informante').value.trim() !== '';
+  } else if(modoManutForm === 'finalizar'){
+    temDados = $('mf-detalhes').value.trim() !== '' || $('mf-informante').value.trim() !== '';
+  }
+  if(temDados && !confirm('Descartar o que foi digitado?')) return;
+  limparFormManut();
+  showManutTab('registros');
 }
+
 async function salvarManut(){
   if(modoManutForm === 'criar') return salvarCriarManut();
-  if(modoManutForm === 'fechar') return salvarFecharManut();
-  if(modoManutForm === 'editar') return salvarEditarManut();
+  if(modoManutForm === 'evento') return salvarEventoManut();
+  if(modoManutForm === 'finalizar') return salvarFinalizarManut();
 }
+
 async function salvarCriarManut(){
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
-  const viatura = $('mm-viatura').value.trim().toUpperCase(); const status = $('mm-status').value;
-  const entrada = $('mm-entrada').value; const local = $('mm-local').value.trim();
-  const informante = $('mm-informante').value.trim(); const detalhes = $('mm-detalhes-entrada').value.trim();
+  const viatura    = $('mm-viatura').value.trim().toUpperCase();
+  const status     = $('mm-status').value;
+  const entrada    = $('mm-entrada').value;
+  const local      = $('mm-local').value.trim();
+  const informante = $('mm-informante').value.trim();
+  const detalhes   = $('mm-detalhes').value.trim();
   if(!viatura){ err.textContent = 'Informe a viatura.'; err.style.display='block'; return; }
   if(!entrada){ err.textContent = 'Informe a data de entrada.'; err.style.display='block'; return; }
   if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
   btn.disabled = true; btn.textContent = 'Salvando…';
-  const r = await apiManut('adicionarManutencao', { viatura, status, entrada, local, informante, detalhes });
-  btn.disabled = false; btn.textContent = 'Salvar';
-  if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
-  try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
-  await loadDataManut();
-  const recResumo = { viatura, status, entrada: new Date(entrada).toLocaleString('pt-BR'), local, informante, detalhes };
-  mostrarSucesso({
-    titulo: 'Movimentação registrada!', sub: 'Os dados foram salvos com sucesso.',
-    resumo: [['Viatura', viatura],['Status', statusLabelManut(status)],['Local', local || '—'],['Entrada', recResumo.entrada],['Informante', informante]],
-    mensagemWhats: montarMensagemEntrada({ viatura, status, entrada: recResumo.entrada, local, informante, detalhes, saida: '--', dias: '0d' })
-  });
-}
-
-/* ─────────────  salvarFecharManut (formato correto)  ───────────── */
-async function salvarFecharManut(){
-  if(!manutEditKey) return;
-  const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
-  const saida = $('mm-saida').value; const statusFinal = $('mm-status-final').value;
-  const novoLocal = $('mm-novo-local').value.trim(); const infSaida = $('mm-informante-saida').value.trim(); const detSaida = $('mm-detalhes-saida').value.trim();
-  if(!saida){ err.textContent = 'Informe a data de saída.'; err.style.display='block'; return; }
-  if(!detSaida){ if(!confirm('Sem descrição do que foi feito. Continuar mesmo assim?')) return; }
-  btn.disabled = true; btn.textContent = 'Salvando…';
-  const r = await apiManut('fecharMovimentacao', { viaturaAntiga: manutEditKey.viatura, entradaAntiga: normalizarDataISOStr(manutEditKey.entrada), localAntigo: manutEditKey.local, saida, statusFinal, novoLocal, informanteSaida: infSaida, detalhesSaida: detSaida });
-  btn.disabled = false; btn.textContent = 'Confirmar saída';
-  if(!r.ok){ err.textContent = r.error || 'Erro ao fechar.'; err.style.display = 'block'; return; }
-  try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
+  const r = await apiManut('criarProcesso', { viatura, status, entrada, local, informante, detalhes });
+  btn.disabled = false; btn.textContent = 'Criar processo';
+  if(!r.ok){
+    err.textContent = r.error || 'Erro ao salvar.';
+    err.style.display = 'block';
+    if(r.idExistente){
+      // Oferece abrir o processo existente
+      if(confirm('Já existe um processo aberto para esta viatura (' + r.idExistente + '). Deseja adicionar um evento a ele?')){
+        // Localiza o processo
+        const grupos = agruparPorProcesso();
+        if(grupos[r.idExistente]) abrirFormEvento(grupos[r.idExistente]);
+      }
+    }
+    return;
+  }
+  try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
   await loadDataManut();
 
-  const infoEntrada = $('mm-informante').value.trim();
-  const detEntrada  = $('mm-detalhes-entrada').value.trim();
-
-  const saidaISO    = saida.split('T')[0];
-  const partesS     = saidaISO.split('-');
-  const saidaFmt    = partesS[2] + '/' + partesS[1] + '/' + partesS[0];
-  const dataEntradaFmt = String(manutEditKey.entrada || '').split(' ')[0];
-
-  const dEntrada = parseDataManut(manutEditKey.entrada);
-  const dSaida   = parseDataManut(saida);
-  let dias = 0;
-  if (dEntrada && dSaida) {
-    const ini = new Date(dEntrada.getTime()); ini.setHours(0,0,0,0);
-    const fim = new Date(dSaida.getTime());   fim.setHours(0,0,0,0);
-    dias = Math.max(0, Math.floor((fim.getTime() - ini.getTime()) / 86400000));
-  }
-
-  const informanteComposto = (!infSaida || infSaida === infoEntrada)
-    ? infoEntrada
-    : 'ENTRADA: ' + infoEntrada + '\nSAÍDA: ' + infSaida;
-
-  let detalhesComposto = detEntrada;
-  if (detSaida) {
-    detalhesComposto = 'ENTRADA (' + dataEntradaFmt + '): ' + detEntrada +
-                       '\nSAÍDA (' + saidaFmt + '): ' + detSaida;
-  }
-
+  const entradaFmt = toDatetimeLocalManut(entrada);
+  const entradaBR = entradaFmt ? entradaFmt.split('T')[0].split('-').reverse().join('/') : '—';
   mostrarSucesso({
-    titulo: 'Saída registrada!', sub: 'A movimentação foi fechada com sucesso.',
+    titulo: 'Processo criado!', sub: 'ID: ' + r.id,
     resumo: [
-      ['Viatura', manutEditKey.viatura],
-      ['Status final', statusLabelManut(statusFinal)],
-      ['Local', novoLocal || '—'],
-      ['Saída', saidaFmt],
-      ['Informante', infSaida || '—']
+      ['ID', r.id],
+      ['Viatura', viatura],
+      ['Status', statusLabelManut(status)],
+      ['Local', local || '—'],
+      ['Entrada', entradaBR],
+      ['Informante', informante]
     ],
-    mensagemWhats: montarMensagemSaida({
-      viatura:    manutEditKey.viatura,
-      status:     statusFinal,
-      entrada:    dataEntradaFmt,
-      saida:      saidaFmt,
-      local:      novoLocal,
-      informante: informanteComposto,
-      detalhes:   detalhesComposto,
-      dias:       dias + 'd'
+    mensagemWhats: montarMensagemEntrada({
+      id: r.id, viatura, status, entrada: entradaBR, local, informante, detalhes
     })
   });
+  limparFormManut();
 }
-/* ─────────────  fim salvarFecharManut  ───────────── */
 
-async function salvarEditarManut(){
-  if(!manutEditKey) return;
+async function salvarEventoManut(){
+  if(!processoAtual) return;
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
-  const novoStatus = $('mm-status').value; const novoLocal = $('mm-local').value.trim();
+  const tipo       = $('me-tipo').value;
+  const data       = $('me-data').value;
+  const status     = $('me-status').value;
+  const local      = $('me-local').value.trim();
+  const informante = $('me-informante').value.trim();
+  const detalhes   = $('me-detalhes').value.trim();
+  if(!data){ err.textContent = 'Informe a data.'; err.style.display='block'; return; }
+  if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
   btn.disabled = true; btn.textContent = 'Salvando…';
-  const r = await apiManut('atualizarManutencao', { viaturaAntiga: manutEditKey.viatura, entradaAntiga: normalizarDataISOStr(manutEditKey.entrada), localAntigo: manutEditKey.local, status: novoStatus, local: novoLocal });
-  btn.disabled = false; btn.textContent = 'Salvar alterações';
+  const r = await apiManut('adicionarEvento', {
+    id: processoAtual.id, tipo, data, status, local, informante, detalhes
+  });
+  btn.disabled = false; btn.textContent = 'Salvar evento';
   if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
-  try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
-  await loadDataManut(); limparFormManut(); showManutTab('registros');
+  try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+  await loadDataManut();
+  limparFormManut();
+  showManutTab('registros');
 }
-async function excluirManutAtual(){
-  if(!manutEditKey) return;
-  if(!confirm(`Excluir o registro de ${manutEditKey.viatura}?`)) return;
-  const btn = $('mm-delete'); btn.disabled = true; btn.textContent = 'Excluindo…';
-  const r = await apiManut('removerManutencao', { viatura: manutEditKey.viatura, entrada: normalizarDataISOStr(manutEditKey.entrada), local: manutEditKey.local });
-  btn.disabled = false; btn.textContent = 'Excluir registro';
-  if(!r.ok){ alert('Erro: ' + r.error); return; }
-  try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
-  await loadDataManut(); limparFormManut(); showManutTab('registros');
+
+async function salvarFinalizarManut(){
+  if(!processoAtual) return;
+  const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
+  const dataFim     = $('mf-data').value;
+  const statusFinal = $('mf-status').value;
+  const local       = $('mf-local').value.trim();
+  const informante  = $('mf-informante').value.trim();
+  const detalhes    = $('mf-detalhes').value.trim();
+  if(!dataFim){ err.textContent = 'Informe a data final.'; err.style.display='block'; return; }
+  if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
+  if(!detalhes){ if(!confirm('Sem descrição do que foi feito. Continuar mesmo assim?')) return; }
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  const procId = processoAtual.id;
+  const r = await apiManut('finalizarProcesso', {
+    id: procId, statusFinal, dataFim, local, informante, detalhes
+  });
+  btn.disabled = false; btn.textContent = 'Finalizar';
+  if(!r.ok){ err.textContent = r.error || 'Erro ao finalizar.'; err.style.display = 'block'; return; }
+  try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+  await loadDataManut();
+
+  // Monta mensagem com dados que já temos
+  const entradaData = processoAtual.entrada ? processoAtual.entrada.data : '—';
+  const entradaInf = processoAtual.entrada ? processoAtual.entrada.informante : '—';
+  const dataFimBR = dataFim.split('T')[0].split('-').reverse().join('/');
+  const dias = r.dias != null ? r.dias : 0;
+
+  mostrarSucesso({
+    titulo: 'Processo finalizado!', sub: 'ID: ' + procId,
+    resumo: [
+      ['ID', procId],
+      ['Viatura', processoAtual.viatura],
+      ['Status final', statusLabelManut(statusFinal)],
+      ['Local', local || '—'],
+      ['Saída', dataFimBR],
+      ['Dias', dias + 'd'],
+      ['Informante', informante]
+    ],
+    mensagemWhats: montarMensagemFinalizacao({
+      id: procId, viatura: processoAtual.viatura, status: statusFinal,
+      entrada: entradaData, informanteEntrada: entradaInf,
+      saida: dataFimBR, informanteSaida: informante,
+      local, detalhes, dias: dias + 'd'
+    })
+  });
+  limparFormManut();
 }
+
+/* WhatsApp */
+function abrirWhatsApp(texto){ const base = WHATSAPP_DESTINO ? 'https://wa.me/' + WHATSAPP_DESTINO : 'https://wa.me/'; window.open(base + '?text=' + encodeURIComponent(texto), '_blank'); }
+
+function montarMensagemEntrada(p){
+  const linhas = [];
+  linhas.push('🛠 *Nova Movimentação* · ' + p.id);
+  linhas.push('');
+  linhas.push('*Viatura:* ' + p.viatura);
+  linhas.push('*Status:* ' + statusLabelManut(p.status));
+  linhas.push('*Local:* ' + (p.local || '—'));
+  linhas.push('*Entrada:* ' + (p.entrada || '—'));
+  if(p.informante) linhas.push('*Informante:* ' + p.informante);
+  if(p.detalhes){ linhas.push(''); linhas.push('*Detalhes:*'); linhas.push(p.detalhes); }
+  linhas.push('');
+  linhas.push('_Registrado por: ' + (currentUser || 'DEMAN') + '_');
+  linhas.push('_DEMAN · ' + new Date().toLocaleString('pt-BR') + '_');
+  return linhas.join('\n');
+}
+
+function montarMensagemFinalizacao(p){
+  const linhas = [];
+  linhas.push('✅ *Saída de Manutenção* · ' + p.id);
+  linhas.push('');
+  linhas.push('*Viatura:* ' + p.viatura);
+  linhas.push('*Status:* ' + statusLabelManut(p.status));
+  linhas.push('*Local:* ' + (p.local || '—'));
+  linhas.push('*Entrada:* ' + (p.entrada || '—') + (p.informanteEntrada ? '  (' + p.informanteEntrada + ')' : ''));
+  linhas.push('*Saída:* ' + (p.saida || '—') + (p.informanteSaida ? '  (' + p.informanteSaida + ')' : ''));
+  linhas.push('*Dias:* ' + (p.dias || '—'));
+  if(p.detalhes){ linhas.push(''); linhas.push('*O que foi feito:*'); linhas.push(p.detalhes); }
+  linhas.push('');
+  linhas.push('_Registrado por: ' + (currentUser || 'DEMAN') + '_');
+  linhas.push('_DEMAN · ' + new Date().toLocaleString('pt-BR') + '_');
+  return linhas.join('\n');
+}
+
 let _sucessoMensagemWhats = '';
 function mostrarSucesso({ titulo, sub, resumo, mensagemWhats }){
   $('sucessoTitulo').textContent = titulo; $('sucessoSub').textContent = sub;
   $('sucessoResumo').innerHTML = resumo.map(([k, v]) => `<div class="resumo-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('');
-  _sucessoMensagemWhats = mensagemWhats || ''; $('sucessoModal').style.display = 'flex';
+  _sucessoMensagemWhats = mensagemWhats || '';
+  $('sucessoModal').style.display = 'flex';
 }
-function fecharSucesso(){ $('sucessoModal').style.display = 'none'; _sucessoMensagemWhats = ''; limparFormManut(); showManutTab('registros'); }
+function fecharSucesso(){
+  $('sucessoModal').style.display = 'none';
+  _sucessoMensagemWhats = '';
+  limparFormManut();
+  showManutTab('registros');
+}
 
-/* ═══════ RELATÓRIO MOVIMENTAÇÃO ═══════ */
+/* Relatório de Movimentação */
 function getMesesDisponiveisManut(){
   const set = new Set();
-  MANUT_REGISTROS.forEach(r => { const d = parseDataManut(r.entrada); if(!d) return; const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); set.add(y + '-' + m); });
+  MANUT_EVENTOS.forEach(e => {
+    const d = parseDataManut(e.data);
+    if(!d) return;
+    set.add(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'));
+  });
   return Array.from(set).sort().reverse();
 }
 function abrirRelatorioManut(){
   const select = $('manutReportMonth'); const meses = getMesesDisponiveisManut();
   select.innerHTML = '<option value="">Todos os meses</option>' + meses.map(ym => `<option value="${escapeAttr(ym)}">${escapeHtml(formatarMesAno(ym))}</option>`).join('');
-  select.value = ''; $('manutReportMode').value = 'detalhado';
+  select.value = '';
+  $('manutReportMode').value = 'detalhado';
   const agora = new Date();
   $('manutReportMeta').innerHTML = 'Emitido em ' + agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR') + '<br>Por: <b style="color:var(--amber);">' + escapeHtml(currentUser || '—') + '</b>';
-  renderRelatorioManut(); $('manutReportModal').style.display = 'flex';
+  renderRelatorioManut();
+  $('manutReportModal').style.display = 'flex';
 }
 function atualizarVisibilidadeModoManut(){
-  const modo = $('manutReportMode').value; const isMes = modo === 'mes';
+  const modo = $('manutReportMode').value;
+  const isMes = modo === 'mes';
   $('manutReportDetalhado').style.display = isMes ? 'none' : '';
   $('manutReportPorMes').style.display = isMes ? '' : 'none';
-  const periodoWrap = $('manutReportPeriodWrap'); if(periodoWrap) periodoWrap.style.display = isMes ? 'none' : 'flex';
+  const periodoWrap = $('manutReportPeriodWrap');
+  if(periodoWrap) periodoWrap.style.display = isMes ? 'none' : 'flex';
 }
-function renderRelatorioManut(){ atualizarVisibilidadeModoManut(); const modo = $('manutReportMode').value; if(modo === 'mes') renderRelatorioManutPorMes(); else renderRelatorioManutDetalhado(); }
+function renderRelatorioManut(){
+  atualizarVisibilidadeModoManut();
+  const modo = $('manutReportMode').value;
+  if(modo === 'mes') renderRelatorioManutPorMes();
+  else renderRelatorioManutDetalhado();
+}
 function renderRelatorioManutDetalhado(){
-  const mes = $('manutReportMonth').value; let dados = MANUT_REGISTROS.slice();
-  if(mes){ dados = dados.filter(r => { const d = parseDataManut(r.entrada); if(!d) return false; const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); return ym === mes; }); }
-  dados.sort((a,b) => { const da = parseDataManut(a.entrada); const db = parseDataManut(b.entrada); return (db ? db.getTime() : 0) - (da ? da.getTime() : 0); });
+  const mes = $('manutReportMonth').value;
+  const grupos = agruparPorProcesso();
+  let procs = Object.values(grupos);
+
+  if(mes){
+    procs = procs.filter(p => {
+      const d = parseDataManut(p.entrada ? p.entrada.data : '');
+      if(!d) return false;
+      return (d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0')) === mes;
+    });
+  }
+
+  procs.sort((a, b) => {
+    const da = parseDataManut(a.entrada ? a.entrada.data : '');
+    const db = parseDataManut(b.entrada ? b.entrada.data : '');
+    return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+  });
+
   const filtroTxt = mes ? 'Mês: ' + formatarMesAno(mes) : 'Todos os meses';
-  $('manutReportFilters').innerHTML = '<b>' + escapeHtml(filtroTxt) + '</b> · <b>Registros:</b> ' + dados.length;
-  $('manutReportBody').innerHTML = dados.length === 0 ? '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro neste período</td></tr>' :
-    dados.map(r => { const classe = statusClasseManut(r.status); const cor = corStatus(classe); return `<tr><td class="v">${escapeHtml(r.viatura)}</td><td class="status" style="color:${cor};">● ${escapeHtml(statusLabelManut(r.status))}</td><td class="date">${escapeHtml(r.entrada || '—')}</td><td class="date">${escapeHtml(r.saida || '--')}</td><td>${escapeHtml(r.local || '—')}</td><td class="dias">${escapeHtml(r.dias || '—')}</td><td>${escapeHtml(parseInformanteDetalhado(r.informante).entrada || '—')}</td><td class="details">${escapeHtml(parseDetalhesDetalhado(r.detalhes).entrada || '')}</td></tr>`; }).join('');
+  $('manutReportFilters').innerHTML = '<b>' + escapeHtml(filtroTxt) + '</b> · <b>Processos:</b> ' + procs.length;
+
+  $('manutReportBody').innerHTML = procs.length === 0
+    ? '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum processo neste período</td></tr>'
+    : procs.map(p => {
+        const cor = corStatus(statusClasseManut(p.ultimo ? p.ultimo.status : ''));
+        const entrada = p.entrada ? p.entrada.data : '—';
+        const saida = p.finalizacao ? p.finalizacao.data : '--';
+        const statusL = statusLabelManut(p.ultimo ? p.ultimo.status : '');
+        const dias = p.finalizacao ? p.dias + 'd' : '—';
+        const inf = p.finalizacao ? p.finalizacao.informante : (p.entrada ? p.entrada.informante : '—');
+        return `<tr>
+          <td class="id">${escapeHtml(p.id)}</td>
+          <td class="v">${escapeHtml(p.viatura)}</td>
+          <td class="date">${escapeHtml(entrada)}</td>
+          <td class="date">${escapeHtml(saida)}</td>
+          <td class="status" style="color:${cor};">● ${escapeHtml(statusL)}</td>
+          <td class="dias">${escapeHtml(dias)}</td>
+          <td style="text-align:center;">${p.eventos.length}</td>
+          <td>${escapeHtml(inf)}</td>
+        </tr>`;
+      }).join('');
 }
 function renderRelatorioManutPorMes(){
   const grupos = {};
-  MANUT_REGISTROS.forEach(r => { const d = parseDataManut(r.entrada); if(!d) return; const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); if(!grupos[ym]) grupos[ym] = {}; if(!grupos[ym][r.viatura]) grupos[ym][r.viatura] = { eventos: 0, dias: 0 }; grupos[ym][r.viatura].eventos += 1; grupos[ym][r.viatura].dias += extrairDiasNumericos(r.dias); });
+  MANUT_EVENTOS.forEach(e => {
+    const d = parseDataManut(e.data);
+    if(!d) return;
+    const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    if(!grupos[ym]) grupos[ym] = {};
+    if(!grupos[ym][e.viatura]) grupos[ym][e.viatura] = { eventos: 0, dias: 0 };
+    grupos[ym][e.viatura].eventos += 1;
+    // Só soma dias da finalização
+    if(normalizeStr(e.evento).indexOf('finaliz') !== -1){
+      grupos[ym][e.viatura].dias += extrairDiasNumericos(e.dias);
+    }
+  });
+
   const meses = Object.keys(grupos).sort().reverse();
   let totalGeralEventos = 0;
   Object.keys(grupos).forEach(ym => { Object.keys(grupos[ym]).forEach(pfx => { totalGeralEventos += grupos[ym][pfx].eventos; }); });
+
   $('manutReportFilters').innerHTML = '<b>Modo:</b> Por mês (agrupado) · <b>Meses:</b> ' + meses.length + ' · <b>Eventos totais:</b> ' + totalGeralEventos;
   const container = $('manutReportMesContent');
-  if(meses.length === 0){ container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-faint);">Nenhum registro encontrado</div>'; return; }
+
+  if(meses.length === 0){
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-faint);">Nenhum registro encontrado</div>';
+    return;
+  }
+
   container.innerHTML = meses.map(ym => {
     const viaturas = Object.keys(grupos[ym]).sort((a,b)=>a.localeCompare(b));
-    let totalEventosMes = 0; let totalDiasMes = 0;
-    const linhas = viaturas.map(pfx => { const info = grupos[ym][pfx]; totalEventosMes += info.eventos; totalDiasMes += info.dias; return `<tr><td class="v">${escapeHtml(pfx)}</td><td class="status" style="text-align:center;">${info.eventos}</td><td class="dias">${info.dias}d</td></tr>`; }).join('');
-    const btnWhats = `<button class="btn ghost wa" data-mes-whats="${escapeAttr(ym)}" title="Compartilhar resumo do mês" style="padding:4px 8px;font-size:11px;">📱</button>`;
-    return `<div class="mes-group"><div class="mes-header"><span>${escapeHtml(formatarMesAno(ym))}</span><span style="display:flex;gap:8px;align-items:center;"><span class="mes-count">${totalEventosMes} evento${totalEventosMes>1?'s':''} · ${viaturas.length} viatura${viaturas.length>1?'s':''}</span>${btnWhats}</span></div><table class="report-table"><thead><tr><th>Viatura</th><th style="text-align:center;">Eventos</th><th style="text-align:right;">Dias no mês</th></tr></thead><tbody>${linhas}<tr class="total-row"><td>TOTAL DO MÊS</td><td style="text-align:center;">${totalEventosMes}</td><td style="text-align:right;">${totalDiasMes}d</td></tr></tbody></table></div>`;
+    let totalEventosMes = 0, totalDiasMes = 0;
+    const linhas = viaturas.map(pfx => {
+      const info = grupos[ym][pfx];
+      totalEventosMes += info.eventos;
+      totalDiasMes += info.dias;
+      return `<tr><td class="v">${escapeHtml(pfx)}</td><td class="status" style="text-align:center;">${info.eventos}</td><td class="dias">${info.dias}d</td></tr>`;
+    }).join('');
+    return `<div class="mes-group"><div class="mes-header"><span>${escapeHtml(formatarMesAno(ym))}</span><span class="mes-count">${totalEventosMes} evento${totalEventosMes>1?'s':''} · ${viaturas.length} viatura${viaturas.length>1?'s':''}</span></div><table class="report-table"><thead><tr><th>Viatura</th><th style="text-align:center;">Eventos</th><th style="text-align:right;">Dias fechados</th></tr></thead><tbody>${linhas}<tr class="total-row"><td>TOTAL DO MÊS</td><td style="text-align:center;">${totalEventosMes}</td><td style="text-align:right;">${totalDiasMes}d</td></tr></tbody></table></div>`;
   }).join('');
-  container.querySelectorAll('[data-mes-whats]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const ym = btn.dataset.mesWhats; const info = grupos[ym]; const viaturas = Object.keys(info).sort();
-      const totalEv = viaturas.reduce((s, p) => s + info[p].eventos, 0); const totalD = viaturas.reduce((s, p) => s + info[p].dias, 0);
-      const linhas = viaturas.map(p => `• ${p} → ${info[p].eventos} evento${info[p].eventos>1?'s':''} · ${info[p].dias}d`).join('\n');
-      const texto = '📊 *Movimentação · ' + formatarMesAno(ym) + '*\n\n*Total:* ' + totalEv + ' eventos · ' + viaturas.length + ' viaturas · ' + totalD + 'd\n\n' + linhas + '\n\n_Resumo gerado por ' + (currentUser || 'DEMAN') + ' · DEMAN_';
-      abrirWhatsApp(texto);
-    });
-  });
 }
 
 /* ═══════ USUÁRIOS ═══════ */
@@ -2121,7 +2347,7 @@ $('menuToggle').addEventListener('click', () => {
 $('sidebarBackdrop').addEventListener('click', () => $('app').classList.remove('sidebar-open'));
 document.querySelectorAll('.sidebar-link[data-view]').forEach(btn => { if(btn.id === 'sidebarMovParent') return; btn.addEventListener('click', () => showView(btn.dataset.view)); });
 $('sidebarMovParent').addEventListener('click', () => { if(activeView !== 'manutencao'){ showView('manutencao'); setSidebarMovExpanded(true); } else { setSidebarMovExpanded(!sidebarMovExpanded); } });
-document.querySelectorAll('#sidebarSubMov .sidebar-sublink').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); showView('manutencao'); showManutTab(btn.dataset.manutTab); }); });
+document.querySelectorAll('#sidebarSubMov .sidebar-sublink').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); showView('manutencao'); if(btn.dataset.manutTab === 'novo'){ limparFormManut(); } showManutTab(btn.dataset.manutTab); }); });
 $('logoutBtn').addEventListener('click', handleLogout);
 $('loginBtn').addEventListener('click', handleLogin);
 $('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
@@ -2134,7 +2360,7 @@ $('um-save').addEventListener('click', salvarUserModal);
 $('um-reset').addEventListener('click', resetarSenhaUsuario);
 $('um-perfil').addEventListener('change', () => aplicarDefaultsPorPerfil($('um-perfil').value));
 $('userModal').addEventListener('click', e => { if(e.target.id === 'userModal') fecharUserModal(); });
-$('newUserBtn').addEventListener('click', () => { if(!temPermissao('usuarios_criar')){ alert('Você não tem permissão para criar contas.'); return; } abrirUserModal('create'); });
+$('newUserBtn').addEventListener('click', () => { if(!temPermissao('usuarios_criar')){ alert('Sem permissão.'); return; } abrirUserModal('create'); });
 $('usersSearch').addEventListener('input', debounce(renderUsuarios, 180));
 
 const afStageSel = $('af-stage'); afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
@@ -2194,8 +2420,6 @@ $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
 $('mm-save').addEventListener('click', salvarManut);
-$('mm-delete').addEventListener('click', excluirManutAtual);
-$('mm-clear').addEventListener('click', limparFormManut);
 $('mm-cancel').addEventListener('click', cancelarFormManut);
 $('manutReportBtn').addEventListener('click', () => { if(!temPermissao('ver_manutencao')){ alert('Sem permissão.'); return; } abrirRelatorioManut(); });
 $('manutReportClose').addEventListener('click', () => { $('manutReportModal').style.display = 'none'; });
