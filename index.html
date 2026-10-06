@@ -854,11 +854,25 @@ const PERM_GRUPOS = {
   usuarios_criar:'admin_usuarios', usuarios_editar:'admin_usuarios', usuarios_resetar:'admin_usuarios'
 };
 
+/* ═══════ WARM-UP (aquece os 3 backends em paralelo) ═══════ */
 (function warmUp(){
-  [OS_APPS_SCRIPT_URL, VIATURAS_APPS_SCRIPT_URL, MANUT_APPS_SCRIPT_URL].forEach(url => {
-    if(!url || url.includes('COLE_AQUI')) return;
-    fetch(url, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action: 'versao' }), cache: 'no-store' }).catch(()=>{});
-  });
+  // OS: lerCSV é o mais pesado; força o script inteiro a acordar
+  fetch(OS_APPS_SCRIPT_URL, {
+    method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'lerCSV' }), cache:'no-store'
+  }).catch(()=>{});
+
+  // Viaturas: listarViaturas acorda tudo
+  fetch(VIATURAS_APPS_SCRIPT_URL, {
+    method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'listarViaturas' }), cache:'no-store'
+  }).catch(()=>{});
+
+  // Manutenção: versao basta
+  fetch(MANUT_APPS_SCRIPT_URL, {
+    method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'versao' }), cache:'no-store'
+  }).catch(()=>{});
 })();
 
 /* ═══════ HELPERS ═══════ */
@@ -882,19 +896,57 @@ function temPermissao(p){
 }
 function isAdmin(){ return currentPerfil === 'admin'; }
 
-/* ═══════ API ═══════ */
-async function apiCall(url, action, payload){
-  const ctrl = new AbortController(); const to = setTimeout(()=>ctrl.abort(), 15000);
+/* ═══════ API — timeout 25s + retry automático ═══════ */
+async function apiCall(url, action, payload, _tentativa){
+  const tentativa = _tentativa || 1;
+  const TIMEOUT_MS = 25000;
+  const ctrl = new AbortController();
+  const to = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+
   try{
-    const r = await fetch(url, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(Object.assign({ action, usuario: currentLogin || '', perfil: currentPerfil || 'view' }, payload||{})), signal: ctrl.signal, cache:'no-store' });
+    const r = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify(Object.assign({
+        action, usuario: currentLogin || '', perfil: currentPerfil || 'view'
+      }, payload || {})),
+      signal: ctrl.signal,
+      cache:'no-store'
+    });
     clearTimeout(to);
-    if(!r.ok) return { ok:false, error:'HTTP '+r.status };
+
+    if(!r.ok){
+      // Se for erro 5xx e for a 1ª tentativa, tenta de novo (pode ser cold start)
+      if(tentativa === 1 && r.status >= 500){
+        console.warn('[apiCall] HTTP ' + r.status + '. Retry em 2s…');
+        await new Promise(res => setTimeout(res, 2000));
+        return apiCall(url, action, payload, 2);
+      }
+      return { ok:false, error:'HTTP ' + r.status };
+    }
+
     const txt = await r.text();
-    try{ return JSON.parse(txt); } catch(e){ return { ok:false, error:'Resposta inválida' }; }
+    try{
+      return JSON.parse(txt);
+    }catch(e){
+      // Se veio HTML (página de erro do Google), retry 1x
+      if(tentativa === 1){
+        console.warn('[apiCall] Resposta não-JSON. Retry em 1.5s…');
+        await new Promise(res => setTimeout(res, 1500));
+        return apiCall(url, action, payload, 2);
+      }
+      return { ok:false, error:'Resposta inválida' };
+    }
   }catch(err){
     clearTimeout(to);
-    if(err.name==='AbortError') return { ok:false, error:'Tempo esgotado após 15s.' };
-    return { ok:false, error:'Erro de rede: '+err.message };
+    // Timeout ou falha de rede: retry 1x depois de 2s
+    if(tentativa === 1){
+      console.warn('[apiCall] tentativa 1 falhou (' + err.name + '). Retry em 2s…');
+      await new Promise(res => setTimeout(res, 2000));
+      return apiCall(url, action, payload, 2);
+    }
+    if(err.name === 'AbortError') return { ok:false, error:'Tempo esgotado após 25s. Tente novamente.' };
+    return { ok:false, error:'Erro de rede: ' + err.message };
   }
 }
 const apiOS       = (a,p) => apiCall(OS_APPS_SCRIPT_URL, a, p);
@@ -1190,7 +1242,8 @@ function mapRowsToData(rows){
 async function fetchCsv(url){ const response = await fetch(url); if(!response.ok) throw new Error('HTTP '+response.status); return await response.text(); }
 async function loadDataOS(){
   if(isLoadingOS) return; isLoadingOS = true; showSkeletonOS();
-  const CACHE_KEY_OS = 'deman_cache_os_v2'; const CACHE_TTL = 5 * 60 * 1000;
+  const CACHE_KEY_OS = 'deman_cache_os_v2';
+  const CACHE_TTL = 15 * 60 * 1000;
   try{ const raw = sessionStorage.getItem(CACHE_KEY_OS); if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.data) && (Date.now() - p.ts) < CACHE_TTL){ OS_DATA = p.data; hideSkeletonOS(); isLoadingOS = false; renderLastUpdateOS(); if(activeView === 'os') renderOS(); if(activeView === 'home') renderHome(); } } }catch(e){}
   try{
     const r = await apiOS('lerCSV');
@@ -1575,7 +1628,8 @@ function parseInformanteDetalhado(txt){
 }
 
 async function loadDataManut(){
-  const upd = $('manutUpdateStatus'); const CACHE_KEY_MANUT = 'deman_cache_manut_v1'; const CACHE_TTL = 5 * 60 * 1000;
+  const upd = $('manutUpdateStatus'); const CACHE_KEY_MANUT = 'deman_cache_manut_v1';
+  const CACHE_TTL = 15 * 60 * 1000;
   try{ const raw = sessionStorage.getItem(CACHE_KEY_MANUT); if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.registros) && (Date.now() - p.ts) < CACHE_TTL){ MANUT_REGISTROS = p.registros; upd.textContent = 'Cache · ' + new Date(p.ts).toLocaleTimeString('pt-BR'); if(activeView === 'manutencao') renderManut(); if(activeView === 'home') renderHome(); } } }catch(e){}
   upd.textContent = 'Atualizando…';
   try{
@@ -1838,7 +1892,7 @@ async function salvarCriarManut(){
   });
 }
 
-/* ─────────────  salvarFecharManut (CORRIGIDA)  ───────────── */
+/* ─────────────  salvarFecharManut (formato correto)  ───────────── */
 async function salvarFecharManut(){
   if(!manutEditKey) return;
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
@@ -1853,19 +1907,14 @@ async function salvarFecharManut(){
   try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
   await loadDataManut();
 
-  // ── Constrói a mensagem no MESMO formato do botão do card (Formato 1) ──
   const infoEntrada = $('mm-informante').value.trim();
   const detEntrada  = $('mm-detalhes-entrada').value.trim();
 
-  // Data de saída: só a parte da data (dd/mm/aaaa), sem hora
-  const saidaISO    = saida.split('T')[0];                       // "2026-10-06"
+  const saidaISO    = saida.split('T')[0];
   const partesS     = saidaISO.split('-');
-  const saidaFmt    = partesS[2] + '/' + partesS[1] + '/' + partesS[0]; // "06/10/2026"
+  const saidaFmt    = partesS[2] + '/' + partesS[1] + '/' + partesS[0];
+  const dataEntradaFmt = String(manutEditKey.entrada || '').split(' ')[0];
 
-  // Data de entrada: só a parte da data (dd/mm/aaaa)
-  const dataEntradaFmt = String(manutEditKey.entrada || '').split(' ')[0]; // "06/10/2026"
-
-  // Dias corridos entre entrada e saída
   const dEntrada = parseDataManut(manutEditKey.entrada);
   const dSaida   = parseDataManut(saida);
   let dias = 0;
@@ -1875,12 +1924,10 @@ async function salvarFecharManut(){
     dias = Math.max(0, Math.floor((fim.getTime() - ini.getTime()) / 86400000));
   }
 
-  // Informante: mesma regra do backend
   const informanteComposto = (!infSaida || infSaida === infoEntrada)
     ? infoEntrada
     : 'ENTRADA: ' + infoEntrada + '\nSAÍDA: ' + infSaida;
 
-  // Detalhes: mesma regra do backend
   let detalhesComposto = detEntrada;
   if (detSaida) {
     detalhesComposto = 'ENTRADA (' + dataEntradaFmt + '): ' + detEntrada +
