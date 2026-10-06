@@ -866,6 +866,25 @@ const PERM_GRUPOS = {
   fetch(MANUT_APPS_SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'versao' }), cache:'no-store' }).catch(()=>{});
 })();
 
+/* ─────────── KEEP-ALIVE FRONTEND (ping periódico) ─────────── */
+setInterval(() => {
+  // Não pinga se a aba está escondida (economiza bateria)
+  if (document.hidden) return;
+  // Só pinga se está logado
+  if (!isLoggedIn()) return;
+
+  const ping = (url) => fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'versao' }),
+    cache: 'no-store'
+  }).catch(()=>{});
+
+  ping(OS_APPS_SCRIPT_URL);
+  ping(VIATURAS_APPS_SCRIPT_URL);
+  ping(MANUT_APPS_SCRIPT_URL);
+}, 2 * 60 * 1000); // 2 minutos
+  
 function normalizeStr(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
 function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
