@@ -8,14 +8,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
 <meta name="color-scheme" content="dark">
+
 <link rel="dns-prefetch" href="https://script.google.com">
 <link rel="dns-prefetch" href="https://script.googleusercontent.com">
 <link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<noscript>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
 <style>
 :root{
   --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
@@ -1832,6 +1837,8 @@ async function salvarCriarManut(){
     mensagemWhats: montarMensagemEntrada({ viatura, status, entrada: recResumo.entrada, local, informante, detalhes, saida: '--', dias: '0d' })
   });
 }
+
+/* ─────────────  salvarFecharManut (CORRIGIDA)  ───────────── */
 async function salvarFecharManut(){
   if(!manutEditKey) return;
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
@@ -1845,13 +1852,64 @@ async function salvarFecharManut(){
   if(!r.ok){ err.textContent = r.error || 'Erro ao fechar.'; err.style.display = 'block'; return; }
   try{ sessionStorage.removeItem('deman_cache_manut_v1'); }catch(e){}
   await loadDataManut();
-  const detE = $('mm-detalhes-entrada').value;
+
+  // ── Constrói a mensagem no MESMO formato do botão do card (Formato 1) ──
+  const infoEntrada = $('mm-informante').value.trim();
+  const detEntrada  = $('mm-detalhes-entrada').value.trim();
+
+  // Data de saída: só a parte da data (dd/mm/aaaa), sem hora
+  const saidaISO    = saida.split('T')[0];                       // "2026-10-06"
+  const partesS     = saidaISO.split('-');
+  const saidaFmt    = partesS[2] + '/' + partesS[1] + '/' + partesS[0]; // "06/10/2026"
+
+  // Data de entrada: só a parte da data (dd/mm/aaaa)
+  const dataEntradaFmt = String(manutEditKey.entrada || '').split(' ')[0]; // "06/10/2026"
+
+  // Dias corridos entre entrada e saída
+  const dEntrada = parseDataManut(manutEditKey.entrada);
+  const dSaida   = parseDataManut(saida);
+  let dias = 0;
+  if (dEntrada && dSaida) {
+    const ini = new Date(dEntrada.getTime()); ini.setHours(0,0,0,0);
+    const fim = new Date(dSaida.getTime());   fim.setHours(0,0,0,0);
+    dias = Math.max(0, Math.floor((fim.getTime() - ini.getTime()) / 86400000));
+  }
+
+  // Informante: mesma regra do backend
+  const informanteComposto = (!infSaida || infSaida === infoEntrada)
+    ? infoEntrada
+    : 'ENTRADA: ' + infoEntrada + '\nSAÍDA: ' + infSaida;
+
+  // Detalhes: mesma regra do backend
+  let detalhesComposto = detEntrada;
+  if (detSaida) {
+    detalhesComposto = 'ENTRADA (' + dataEntradaFmt + '): ' + detEntrada +
+                       '\nSAÍDA (' + saidaFmt + '): ' + detSaida;
+  }
+
   mostrarSucesso({
     titulo: 'Saída registrada!', sub: 'A movimentação foi fechada com sucesso.',
-    resumo: [['Viatura', manutEditKey.viatura],['Status final', statusLabelManut(statusFinal)],['Local', novoLocal || '—'],['Saída', new Date(saida).toLocaleString('pt-BR')],['Informante', infSaida || '—']],
-    mensagemWhats: montarMensagemSaida({ viatura: manutEditKey.viatura, status: statusFinal, entrada: manutEditKey.entrada, saida: new Date(saida).toLocaleString('pt-BR'), local: novoLocal, informante: 'ENTRADA: ' + $('mm-informante').value + (infSaida && infSaida !== $('mm-informante').value ? '\nSAÍDA: ' + infSaida : ''), detalhes: 'ENTRADA: ' + detE + '\nSAÍDA: ' + detSaida, dias: '—' })
+    resumo: [
+      ['Viatura', manutEditKey.viatura],
+      ['Status final', statusLabelManut(statusFinal)],
+      ['Local', novoLocal || '—'],
+      ['Saída', saidaFmt],
+      ['Informante', infSaida || '—']
+    ],
+    mensagemWhats: montarMensagemSaida({
+      viatura:    manutEditKey.viatura,
+      status:     statusFinal,
+      entrada:    dataEntradaFmt,
+      saida:      saidaFmt,
+      local:      novoLocal,
+      informante: informanteComposto,
+      detalhes:   detalhesComposto,
+      dias:       dias + 'd'
+    })
   });
 }
+/* ─────────────  fim salvarFecharManut  ───────────── */
+
 async function salvarEditarManut(){
   if(!manutEditKey) return;
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
