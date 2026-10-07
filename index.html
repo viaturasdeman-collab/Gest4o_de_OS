@@ -1598,6 +1598,9 @@ let activeManutTab = 'registros';
 let modoManutForm = 'criar';
 let processoAtual = null;
 let sidebarMovExpanded = true;
+const DESFAZER_JANELA_MS = 20000;
+const _ultimoEventoAdicionado = {};
+let _desfazerTimer = null;
 
 function setSidebarMovExpanded(v){ sidebarMovExpanded = !!v; const sub = $('sidebarSubMov'); const parent = $('sidebarMovParent'); if(sub) sub.classList.toggle('open', sidebarMovExpanded); if(parent) parent.classList.toggle('expanded', sidebarMovExpanded); }
 function parseDataManut(str){
@@ -1796,7 +1799,9 @@ function renderManutGrid(){
       if(podeEditar) acoes += `<button class="btn ghost" data-action="evento" data-id="${escapeAttr(p.id)}">+ Evento</button>`;
     }
     acoes += `<button class="btn whatsapp" data-action="whats" data-id="${escapeAttr(p.id)}" title="Compartilhar">${waSvgCard}</button>`;
-    if(p.aberto && p.eventos.length > 1 && podeEditar){
+    const tsUltimo = _ultimoEventoAdicionado[p.id] || 0;
+    const dentroJanela = (Date.now() - tsUltimo) < DESFAZER_JANELA_MS;
+    if(p.aberto && p.eventos.length > 1 && podeEditar && dentroJanela){
       acoes += `<button class="btn ghost" data-action="desfazer" data-id="${escapeAttr(p.id)}" title="Desfazer último evento">↩</button>`;
     }
     if(podeExcluir){
@@ -1828,6 +1833,21 @@ function renderManutGrid(){
     </div>`;
   }).join('');
 
+  // Agenda re-render para esconder botões "desfazer" quando a janela de 20s expirar
+  if(_desfazerTimer) clearTimeout(_desfazerTimer);
+  const agora = Date.now();
+  let menorRestante = Infinity;
+  procs.forEach(p => {
+    const ts = _ultimoEventoAdicionado[p.id] || 0;
+    const restante = DESFAZER_JANELA_MS - (agora - ts);
+    if(restante > 0 && restante < menorRestante) menorRestante = restante;
+  });
+  if(menorRestante !== Infinity){
+    _desfazerTimer = setTimeout(() => {
+      if(activeView === 'manutencao') renderManut();
+    }, menorRestante + 100);
+  }
+
   container.querySelectorAll('[data-action="finalizar"]').forEach(btn => {
     btn.addEventListener('click', () => {
       const p = procs.find(x => x.id === btn.dataset.id); if(p) abrirFormFinalizar(p);
@@ -1853,6 +1873,7 @@ function renderManutGrid(){
       const r = await apiManut('removerUltimoEvento', { id: p.id });
       btn.disabled = false;
       if(!r.ok){ alert('Erro: ' + r.error); return; }
+      delete _ultimoEventoAdicionado[p.id];
       try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
       await loadDataManut();
     });
@@ -2072,11 +2093,13 @@ async function salvarEventoManut(){
   if(!data){ err.textContent = 'Informe a data.'; err.style.display='block'; return; }
   if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
   btn.disabled = true; btn.textContent = 'Salvando…';
+  const procId = processoAtual.id;
   const r = await apiManut('adicionarEvento', {
-    id: processoAtual.id, tipo, data, status, local, informante, detalhes
+    id: procId, tipo, data, status, local, informante, detalhes
   });
   btn.disabled = false; btn.textContent = 'Salvar evento';
   if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
+  _ultimoEventoAdicionado[procId] = Date.now();
   try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
   await loadDataManut();
   limparFormManut();
