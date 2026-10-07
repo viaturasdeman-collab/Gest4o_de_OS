@@ -2213,6 +2213,17 @@ function normalizarProcessoParaMensagem(p){
   };
 }
 
+/* ─────── BLOCOS DE EVENTO PARA HISTÓRICO ─────── */
+function montarBlocoEvento(ev){
+  const linhas = [];
+  linhas.push(iconeEvento(ev.tipo) + ' *' + (ev.tipo || 'Evento') + '* · ' + (ev.data || '—'));
+  if(ev.status) linhas.push('Status: ' + statusLabelManut(ev.status));
+  if(ev.local) linhas.push('Local: ' + ev.local);
+  if(ev.informante) linhas.push('Informante: ' + ev.informante);
+  if(ev.detalhes) linhas.push('Descrição: ' + ev.detalhes);
+  return linhas.join('\n');
+}
+
 function montarMensagemEntrada(p){
   const proc = normalizarProcessoParaMensagem(p);
   const linhas = [];
@@ -2224,6 +2235,14 @@ function montarMensagemEntrada(p){
   linhas.push('*Entrada:* ' + (proc.entrada || '—'));
   if(proc.informanteEntrada) linhas.push('*Informante:* ' + proc.informanteEntrada);
   if(proc.detalhes){ linhas.push(''); linhas.push('*Detalhes:*'); linhas.push(proc.detalhes); }
+
+  if(proc.eventos.length > 1){
+    proc.eventos.forEach(ev => {
+      linhas.push('');
+      linhas.push(montarBlocoEvento(ev));
+    });
+  }
+
   linhas.push('');
   linhas.push('_Registrado por: ' + (currentUser || 'DEMAN') + '_');
   linhas.push('_DEMAN · ' + new Date().toLocaleString('pt-BR') + '_');
@@ -2242,19 +2261,10 @@ function montarMensagemFinalizacao(p){
   linhas.push('*Saída:* ' + (proc.saida || '—'));
   linhas.push('*Dias:* ' + (proc.dias || '—'));
 
-  if(proc.eventos && proc.eventos.length > 0){
+  proc.eventos.forEach(ev => {
     linhas.push('');
-    linhas.push('📋 *Histórico do processo (' + proc.eventos.length + ' eventos):*');
-    proc.eventos.forEach(ev => {
-      linhas.push('');
-      const icone = iconeEvento(ev.tipo);
-      linhas.push(icone + ' *' + (ev.tipo || 'Evento') + '* · ' + (ev.data || '—'));
-      if(ev.status) linhas.push('Status: ' + statusLabelManut(ev.status));
-      if(ev.local) linhas.push('📍 ' + ev.local);
-      if(ev.informante) linhas.push('👤 ' + ev.informante);
-      if(ev.detalhes) linhas.push(ev.detalhes);
-    });
-  }
+    linhas.push(montarBlocoEvento(ev));
+  });
 
   linhas.push('');
   linhas.push('_Registrado por: ' + (currentUser || 'DEMAN') + '_');
