@@ -245,8 +245,6 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .summary-card.baixadas::before{background:var(--vermelho);}
 .summary-card.diretorias::before{background:var(--verde);}
 .summary-card.manut-total::before{background:var(--roxo);}
-.summary-card.manut-vtrs::before{background:var(--azul);}
-.summary-card.manut-em::before{background:var(--amber);}
 .summary-card.manut-dias::before{background:var(--vermelho);}
 .summary-card.manut-abertos::before{background:var(--amber);}
 .summary-card.manut-fechados::before{background:var(--verde);}
@@ -258,8 +256,6 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .summary-card.baixadas .value{color:var(--vermelho);}
 .summary-card.diretorias .value{color:var(--verde);}
 .summary-card.manut-total .value{color:var(--roxo);}
-.summary-card.manut-vtrs .value{color:var(--azul);}
-.summary-card.manut-em .value{color:var(--amber);}
 .summary-card.manut-dias .value{color:var(--vermelho);}
 .summary-card.manut-abertos .value{color:var(--amber);}
 .summary-card.manut-fechados .value{color:var(--verde);}
@@ -967,12 +963,10 @@ async function handleLogin(){
   if(!u || !p){ err.textContent = 'Preencha usuário e senha.'; err.style.display='block'; return; }
   btn.disabled = true; btn.textContent = 'Conectando…'; err.style.display = 'none';
 
-  /* Feedback progressivo no botão */
   const t1 = setTimeout(() => { if(btn.disabled) btn.textContent = 'Aguardando servidor…'; }, 4000);
   const t2 = setTimeout(() => { if(btn.disabled) btn.textContent = 'Servidor iniciando (aguarde)…'; }, 12000);
   const t3 = setTimeout(() => { if(btn.disabled) btn.textContent = 'Quase lá…'; }, 20000);
 
-  /* Aguarda o warm-up terminar (cap de 22s) antes de autenticar */
   if(_warmupPromise){
     try{ await _warmupPromise; }catch(e){}
   }
@@ -1697,30 +1691,23 @@ function calcularEstatisticasManut(){
   const grupos = agruparPorProcesso();
   const ids = Object.keys(grupos);
   const total = ids.length;
-  let abertos = 0, fechados = 0, baixadas = 0, emManut = 0, ativas = 0, reservas = 0;
-  let viaturasSet = new Set();
+  let abertos = 0, fechados = 0, baixadas = 0;
   ids.forEach(id => {
     const g = grupos[id];
-    viaturasSet.add(g.viatura);
     if(g.aberto) abertos++; else fechados++;
     const classe = statusClasseManut(g.ultimo ? g.ultimo.status : '');
     if(classe === 'baixada') baixadas++;
-    else if(classe === 'em-manutencao') emManut++;
-    else if(classe === 'reserva') reservas++;
-    else ativas++;
   });
-  return { total, abertos, fechados, baixadas, emManut, ativas, reservas, viaturas: viaturasSet.size };
+  return { total, abertos, fechados, baixadas };
 }
 
 function renderSummaryManut(){
   const st = calcularEstatisticasManut();
   const cards = [
-    { key:'todas',       label:'Total de processos', value: st.total,     cls:'manut-total' },
-    { key:'abertos',     label:'Em andamento',       value: st.abertos,   cls:'manut-abertos' },
-    { key:'finalizados', label:'Finalizados',        value: st.fechados,  cls:'manut-fechados' },
-    { key:'em',          label:'Em manutenção',      value: st.emManut,   cls:'manut-em' },
-    { key:'baixadas',    label:'Baixadas',           value: st.baixadas,  cls:'manut-dias' },
-    { key:'vtrs',        label:'Viaturas únicas',    value: st.viaturas,  cls:'manut-vtrs' }
+    { key:'todas',       label:'Total de processos', value: st.total,    cls:'manut-total' },
+    { key:'abertos',     label:'Em andamento',       value: st.abertos,  cls:'manut-abertos' },
+    { key:'finalizados', label:'Finalizados',        value: st.fechados, cls:'manut-fechados' },
+    { key:'baixadas',    label:'Baixadas',           value: st.baixadas, cls:'manut-dias' }
   ];
   $('manutSummary').innerHTML = cards.map(c => `<div class="summary-card ${c.cls}" data-filter="${c.key}"><div class="label">${c.label}</div><div class="value">${c.value}</div></div>`).join('');
   document.querySelectorAll('#view-manutencao .summary-card').forEach(card => {
@@ -1748,7 +1735,6 @@ function processosFiltrados(){
 
   if(MANUT_FILTRO_STATUS === 'abertos') ids = ids.filter(id => grupos[id].aberto);
   else if(MANUT_FILTRO_STATUS === 'finalizados') ids = ids.filter(id => !grupos[id].aberto);
-  else if(MANUT_FILTRO_STATUS === 'em') ids = ids.filter(id => statusClasseManut(grupos[id].ultimo ? grupos[id].ultimo.status : '') === 'em-manutencao');
   else if(MANUT_FILTRO_STATUS === 'baixadas') ids = ids.filter(id => statusClasseManut(grupos[id].ultimo ? grupos[id].ultimo.status : '') === 'baixada');
 
   if(q){
