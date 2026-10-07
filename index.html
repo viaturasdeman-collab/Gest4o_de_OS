@@ -165,6 +165,21 @@ input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus
 input[type=file]{font-size:13px;}
 input[type=datetime-local]{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:16px;width:100%;min-width:0;-webkit-appearance:none;touch-action:manipulation;}
 input[type=datetime-local]:focus{outline:1px solid var(--amber);}
+/* ─── Botão de mostrar/ocultar senha ─── */
+.pass-wrap{position:relative;display:block;width:100%;}
+.pass-wrap input{padding-right:44px !important;width:100%;}
+.pass-toggle{
+  position:absolute;top:50%;right:6px;transform:translateY(-50%);
+  width:34px;height:34px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:none;border-radius:6px;
+  color:var(--text-dim);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:color .15s ease, background .15s ease;
+}
+.pass-toggle:hover{color:var(--amber);}
+.pass-toggle:active{background:rgba(232,169,58,.12);}
+.pass-toggle svg{width:18px;height:18px;display:block;flex:none;}
 .modal-overlay{position:fixed;inset:0;background:rgba(16,20,26,.85);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px;padding-top:calc(20px + var(--safe-top));padding-bottom:calc(20px + var(--safe-bottom));overscroll-behavior:contain;}
 .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
 .modal-box.wide{max-width:640px;}
@@ -494,7 +509,13 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <h2>DEMAN · Acesso</h2>
     <p class="sub">Entre com suas credenciais para continuar.</p>
     <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
-    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
+    <div class="pass-wrap">
+      <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
+      <button type="button" class="pass-toggle" data-target="loginPass" aria-label="Mostrar senha" tabindex="-1">
+        <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      </button>
+    </div>
     <p id="loginError" class="login-error">Usuário ou senha inválidos.</p>
     <button class="btn primary" id="loginBtn">Entrar</button>
     <a class="login-create-link" id="createAccountLink">+ Criar nova conta</a>
@@ -752,8 +773,24 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     <h2>🔐 Defina sua nova senha</h2>
     <p class="help">Esta é a sua primeira vez no sistema. Você precisa definir uma <b>senha pessoal</b> antes de continuar. A senha padrão não pode ser reutilizada.</p>
     <div class="modal-grid">
-      <label class="full">Nova senha<input type="password" id="cp-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></label>
-      <label class="full">Confirmar nova senha<input type="password" id="cp-confirm" placeholder="Repita a senha" autocomplete="new-password"></label>
+      <label class="full">Nova senha
+        <div class="pass-wrap">
+          <input type="password" id="cp-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+          <button type="button" class="pass-toggle" data-target="cp-new" aria-label="Mostrar senha" tabindex="-1">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </label>
+      <label class="full">Confirmar nova senha
+        <div class="pass-wrap">
+          <input type="password" id="cp-confirm" placeholder="Repita a senha" autocomplete="new-password">
+          <button type="button" class="pass-toggle" data-target="cp-confirm" aria-label="Mostrar senha" tabindex="-1">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </label>
     </div>
     <p id="cp-error" class="modal-error"></p>
     <div class="modal-actions"><button class="btn primary" id="cp-save">Salvar e entrar</button></div>
@@ -770,7 +807,15 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <label>Perfil
         <select id="um-perfil"><option value="view">Visualização</option><option value="admin">Administrador</option></select>
       </label>
-      <label id="um-root-label">Senha do administrador<input type="password" id="um-root-pass" placeholder="Senha ROOT"></label>
+      <label id="um-root-label">Senha do administrador
+        <div class="pass-wrap">
+          <input type="password" id="um-root-pass" placeholder="Senha ROOT">
+          <button type="button" class="pass-toggle" data-target="um-root-pass" aria-label="Mostrar senha" tabindex="-1">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </label>
     </div>
     <div>
       <div style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;">Permissões</div>
@@ -915,6 +960,27 @@ const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
 if(IS_IOS) document.documentElement.classList.add('is-ios');
 const IS_TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 if(IS_TOUCH) document.documentElement.classList.add('is-touch');
+
+/* ─────────── MOSTRAR / OCULTAR SENHA ─────────── */
+function bindPasswordToggles(){
+  document.querySelectorAll('.pass-toggle').forEach(btn => {
+    if(btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const input = document.getElementById(btn.dataset.target);
+      if(!input) return;
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      btn.setAttribute('aria-label', isPass ? 'Ocultar senha' : 'Mostrar senha');
+      const eye = btn.querySelector('.icon-eye');
+      const eyeOff = btn.querySelector('.icon-eye-off');
+      if(eye) eye.style.display = isPass ? 'none' : 'block';
+      if(eyeOff) eyeOff.style.display = isPass ? 'block' : 'none';
+      try{ input.focus(); }catch(err){}
+    });
+  });
+}
 
 /* ─────────── WARM-UP (Promise rastreável, operação leve) ─────────── */
 let _warmupPromise = null;
@@ -2674,6 +2740,9 @@ if(isLoggedIn()){
   try{ currentPermissoes = JSON.parse(sessionStorage.getItem('deman_user_permissoes') || '{}'); }catch(e){ currentPermissoes = {}; }
   startApp();
 } else { showLogin(); }
+
+/* Bind dos botões de mostrar/ocultar senha */
+bindPasswordToggles();
 </script>
 </body>
 </html>
