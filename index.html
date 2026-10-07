@@ -2227,16 +2227,28 @@ function montarBlocoEvento(ev){
 function montarMensagemEntrada(p){
   const proc = normalizarProcessoParaMensagem(p);
   const linhas = [];
-  linhas.push('🛠 *NOVA MOVIMENTAÇÃO* · ' + proc.id);
-  linhas.push('');
-  linhas.push('*Viatura:* ' + proc.viatura);
-  linhas.push('*Status:* ' + statusLabelManut(proc.status));
-  linhas.push('*Local:* ' + (proc.local || '—'));
-  linhas.push('*Entrada:* ' + (proc.entrada || '—'));
-  if(proc.informanteEntrada) linhas.push('*Informante:* ' + proc.informanteEntrada);
-  if(proc.detalhes){ linhas.push(''); linhas.push('*Detalhes:*'); linhas.push(proc.detalhes); }
 
-  if(proc.eventos.length > 1){
+  if(proc.eventos.length === 1){
+    const ev = proc.eventos[0];
+    linhas.push('🛠 *NOVA MOVIMENTAÇÃO* · ' + proc.id);
+    linhas.push('');
+    linhas.push('*Viatura:* ' + proc.viatura);
+    linhas.push('*Status:* ' + statusLabelManut(ev.status || proc.status));
+    linhas.push('*Local:* ' + (ev.local || '—'));
+    linhas.push('*Entrada:* ' + (ev.data || '—'));
+    if(ev.informante) linhas.push('*Informante:* ' + ev.informante);
+    if(ev.detalhes){
+      linhas.push('');
+      linhas.push('*Descrição:*');
+      linhas.push(ev.detalhes);
+    }
+  } else {
+    linhas.push('🛠 *NOVA MOVIMENTAÇÃO* · ' + proc.id);
+    linhas.push('');
+    linhas.push('*Viatura:* ' + proc.viatura);
+    linhas.push('*Status:* ' + statusLabelManut(proc.status));
+    linhas.push('*Local:* ' + (proc.local || '—'));
+    linhas.push('*Entrada:* ' + (proc.entrada || '—'));
     proc.eventos.forEach(ev => {
       linhas.push('');
       linhas.push(montarBlocoEvento(ev));
