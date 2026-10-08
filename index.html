@@ -257,17 +257,19 @@ input[type=datetime-local]:focus{outline:1px solid var(--amber);}
 .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 
 /* ─── SVG ROW compacto ─── */
-.svc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 28px 7px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;position:relative;}
+.svc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 30px 10px 10px;border-top:1px solid var(--border);border-left:4px solid transparent;position:relative;min-height:56px;}
 .svc-row:first-of-type{border-top:none;}
-.svc-left{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;}
-.svc-label{font-size:11.5px;color:var(--text);font-weight:500;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
-.svc-meta{font-size:9.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
-.svc-meta .sep{color:var(--text-faint);opacity:.5;}
+.svc-left{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;}
+.svc-label{font-size:13px;color:var(--text);font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.svc-meta{font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;display:flex;gap:6px;flex-wrap:wrap;align-items:center;line-height:1.35;}
+.svc-meta .os-num{color:var(--amber);font-weight:600;font-size:11.5px;letter-spacing:.02em;}
+.svc-meta .sep{color:var(--text-faint);opacity:.7;}
 .svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none;}
-.os-num{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--text-faint);white-space:nowrap;}
-select.stage-select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:2px 4px;font-family:'IBM Plex Mono',monospace;font-size:10px;max-width:110px;touch-action:manipulation;}
-.stage-static{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);padding:2px 6px;border:1px dashed var(--border);border-radius:6px;}
+select.stage-select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;min-width:100px;touch-action:manipulation;cursor:pointer;}
+select.stage-select:hover{border-color:var(--amber);}
+.stage-static{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);padding:3px 8px;border:1px dashed var(--border);border-radius:6px;}
 .svc-row.orc-alto{background:linear-gradient(90deg, rgba(232,169,58,.14), transparent 70%);}
+.badge-orc{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);}
 .badge-orc{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;white-space:nowrap;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);}
 .edit-btn{position:absolute;top:4px;right:2px;width:22px;height:22px;padding:0;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s, color .15s, background .15s, transform .12s;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .edit-btn:hover{border-color:var(--amber);color:var(--amber);background:var(--surface);}
@@ -1509,7 +1511,7 @@ function renderGeralOS(eventoFiltro){
       let borderStyle = 'var(--border)';
       if(uniqueColors.length === 1) borderStyle = uniqueColors[0];
       else if(uniqueColors.length > 1){ const stops = uniqueColors.map((color, idx) => `${color} ${Math.round(idx/(uniqueColors.length-1)*100)}%`).join(', '); borderStyle = `linear-gradient(135deg, ${stops})`; }
-      const osEntries = osList.map(r => {
+           const osEntries = osList.map(r => {
         const st = stageInfoOS(r.stage);
         const qnt = r.orcamentos > 0 ? r.orcamentos : null;
         const destacar = (r.stage === 'Pendente' && r.orcamentos >= 3);
@@ -1519,17 +1521,21 @@ function renderGeralOS(eventoFiltro){
           ? `<select class="stage-select" data-id="${escapeAttr(r.id)}" data-os="${escapeAttr(r.os)}">${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}</select>`
           : `<span class="stage-static">${st.label}</span>`;
         const editBtn = podeEditar ? `<button class="edit-btn" data-edit-id="${escapeAttr(r.id)}" title="Editar OS ${escapeAttr(r.os)}">${pencilSvg}</button>` : '';
-        // Meta compacta: Orçada / Qnt / Empresa em linha única
+        // Meta legível: OS destacado, depois "Não orçada" (claro) ou "Orçada · Qnt X", e empresa
         const metaParts = [];
-        metaParts.push(`Orçada: ${r.orcamentos > 0 ? 'Sim' : 'Não'}`);
-        if(qnt !== null) metaParts.push(`Qnt: ${qnt}`);
-        if(r.empresa) metaParts.push(r.empresa);
-        const metaHtml = metaParts.map(escapeHtml).join('<span class="sep">·</span>');
+        metaParts.push(`<span class="os-num">OS ${escapeHtml(r.os)}</span>`);
+        if(r.orcamentos > 0){
+          metaParts.push(`<span>Orçada · Qnt ${r.orcamentos}</span>`);
+        } else {
+          metaParts.push(`<span>Não orçada</span>`);
+        }
+        if(r.empresa) metaParts.push(`<span>${escapeHtml(r.empresa)}</span>`);
+        const metaHtml = metaParts.join('<span class="sep">·</span>');
         return `<div class="svc-row ${orcClass}" style="border-left-color:${st.color}">
           ${editBtn}
           <div class="svc-left">
             <div class="svc-label">${escapeHtml(r.category)}${orcBadge}</div>
-            <div class="svc-meta"><span class="sep">OS</span>${escapeHtml(r.os)}<span class="sep">·</span>${metaHtml}</div>
+            <div class="svc-meta">${metaHtml}</div>
           </div>
           <div class="svc-right">
             ${stageControl}
