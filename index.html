@@ -726,7 +726,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
                 <option value="Baixada">Baixada</option>
               </select>
             </label>
-            <label class="full">Local final<div class="local-field-wrap" id="mf-local-wrap" data-valor=""></div></label>
+            <label class="full">Local final (vazio = volta ao local de origem)<div class="local-field-wrap" id="mf-local-wrap" data-valor=""></div></label>
             <label class="full">Informante da saída<input type="text" id="mf-informante" placeholder="Quem liberou a viatura"></label>
             <label class="full">O que foi feito
               <textarea id="mf-detalhes" rows="3" placeholder="Descreva o serviço realizado…"></textarea>
@@ -965,11 +965,11 @@ const PERM_GRUPOS = {
 /* ─── Listas de locais (campo dinâmico) ─── */
 const LOCAIS_OFICINA = [
   'FIX CAR','VIDROCAR','ARCOM','DAKAR','POTTENTE','MOVESA','BR DIESEL','TAVARES',
-  'MULTIRADIUS','RENOBAN','XINGO','PAULISTA','LEANDRO TRUCK','CAXANGA',
-  'M. SOBRAL','M.SOBRAL','ARIBE MOTOS','AC MOTOS',
-  'ARCON','SR. AROLDO','MARDISA','MORAUTO','SANVEL',
+  'MULTIRADIUS','RENOBAN','XINGÓ','XINGO','PAULISTA','LEANDRO TRUCK','CAXANGÁ','CAXANGA',
+  'M. SOBRAL','M. SOBRAL (ITABAIANA)','M.SOBRAL','ARIBE MOTOS','ARIBE','AC MOTOS',
+  'ARCON','OFICINA DO SR. AROLDO','MARDISA','MORAUTO','SANVEL','MAGNUM','MAGNO',
   'TOTAL ACESSÓRIOS','RODOPEÇAS','SERVEL','ITABAIANA ACESSÓRIOS','ADESIVE-SE',
-  'POTENTE','OFICINA DE MOTO','ESCAPE SOLUTIONS'
+  'POTENTE','LEANDRO','OFICINA DE MOTO','ESCAPE SOLUTIONS'
 ];
 const LOCAIS_UNIDADE = [
   '1° GBM/1° SGBM','2° SGBM','2° GBM','3° GBM','4° GBM','5° GBM','6° GBM','7° GBM','GBS'
@@ -979,6 +979,7 @@ const LOCAIS_DIRETORIA = [
   'ALMOXARIFADO','SAT','GABINETE DO COMANDO','CIOSP','COBOM','CORREGEDORIA','CANIL'
 ];
 const LOCAL_RESERVA = 'DEMAN';
+const LOCAIS_BAIXADA = [LOCAL_RESERVA].concat(LOCAIS_OFICINA);
 
 /* ─────────── DETECÇÃO DE PLATAFORMA ─────────── */
 const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
@@ -1008,7 +1009,7 @@ function bindPasswordToggles(){
   });
 }
 
-/* ─────────── WARM-UP (Promise rastreável, operação leve) ─────────── */
+/* ─────────── WARM-UP ─────────── */
 let _warmupPromise = null;
 function _pingVersao(url){
   return fetch(url, {
@@ -1029,7 +1030,6 @@ function _pingVersao(url){
   ]);
 })();
 
-/* ─────────── KEEP-ALIVE FRONTEND (ping periódico) ─────────── */
 setInterval(() => {
   if (document.hidden) return;
   if (!isLoggedIn()) return;
@@ -1116,9 +1116,7 @@ async function handleLogin(){
   const t3 = setTimeout(() => { if(btn.disabled) btn.textContent = 'Quase lá…'; }, 20000);
   const t4 = setTimeout(() => { if(btn.disabled) btn.textContent = 'Ainda aguardando… (pode demorar até 55s)'; }, 35000);
 
-  if(_warmupPromise){
-    try{ await _warmupPromise; }catch(e){}
-  }
+  if(_warmupPromise){ try{ await _warmupPromise; }catch(e){} }
 
   clearTimeout(t1); clearTimeout(t2);
   btn.textContent = 'Entrando…';
@@ -1784,9 +1782,8 @@ function montarCampoLocal(wrapId, valorAtual, status, modoEvento){
   } else if(classe === 'reserva'){
     wrap.innerHTML = _htmlLocalDisabled(idCampo, LOCAL_RESERVA);
   } else if(classe === 'baixada'){
-    // Baixada aceita texto livre com todas as sugestões (oficina + unidade + diretoria)
-    const todas = LOCAIS_OFICINA.concat(LOCAIS_UNIDADE, LOCAIS_DIRETORIA);
-    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, todas);
+    // Baixada aceita apenas DEMAN + oficinas (texto livre também permitido)
+    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, LOCAIS_BAIXADA);
   } else {
     wrap.innerHTML = _htmlSelectLocal(idCampo, valorAtual);
   }
