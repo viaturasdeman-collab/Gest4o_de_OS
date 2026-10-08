@@ -880,7 +880,26 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 <div id="manutReportModal" class="modal-overlay" style="display:none;">
   <div class="report-box">
     <div class="report-header"><h2>Relatório de Movimentação</h2><div class="meta" id="manutReportMeta"></div></div>
-    <div class="report-filters">
+    <div class="report-filters" id="reportFilters">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;">
+    <span><b>Status:</b></span>
+    <select id="repFilterStatus" style="min-width:130px;">
+      <option value="">Todos</option>
+    </select>
+    <span><b>Oficina/Empresa:</b></span>
+    <select id="repFilterOficina" style="min-width:170px;">
+      <option value="">Todas</option>
+    </select>
+    <span><b>Orçada:</b></span>
+    <select id="repFilterOrcada" style="min-width:100px;">
+      <option value="">Todas</option>
+      <option value="Sim">Sim</option>
+      <option value="Não">Não</option>
+    </select>
+    <button class="btn ghost" id="repFilterLimpar" style="margin-left:auto;font-size:11px;padding:5px 10px;">Limpar filtros</button>
+  </div>
+  <span id="repFilterResumo" style="font-size:11px;color:var(--text-dim);padding-top:6px;display:block;width:100%;"></span>
+</div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <span><b>Modo:</b></span>
         <select id="manutReportMode">
@@ -1529,21 +1548,131 @@ function renderOS(){
   else if(activeTab === TAB_GERAL) renderGeralOS(null);
   else renderGeralOS(activeTab);
 }
+/* ═══════ RELATÓRIO OS — com filtros ═══════ */
+let repFiltroStatus  = '';
+let repFiltroOficina = '';
+let repFiltroOrcada  = '';
+
+function repPopularSelects(dados){
+  const status = Array.from(new Set(dados.map(r => r.stage).filter(Boolean))).sort();
+  const oficinas = Array.from(new Set(dados.map(r => (r.empresa||'').trim()).filter(Boolean))).sort();
+
+  const selS = $('repFilterStatus');
+  const selO = $('repFilterOficina');
+  if(!selS || !selO) return;
+
+  selS.innerHTML = '<option value="">Todos</option>' + status.map(s => {
+    const info = STAGES.find(x => x.key === s);
+    const label = info ? info.label : s;
+    const sel = (repFiltroStatus === s) ? ' selected' : '';
+    return `<option value="${escapeAttr(s)}"${sel}>${escapeHtml(label)}</option>`;
+  }).join('');
+
+  selO.innerHTML = '<option value="">Todas</option>' + oficinas.map(o => {
+    const sel = (repFiltroOficina === o) ? ' selected' : '';
+    return `<option value="${escapeAttr(o)}"${sel}>${escapeHtml(o)}</option>`;
+  }).join('');
+
+  const selOrc = $('repFilterOrcada');
+  if(selOrc) selOrc.value = repFiltroOrcada;
+}
+
+function repAplicarFiltros(dados){
+  return dados.filter(r => {
+    if(repFiltroStatus && r.stage !== repFiltroStatus) return false;
+    if(repFiltroOficina && (r.empresa||'').trim() !== repFiltroOficina) return false;
+    if(repFiltroOrcada === 'Sim' && !(r.orcamentos > 0)) return false;
+    if(repFiltroOrcada === 'Não' && (r.orcamentos > 0)) return false;
+    return true;
+  });
+}
+
 function abrirRelatorioOS(){
+  // Reseta os filtros cada vez que abre o relatório
+  repFiltroStatus = '';
+  repFiltroOficina = '';
+  repFiltroOrcada = '';
+
   const dados = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
+
+  // Popular os selects com valores únicos
+  repPopularSelects(dados);
+
+  // Bind dos eventos (só uma vez)
+  const selS = $('repFilterStatus');
+  const selO = $('repFilterOficina');
+  const selOrc = $('repFilterOrcada');
+  const btnLimpar = $('repFilterLimpar');
+
+  if(selS && !selS.dataset.bound){
+    selS.dataset.bound = '1';
+    selS.addEventListener('change', () => { repFiltroStatus = selS.value; repRenderTabela(); });
+  }
+  if(selO && !selO.dataset.bound){
+    selO.dataset.bound = '1';
+    selO.addEventListener('change', () => { repFiltroOficina = selO.value; repRenderTabela(); });
+  }
+  if(selOrc && !selOrc.dataset.bound){
+    selOrc.dataset.bound = '1';
+    selOrc.addEventListener('change', () => { repFiltroOrcada = selOrc.value; repRenderTabela(); });
+  }
+  if(btnLimpar && !btnLimpar.dataset.bound){
+    btnLimpar.dataset.bound = '1';
+    btnLimpar.addEventListener('click', () => {
+      repFiltroStatus = '';
+      repFiltroOficina = '';
+      repFiltroOrcada = '';
+      if(selS) selS.value = '';
+      if(selO) selO.value = '';
+      if(selOrc) selOrc.value = '';
+      repRenderTabela();
+    });
+  }
+
   const agora = new Date();
   $('reportMeta').innerHTML = 'Emitido em '+agora.toLocaleDateString('pt-BR')+' às '+agora.toLocaleTimeString('pt-BR')+'<br>Por: <b style="color:var(--amber);">'+escapeHtml(currentUser||'—')+'</b>';
+
+  repRenderTabela();
+  $('reportModal').style.display = 'flex';
+}
+
+function repRenderTabela(){
+  const dadosOriginais = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
+  const dados = repAplicarFiltros(dadosOriginais);
+
+  // Resumo
   const filtros = [];
   if(activeTab === TAB_GERAL) filtros.push('Visão Geral');
   else if(activeTab === TAB_MANUTENCAO) filtros.push('Manutenção');
   else filtros.push('Evento: '+activeTab);
-  filtros.push(activeStatusFilter ? 'Status: '+activeStatusFilter : 'Status: Todos (exceto Finalizadas e Canceladas)');
+  filtros.push(activeStatusFilter ? 'Status (card): '+activeStatusFilter : 'Status (card): Todos');
   const q = $('osSearch').value.trim(); if(q) filtros.push('Busca: "'+q+'"');
-  $('reportFilters').innerHTML = '<b>Filtros aplicados:</b> '+filtros.map(escapeHtml).join(' · ')+' · <b>Total:</b> '+dados.length+' OS';
+
+  const partes = [];
+  if(repFiltroStatus) partes.push('Status: ' + (STAGES.find(x => x.key === repFiltroStatus)?.label || repFiltroStatus));
+  if(repFiltroOficina) partes.push('Oficina: ' + repFiltroOficina);
+  if(repFiltroOrcada) partes.push('Orçada: ' + repFiltroOrcada);
+
+  $('repFilterResumo').innerHTML =
+    '<b>Base:</b> ' + filtros.map(escapeHtml).join(' · ') +
+    (partes.length ? ' · <b>Filtros:</b> ' + partes.map(escapeHtml).join(' · ') : '') +
+    ' · <b>Exibindo:</b> ' + dados.length + ' de ' + dadosOriginais.length + ' OS';
+
   const ordenado = dados.slice().sort((a,b) => a.v.localeCompare(b.v) || a.os.localeCompare(b.os));
-  $('reportBody').innerHTML = ordenado.length === 0 ? '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado</td></tr>' :
-    ordenado.map(r => { const st = stageInfoOS(r.stage); return `<tr><td class="v">${escapeHtml(r.v)}</td><td class="os">${escapeHtml(r.os)}</td><td>${escapeHtml(r.category)}</td><td class="status" style="color:${st.color};">● ${st.label}</td><td>${r.orcamentos > 0 ? 'Sim' : 'Não'}</td><td>${r.orcamentos > 0 ? r.orcamentos : '—'}</td><td>${escapeHtml(r.empresa || '—')}</td></tr>`; }).join('');
-  $('reportModal').style.display = 'flex';
+  $('reportBody').innerHTML = ordenado.length === 0
+    ? '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado com os filtros atuais</td></tr>'
+    : ordenado.map(r => {
+        const st = stageInfoOS(r.stage);
+        return `<tr>
+          <td class="v">${escapeHtml(r.v)}</td>
+          <td class="os">${escapeHtml(r.os)}</td>
+          <td>${escapeHtml(r.category)}</td>
+          <td class="status" style="color:${st.color};">● ${st.label}</td>
+          <td>${r.orcamentos > 0 ? 'Sim' : 'Não'}</td>
+          <td>${r.orcamentos > 0 ? r.orcamentos : '—'}</td>
+          <td>${escapeHtml(r.empresa || '—')}</td>
+        </tr>`;
+      }).join('');
 }
 const edStageSel = $('ed-stage'); edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 function openEditModal(recordId){
