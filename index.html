@@ -1759,13 +1759,18 @@ function _htmlInputLocal(idCampo, valorAtual, sugestoes){
 }
 function _htmlSelectLocal(idCampo, valorAtual){
   const vAtual = String(valorAtual||'').trim().toUpperCase();
-  function opt(l){ const sel = (vAtual === l.toUpperCase()) ? ' selected' : ''; return `<option value="${escapeAttr(l)}"${sel}>${escapeHtml(l)}</option>`; }
+  function opt(l){
+    const sel = (vAtual && vAtual === l.toUpperCase()) ? ' selected' : '';
+    return `<option value="${escapeAttr(l)}"${sel}>${escapeHtml(l)}</option>`;
+  }
+  const selVazio = vAtual ? '' : ' selected';
   return `<select id="${idCampo}" autocomplete="off">
+    <option value=""${selVazio}>— Selecione o local —</option>
     <optgroup label="Reserva">${opt(LOCAL_RESERVA)}</optgroup>
     <optgroup label="Unidades">${LOCAIS_UNIDADE.map(opt).join('')}</optgroup>
     <optgroup label="Diretorias">${LOCAIS_DIRETORIA.map(opt).join('')}</optgroup>
   </select>
-  <span class="local-hint">Escolha "DEMAN" para enviar à reserva.</span>`;
+  <span class="local-hint">Deixe em branco para retornar ao local de origem.</span>`;
 }
 function _htmlLocalDisabled(idCampo, valor){
   return `<input type="text" id="${idCampo}" value="${escapeAttr(valor)}" disabled><span class="local-hint">Definido automaticamente pelo status.</span>`;
