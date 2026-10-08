@@ -480,6 +480,16 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
 .error-box p{margin:5px 0;}
 footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:40px;}
+
+/* ─── Campo Local dinâmico ─── */
+.local-field-wrap{display:flex;flex-direction:column;gap:5px;width:100%;}
+.local-field-wrap input[type=text],
+.local-field-wrap select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:16px;width:100%;min-width:0;-webkit-appearance:none;touch-action:manipulation;}
+.local-field-wrap input[type=text]:focus,
+.local-field-wrap select:focus{outline:1px solid var(--amber);}
+.local-field-wrap input:disabled{opacity:.55;cursor:not-allowed;background:var(--surface);}
+.local-hint{font-size:10px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;}
+
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 @media print{
   body{background:#fff;color:#000;}
@@ -677,7 +687,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
               </select>
             </label>
             <label>Entrada<input type="datetime-local" id="mm-entrada"></label>
-            <label>Local<input type="text" id="mm-local" placeholder="ex: Fix Car, 1° GBM, DEMAN"></label>
+            <label>Local<div class="local-field-wrap" id="mm-local-wrap" data-valor=""></div></label>
             <label class="full">Informante<input type="text" id="mm-informante" placeholder="ex: Capitão Bita"></label>
             <label class="full">Motivo / Detalhes da entrada
               <textarea id="mm-detalhes" rows="3" placeholder="Descreva o problema identificado…"></textarea>
@@ -701,7 +711,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
                 <option value="Ativa">Ativa</option>
               </select>
             </label>
-            <label>Local (opcional)<input type="text" id="me-local" placeholder="Novo local, se houver"></label>
+            <label>Local (opcional)<div class="local-field-wrap" id="me-local-wrap" data-valor=""></div></label>
             <label class="full">Informante<input type="text" id="me-informante" placeholder="Quem informou este evento"></label>
             <label class="full">Detalhes
               <textarea id="me-detalhes" rows="3" placeholder="Descreva o evento…"></textarea>
@@ -718,7 +728,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
                 <option value="Baixada">Baixada</option>
               </select>
             </label>
-            <label class="full">Local final<input type="text" id="mf-local" placeholder="Destino da viatura"></label>
+            <label class="full">Local final<div class="local-field-wrap" id="mf-local-wrap" data-valor=""></div></label>
             <label class="full">Informante da saída<input type="text" id="mf-informante" placeholder="Quem liberou a viatura"></label>
             <label class="full">O que foi feito
               <textarea id="mf-detalhes" rows="3" placeholder="Descreva o serviço realizado…"></textarea>
@@ -953,6 +963,24 @@ const PERM_GRUPOS = {
   manut_criar:'manut_editar', manut_excluir:'manut_editar',
   usuarios_criar:'admin_usuarios', usuarios_editar:'admin_usuarios', usuarios_resetar:'admin_usuarios'
 };
+
+/* ─── Listas de locais (campo dinâmico) ─── */
+const LOCAIS_OFICINA = [
+  'FIX CAR','VIDROCAR','ARCOM','DAKAR','POTTENTE','MOVESA','BR DIESEL','TAVARES',
+  'MULTIRADIUS','RENOBAN','XINGÓ','XINGO','PAULISTA','LEANDRO TRUCK','CAXANGÁ','CAXANGA',
+  'M. SOBRAL','M. SOBRAL (ITABAIANA)','M.SOBRAL','ARIBE MOTOS','ARIBE','AC MOTOS',
+  'ARCON','OFICINA DO SR. AROLDO','MARDISA','MORAUTO','SANVEL','MAGNUM','MAGNO',
+  'TOTAL ACESSÓRIOS','RODOPEÇAS','SERVEL','ITABAIANA ACESSÓRIOS','ADESIVE-SE',
+  'POTENTE','LEANDRO','OFICINA DE MOTO','ESCAPE SOLUTIONS'
+];
+const LOCAIS_UNIDADE = [
+  '1° GBM/1° SGBM','2° SGBM','2° GBM','3° GBM','4° GBM','5° GBM','6° GBM','7° GBM','GBS'
+];
+const LOCAIS_DIRETORIA = [
+  'DOP','DEP','DAT','DLOG','DGP','DPLAN','ASSIN','ASTEI','ASTEA','ASCOM','ASTINF',
+  'ALMOXARIFADO','SAT','GABINETE DO COMANDO','CIOSP','COBOM','CORREGEDORIA','CANIL'
+];
+const LOCAL_RESERVA = 'DEMAN';
 
 /* ─────────── DETECÇÃO DE PLATAFORMA ─────────── */
 const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
@@ -1714,6 +1742,65 @@ function abrirModalMoverReserva(prefixo){
   }, 'viat_permutar');
 }
 
+/* ═══════ CAMPO LOCAL DINÂMICO ═══════ */
+function _classeStatusLocal(status, modoEvento){
+  const s = normalizeStr(status || '');
+  if(!s && modoEvento) return 'livre';
+  if(s.includes('manut') || s.includes('oficina') || s.includes('quebrad')) return 'manutencao';
+  if(s.includes('reserv')) return 'reserva';
+  if(s.includes('baixa') || s.includes('inoper')) return 'baixada';
+  return 'ativa';
+}
+function _htmlInputLocal(idCampo, valorAtual, sugestoes){
+  const listaId = idCampo + '-list';
+  return `<input type="text" id="${idCampo}" value="${escapeAttr(valorAtual||'')}" placeholder="Ex.: Fix Car, Vidrocar, Arcom…" list="${listaId}" autocomplete="off" autocapitalize="characters">
+    <datalist id="${listaId}">
+      ${sugestoes.map(o => `<option value="${escapeAttr(o)}"></option>`).join('')}
+    </datalist>
+    <span class="local-hint">Digite ou escolha uma oficina — texto livre permitido.</span>`;
+}
+function _htmlSelectLocal(idCampo, valorAtual){
+  const vAtual = String(valorAtual||'').trim().toUpperCase();
+  function opt(l){ const sel = (vAtual === l.toUpperCase()) ? ' selected' : ''; return `<option value="${escapeAttr(l)}"${sel}>${escapeHtml(l)}</option>`; }
+  return `<select id="${idCampo}" autocomplete="off">
+    <optgroup label="Reserva">${opt(LOCAL_RESERVA)}</optgroup>
+    <optgroup label="Unidades">${LOCAIS_UNIDADE.map(opt).join('')}</optgroup>
+    <optgroup label="Diretorias">${LOCAIS_DIRETORIA.map(opt).join('')}</optgroup>
+  </select>
+  <span class="local-hint">Escolha "DEMAN" para enviar à reserva.</span>`;
+}
+function _htmlLocalDisabled(idCampo, valor){
+  return `<input type="text" id="${idCampo}" value="${escapeAttr(valor)}" disabled><span class="local-hint">Definido automaticamente pelo status.</span>`;
+}
+function montarCampoLocal(wrapId, valorAtual, status, modoEvento){
+  const wrap = $(wrapId); if(!wrap) return;
+  const idCampo = wrapId.replace('-wrap','');
+  const classe = _classeStatusLocal(status, !!modoEvento);
+  if(classe === 'manutencao' || classe === 'livre'){
+    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, LOCAIS_OFICINA);
+  } else if(classe === 'reserva'){
+    wrap.innerHTML = _htmlLocalDisabled(idCampo, LOCAL_RESERVA);
+  } else if(classe === 'baixada'){
+    wrap.innerHTML = _htmlLocalDisabled(idCampo, '—');
+  } else {
+    wrap.innerHTML = _htmlSelectLocal(idCampo, valorAtual);
+  }
+}
+function trocarCampoLocal(wrapId, statusSelectId, modoEvento){
+  const sel = $(statusSelectId); const wrap = $(wrapId);
+  if(!sel || !wrap) return;
+  const inputAtual = wrap.querySelector('input, select');
+  const valorAtual = inputAtual && !inputAtual.disabled ? inputAtual.value : (wrap.dataset.valor || '');
+  wrap.dataset.valor = valorAtual;
+  montarCampoLocal(wrapId, valorAtual, sel.value, modoEvento);
+}
+function lerLocalForm(wrapId){
+  const wrap = $(wrapId); if(!wrap) return '';
+  const input = wrap.querySelector('input, select');
+  if(!input) return '';
+  return String(input.value || '').trim().toUpperCase();
+}
+
 /* ═══════ MOVIMENTAÇÃO (v5 — processos com eventos) ═══════ */
 let MANUT_EVENTOS = [];
 let MANUT_FILTRO_STATUS = 'todas';
@@ -2084,20 +2171,20 @@ function limparFormManut(){
   $('mm-viatura').value = ''; $('mm-viatura').disabled = false;
   $('mm-status').value = 'Em Manutenção'; $('mm-status').disabled = false;
   $('mm-entrada').value = agoraDatetimeLocal(); $('mm-entrada').disabled = false;
-  $('mm-local').value = ''; $('mm-local').disabled = false;
+  montarCampoLocal('mm-local-wrap', '', $('mm-status').value, false);
   $('mm-informante').value = ''; $('mm-informante').disabled = false;
   $('mm-detalhes').value = ''; $('mm-detalhes').disabled = false;
 
   $('me-tipo').value = 'Movimentação';
   $('me-data').value = agoraDatetimeLocal();
   $('me-status').value = '';
-  $('me-local').value = '';
+  montarCampoLocal('me-local-wrap', '', '', true);
   $('me-informante').value = '';
   $('me-detalhes').value = '';
 
   $('mf-data').value = agoraDatetimeLocal();
   $('mf-status').value = 'Ativa';
-  $('mf-local').value = '';
+  montarCampoLocal('mf-local-wrap', '', $('mf-status').value, false);
   $('mf-informante').value = '';
   $('mf-detalhes').value = '';
 
@@ -2113,7 +2200,7 @@ function abrirFormEvento(p){
   $('me-tipo').value = 'Movimentação';
   $('me-data').value = agoraDatetimeLocal();
   $('me-status').value = '';
-  $('me-local').value = p.ultimo ? p.ultimo.local : '';
+  montarCampoLocal('me-local-wrap', p.ultimo ? p.ultimo.local : '', $('me-status').value, true);
   $('me-informante').value = '';
   $('me-detalhes').value = '';
   $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
@@ -2128,7 +2215,7 @@ function abrirFormFinalizar(p){
   preencherProcInfoBox(p);
   $('mf-data').value = agoraDatetimeLocal();
   $('mf-status').value = 'Ativa';
-  $('mf-local').value = p.ultimo ? p.ultimo.local : '';
+  montarCampoLocal('mf-local-wrap', p.ultimo ? p.ultimo.local : '', $('mf-status').value, false);
   $('mf-informante').value = p.entrada ? p.entrada.informante : '';
   $('mf-detalhes').value = '';
   $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
@@ -2139,7 +2226,7 @@ function abrirFormFinalizar(p){
 function cancelarFormManut(){
   let temDados = false;
   if(modoManutForm === 'criar'){
-    temDados = $('mm-viatura').value.trim() !== '' || $('mm-local').value.trim() !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
+    temDados = $('mm-viatura').value.trim() !== '' || lerLocalForm('mm-local-wrap') !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
   } else if(modoManutForm === 'evento'){
     temDados = $('me-detalhes').value.trim() !== '' || $('me-informante').value.trim() !== '';
   } else if(modoManutForm === 'finalizar'){
@@ -2161,7 +2248,7 @@ async function salvarCriarManut(){
   const viatura    = $('mm-viatura').value.trim().toUpperCase();
   const status     = $('mm-status').value;
   const entrada    = $('mm-entrada').value;
-  const local      = $('mm-local').value.trim();
+  const local      = lerLocalForm('mm-local-wrap');
   const informante = $('mm-informante').value.trim();
   const detalhes   = $('mm-detalhes').value.trim();
   if(!viatura){ err.textContent = 'Informe a viatura.'; err.style.display='block'; return; }
@@ -2213,7 +2300,7 @@ async function salvarEventoManut(){
   const tipo       = $('me-tipo').value;
   const data       = $('me-data').value;
   const status     = $('me-status').value;
-  const local      = $('me-local').value.trim();
+  const local      = lerLocalForm('me-local-wrap');
   const informante = $('me-informante').value.trim();
   const detalhes   = $('me-detalhes').value.trim();
   if(!data){ err.textContent = 'Informe a data.'; err.style.display='block'; return; }
@@ -2237,7 +2324,7 @@ async function salvarFinalizarManut(){
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
   const dataFim     = $('mf-data').value;
   const statusFinal = $('mf-status').value;
-  const local       = $('mf-local').value.trim();
+  const local       = lerLocalForm('mf-local-wrap');
   const informante  = $('mf-informante').value.trim();
   const detalhes    = $('mf-detalhes').value.trim();
   if(!dataFim){ err.textContent = 'Informe a data final.'; err.style.display='block'; return; }
@@ -2699,6 +2786,9 @@ $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
 $('mm-save').addEventListener('click', salvarManut);
 $('mm-cancel').addEventListener('click', cancelarFormManut);
+$('mm-status').addEventListener('change', () => trocarCampoLocal('mm-local-wrap','mm-status',false));
+$('me-status').addEventListener('change', () => trocarCampoLocal('me-local-wrap','me-status',true));
+$('mf-status').addEventListener('change', () => trocarCampoLocal('mf-local-wrap','mf-status',false));
 $('manutReportBtn').addEventListener('click', () => { if(!temPermissao('ver_manutencao')){ alert('Sem permissão.'); return; } abrirRelatorioManut(); });
 $('manutReportClose').addEventListener('click', () => { $('manutReportModal').style.display = 'none'; });
 $('manutReportPrint').addEventListener('click', () => window.print());
@@ -2726,6 +2816,7 @@ function startApp(){
   if(perfilEl){ perfilEl.textContent = isAdmin() ? 'ADMIN' : 'VISUALIZAÇÃO'; perfilEl.className = 'badge-perfil ' + (isAdmin() ? 'admin' : 'view'); perfilEl.style.display = 'inline-block'; }
   try{ if(localStorage.getItem('deman_sidebar_collapsed') === '1' && !isMobile()) $('app').classList.add('sidebar-collapsed'); }catch(e){}
   renderPermissoesNoModal(); aplicarPermissoesUI();
+  limparFormManut();
   if(carregarCache() && temPermissao('ver_viaturas')){ renderViaturas(); }
   if(temPermissao('ver_os')) loadDataOS();
   if(temPermissao('ver_viaturas')) loadDataViaturas();
