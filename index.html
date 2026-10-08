@@ -498,6 +498,9 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 @media print{
   body{background:#fff;color:#000;}
   .topbar, .sidebar, .sidebar-backdrop, .view:not(#view-os), .modal-overlay:not(#reportModal):not(#manutReportModal){display:none !important;}
+  body.relatorio-aberto #view-os,
+  body.relatorio-aberto #view-viaturas,
+  body.relatorio-aberto #view-manutencao { display: none !important; }
   .main{margin-left:0;padding:0;}
   #reportModal, #manutReportModal{position:static;background:#fff;display:block !important;padding:0;}
   .report-box{background:#fff;color:#000;box-shadow:none;border:none;max-width:none;max-height:none;padding:0;overflow:visible;}
@@ -1687,10 +1690,11 @@ function repRenderTabela(){
 }
 
 function abrirRelatorioOS(){
+  document.body.classList.add('relatorio-aberto');
   repFiltroStatus = '';
   repFiltroOficina = '';
   repFiltroOrcada = '';
-
+  
   const dados = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
   repPopularSelects(dados);
 
@@ -2708,6 +2712,7 @@ function getMesesDisponiveisManut(){
   return Array.from(set).sort().reverse();
 }
 function abrirRelatorioManut(){
+  document.body.classList.add('relatorio-aberto');
   const select = $('manutReportMonth'); const meses = getMesesDisponiveisManut();
   select.innerHTML = '<option value="">Todos os meses</option>' + meses.map(ym => `<option value="${escapeAttr(ym)}">${escapeHtml(formatarMesAno(ym))}</option>`).join('');
   select.value = '';
@@ -2976,9 +2981,17 @@ $('ed-save').addEventListener('click', async () => {
   if(!ok){ Object.assign(rec, backup); alert('A edição não pôde ser salva. Revertida.'); renderOS(); }
 });
 $('reportBtn').addEventListener('click', () => { if(!temPermissao('os_relatorio')){ alert('Sem permissão.'); return; } abrirRelatorioOS(); });
-$('reportClose').addEventListener('click', () => { $('reportModal').style.display = 'none'; });
+$('reportClose').addEventListener('click', () => {
+  document.body.classList.remove('relatorio-aberto');
+  $('reportModal').style.display = 'none';
+});
 $('reportPrint').addEventListener('click', () => window.print());
-$('reportModal').addEventListener('click', e => { if(e.target.id === 'reportModal') $('reportModal').style.display='none'; });
+$('reportModal').addEventListener('click', e => {
+  if(e.target.id === 'reportModal'){
+    document.body.classList.remove('relatorio-aberto');
+    $('reportModal').style.display = 'none';
+  }
+});
 
 $('viatSearch').addEventListener('input', debounce(() => renderViaturas(), 180));
 $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'; renderViaturas(); });
@@ -2990,11 +3003,17 @@ $('mm-status').addEventListener('change', () => trocarCampoLocal('mm-local-wrap'
 $('me-status').addEventListener('change', () => trocarCampoLocal('me-local-wrap','me-status',true));
 $('mf-status').addEventListener('change', () => trocarCampoLocal('mf-local-wrap','mf-status',false));
 $('manutReportBtn').addEventListener('click', () => { if(!temPermissao('ver_manutencao')){ alert('Sem permissão.'); return; } abrirRelatorioManut(); });
-$('manutReportClose').addEventListener('click', () => { $('manutReportModal').style.display = 'none'; });
+$('manutReportClose').addEventListener('click', () => {
+  document.body.classList.remove('relatorio-aberto');
+  $('manutReportModal').style.display = 'none';
+});
 $('manutReportPrint').addEventListener('click', () => window.print());
-$('manutReportModal').addEventListener('click', e => { if(e.target.id === 'manutReportModal') $('manutReportModal').style.display='none'; });
-$('manutReportMonth').addEventListener('change', renderRelatorioManut);
-$('manutReportMode').addEventListener('change', renderRelatorioManut);
+$('manutReportModal').addEventListener('click', e => {
+  if(e.target.id === 'manutReportModal'){
+    document.body.classList.remove('relatorio-aberto');
+    $('manutReportModal').style.display = 'none';
+  }
+});
 // Melhoria #10: listener do filtro de status
 const selStatusManutRep = $('manutReportStatus');
 if(selStatusManutRep){
