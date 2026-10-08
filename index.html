@@ -863,7 +863,26 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 <div id="reportModal" class="modal-overlay" style="display:none;">
   <div class="report-box">
     <div class="report-header"><h2>Relatório de OS-BAMEX</h2><div class="meta" id="reportMeta"></div></div>
-    <div class="report-filters" id="reportFilters"></div>
+    <div class="report-filters" id="reportFilters">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;">
+        <span><b>Status:</b></span>
+        <select id="repFilterStatus" style="min-width:130px;">
+          <option value="">Todos</option>
+        </select>
+        <span><b>Oficina/Empresa:</b></span>
+        <select id="repFilterOficina" style="min-width:170px;">
+          <option value="">Todas</option>
+        </select>
+        <span><b>Orçada:</b></span>
+        <select id="repFilterOrcada" style="min-width:100px;">
+          <option value="">Todas</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+        <button class="btn ghost" id="repFilterLimpar" style="margin-left:auto;font-size:11px;padding:5px 10px;">Limpar filtros</button>
+      </div>
+      <span id="repFilterResumo" style="font-size:11px;color:var(--text-dim);padding-top:6px;display:block;width:100%;"></span>
+    </div>
     <div class="report-table-wrap">
       <table class="report-table">
         <thead><tr><th>Viatura</th><th>Nº OS</th><th>Categoria</th><th>Status</th><th>Orçada</th><th>Qnt</th><th>Oficina/Empresa</th></tr></thead>
@@ -880,26 +899,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 <div id="manutReportModal" class="modal-overlay" style="display:none;">
   <div class="report-box">
     <div class="report-header"><h2>Relatório de Movimentação</h2><div class="meta" id="manutReportMeta"></div></div>
-    <div class="report-filters" id="reportFilters">
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;">
-    <span><b>Status:</b></span>
-    <select id="repFilterStatus" style="min-width:130px;">
-      <option value="">Todos</option>
-    </select>
-    <span><b>Oficina/Empresa:</b></span>
-    <select id="repFilterOficina" style="min-width:170px;">
-      <option value="">Todas</option>
-    </select>
-    <span><b>Orçada:</b></span>
-    <select id="repFilterOrcada" style="min-width:100px;">
-      <option value="">Todas</option>
-      <option value="Sim">Sim</option>
-      <option value="Não">Não</option>
-    </select>
-    <button class="btn ghost" id="repFilterLimpar" style="margin-left:auto;font-size:11px;padding:5px 10px;">Limpar filtros</button>
-  </div>
-  <span id="repFilterResumo" style="font-size:11px;color:var(--text-dim);padding-top:6px;display:block;width:100%;"></span>
-</div>
+    <div class="report-filters">
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <span><b>Modo:</b></span>
         <select id="manutReportMode">
@@ -981,7 +981,6 @@ const PERM_GRUPOS = {
   usuarios_criar:'admin_usuarios', usuarios_editar:'admin_usuarios', usuarios_resetar:'admin_usuarios'
 };
 
-/* ─── Listas de locais (campo dinâmico) ─── */
 const LOCAIS_OFICINA = [
   'FIX CAR','VIDROCAR','ARCOM','DAKAR','POTTENTE','MOVESA','BR DIESEL','TAVARES',
   'MULTIRADIUS','RENOBAN','XINGO','PAULISTA','LEANDRO TRUCK','CAXANGA',
@@ -1000,14 +999,12 @@ const LOCAIS_DIRETORIA = [
 const LOCAL_RESERVA = 'DEMAN';
 const LOCAIS_BAIXADA = [LOCAL_RESERVA].concat(LOCAIS_OFICINA);
 
-/* ─────────── DETECÇÃO DE PLATAFORMA ─────────── */
 const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 if(IS_IOS) document.documentElement.classList.add('is-ios');
 const IS_TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 if(IS_TOUCH) document.documentElement.classList.add('is-touch');
 
-/* ─────────── MOSTRAR / OCULTAR SENHA ─────────── */
 function bindPasswordToggles(){
   document.querySelectorAll('.pass-toggle').forEach(btn => {
     if(btn.dataset.bound === '1') return;
@@ -1028,7 +1025,6 @@ function bindPasswordToggles(){
   });
 }
 
-/* ─────────── WARM-UP ─────────── */
 let _warmupPromise = null;
 function _pingVersao(url){
   return fetch(url, {
@@ -1548,6 +1544,7 @@ function renderOS(){
   else if(activeTab === TAB_GERAL) renderGeralOS(null);
   else renderGeralOS(activeTab);
 }
+
 /* ═══════ RELATÓRIO OS — com filtros ═══════ */
 let repFiltroStatus  = '';
 let repFiltroOficina = '';
@@ -1587,18 +1584,52 @@ function repAplicarFiltros(dados){
   });
 }
 
+function repRenderTabela(){
+  const dadosOriginais = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
+  const dados = repAplicarFiltros(dadosOriginais);
+
+  const filtros = [];
+  if(activeTab === TAB_GERAL) filtros.push('Visão Geral');
+  else if(activeTab === TAB_MANUTENCAO) filtros.push('Manutenção');
+  else filtros.push('Evento: '+activeTab);
+  filtros.push(activeStatusFilter ? 'Status (card): '+activeStatusFilter : 'Status (card): Todos');
+  const q = $('osSearch').value.trim(); if(q) filtros.push('Busca: "'+q+'"');
+
+  const partes = [];
+  if(repFiltroStatus) partes.push('Status: ' + ((STAGES.find(x => x.key === repFiltroStatus)||{}).label || repFiltroStatus));
+  if(repFiltroOficina) partes.push('Oficina: ' + repFiltroOficina);
+  if(repFiltroOrcada) partes.push('Orçada: ' + repFiltroOrcada);
+
+  $('repFilterResumo').innerHTML =
+    '<b>Base:</b> ' + filtros.map(escapeHtml).join(' · ') +
+    (partes.length ? ' · <b>Filtros:</b> ' + partes.map(escapeHtml).join(' · ') : '') +
+    ' · <b>Exibindo:</b> ' + dados.length + ' de ' + dadosOriginais.length + ' OS';
+
+  const ordenado = dados.slice().sort((a,b) => a.v.localeCompare(b.v) || a.os.localeCompare(b.os));
+  $('reportBody').innerHTML = ordenado.length === 0
+    ? '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado com os filtros atuais</td></tr>'
+    : ordenado.map(r => {
+        const st = stageInfoOS(r.stage);
+        return `<tr>
+          <td class="v">${escapeHtml(r.v)}</td>
+          <td class="os">${escapeHtml(r.os)}</td>
+          <td>${escapeHtml(r.category)}</td>
+          <td class="status" style="color:${st.color};">● ${st.label}</td>
+          <td>${r.orcamentos > 0 ? 'Sim' : 'Não'}</td>
+          <td>${r.orcamentos > 0 ? r.orcamentos : '—'}</td>
+          <td>${escapeHtml(r.empresa || '—')}</td>
+        </tr>`;
+      }).join('');
+}
+
 function abrirRelatorioOS(){
-  // Reseta os filtros cada vez que abre o relatório
   repFiltroStatus = '';
   repFiltroOficina = '';
   repFiltroOrcada = '';
 
   const dados = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
-
-  // Popular os selects com valores únicos
   repPopularSelects(dados);
 
-  // Bind dos eventos (só uma vez)
   const selS = $('repFilterStatus');
   const selO = $('repFilterOficina');
   const selOrc = $('repFilterOrcada');
@@ -1636,44 +1667,6 @@ function abrirRelatorioOS(){
   $('reportModal').style.display = 'flex';
 }
 
-function repRenderTabela(){
-  const dadosOriginais = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
-  const dados = repAplicarFiltros(dadosOriginais);
-
-  // Resumo
-  const filtros = [];
-  if(activeTab === TAB_GERAL) filtros.push('Visão Geral');
-  else if(activeTab === TAB_MANUTENCAO) filtros.push('Manutenção');
-  else filtros.push('Evento: '+activeTab);
-  filtros.push(activeStatusFilter ? 'Status (card): '+activeStatusFilter : 'Status (card): Todos');
-  const q = $('osSearch').value.trim(); if(q) filtros.push('Busca: "'+q+'"');
-
-  const partes = [];
-  if(repFiltroStatus) partes.push('Status: ' + (STAGES.find(x => x.key === repFiltroStatus)?.label || repFiltroStatus));
-  if(repFiltroOficina) partes.push('Oficina: ' + repFiltroOficina);
-  if(repFiltroOrcada) partes.push('Orçada: ' + repFiltroOrcada);
-
-  $('repFilterResumo').innerHTML =
-    '<b>Base:</b> ' + filtros.map(escapeHtml).join(' · ') +
-    (partes.length ? ' · <b>Filtros:</b> ' + partes.map(escapeHtml).join(' · ') : '') +
-    ' · <b>Exibindo:</b> ' + dados.length + ' de ' + dadosOriginais.length + ' OS';
-
-  const ordenado = dados.slice().sort((a,b) => a.v.localeCompare(b.v) || a.os.localeCompare(b.os));
-  $('reportBody').innerHTML = ordenado.length === 0
-    ? '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado com os filtros atuais</td></tr>'
-    : ordenado.map(r => {
-        const st = stageInfoOS(r.stage);
-        return `<tr>
-          <td class="v">${escapeHtml(r.v)}</td>
-          <td class="os">${escapeHtml(r.os)}</td>
-          <td>${escapeHtml(r.category)}</td>
-          <td class="status" style="color:${st.color};">● ${st.label}</td>
-          <td>${r.orcamentos > 0 ? 'Sim' : 'Não'}</td>
-          <td>${r.orcamentos > 0 ? r.orcamentos : '—'}</td>
-          <td>${escapeHtml(r.empresa || '—')}</td>
-        </tr>`;
-      }).join('');
-}
 const edStageSel = $('ed-stage'); edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 function openEditModal(recordId){
   if(!temPermissao('os_editar')){ alert('Você não tem permissão para editar.'); return; }
@@ -1911,7 +1904,6 @@ function montarCampoLocal(wrapId, valorAtual, status, modoEvento){
   } else if(classe === 'reserva'){
     wrap.innerHTML = _htmlLocalDisabled(idCampo, LOCAL_RESERVA);
   } else if(classe === 'baixada'){
-    // Baixada aceita apenas DEMAN + oficinas (texto livre também permitido)
     wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, LOCAIS_BAIXADA);
   } else {
     wrap.innerHTML = _htmlSelectLocal(idCampo, valorAtual);
@@ -2346,8 +2338,6 @@ function abrirFormFinalizar(p){
   preencherProcInfoBox(p);
   $('mf-data').value = agoraDatetimeLocal();
   $('mf-status').value = 'Ativa';
-  // Campo Local SEMPRE vazio — se deixado em branco, o backend devolve a
-  // viatura ao GBM original (ou ao local do evento Entrada como fallback).
   montarCampoLocal('mf-local-wrap', '', $('mf-status').value, false);
   $('mf-informante').value = p.entrada ? p.entrada.informante : '';
   $('mf-detalhes').value = '';
@@ -2511,7 +2501,6 @@ async function salvarFinalizarManut(){
 
 function abrirWhatsApp(texto){ const base = WHATSAPP_DESTINO ? 'https://wa.me/' + WHATSAPP_DESTINO : 'https://wa.me/'; window.open(base + '?text=' + encodeURIComponent(texto), '_blank'); }
 
-/* ─────── NORMALIZAÇÃO DE PROCESSO PARA MENSAGEM ─────── */
 function normalizarEventoParaMensagem(e){
   return {
     tipo: e.evento || e.tipo || '',
@@ -2558,7 +2547,6 @@ function normalizarProcessoParaMensagem(p){
   };
 }
 
-/* ─────── BLOCOS DE EVENTO PARA HISTÓRICO ─────── */
 function montarBlocoEvento(ev){
   const linhas = [];
   linhas.push(iconeEvento(ev.tipo) + ' *' + (ev.tipo || 'Evento') + '* · ' + (ev.data || '—'));
@@ -2827,7 +2815,6 @@ document.addEventListener('visibilitychange', () => {
   if(activeView === 'manutencao' && temPermissao('ver_manutencao')) loadDataManut();
 });
 
-/* ═══════ iOS — AJUSTES DE TECLADO ═══════ */
 if(IS_IOS){
   document.addEventListener('focusin', e => {
     if(e.target.matches('input, select, textarea')){
