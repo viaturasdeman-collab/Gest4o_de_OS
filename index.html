@@ -71,11 +71,8 @@ button{font:inherit;}
 .badge-perfil.admin{background:rgba(232,169,58,.15);color:var(--amber);border-color:var(--amber);}
 .badge-perfil.view{background:rgba(0,171,251,.12);color:var(--azul);border-color:var(--azul);}
 .sidebar{
-  position:fixed;
-  top:calc(var(--topbar-h) + var(--safe-top));
-  bottom:0;left:0;
-  width:var(--sidebar-w);
-  padding-bottom:var(--safe-bottom);
+  position:fixed;top:calc(var(--topbar-h) + var(--safe-top));bottom:0;left:0;
+  width:var(--sidebar-w);padding-bottom:var(--safe-bottom);
   background:var(--bg-elev);border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   transition:width .2s ease, transform .2s ease;
@@ -167,15 +164,7 @@ input[type=datetime-local]{background:var(--surface-2);border:1px solid var(--bo
 input[type=datetime-local]:focus{outline:1px solid var(--amber);}
 .pass-wrap{position:relative;display:block;width:100%;}
 .pass-wrap input{padding-right:44px !important;width:100%;}
-.pass-toggle{
-  position:absolute;top:50%;right:6px;transform:translateY(-50%);
-  width:34px;height:34px;padding:0;
-  display:flex;align-items:center;justify-content:center;
-  background:transparent;border:none;border-radius:6px;
-  color:var(--text-dim);cursor:pointer;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  transition:color .15s ease, background .15s ease;
-}
+.pass-toggle{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:6px;color:var(--text-dim);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .15s ease, background .15s ease;}
 .pass-toggle:hover{color:var(--amber);}
 .pass-toggle:active{background:rgba(232,169,58,.12);}
 .pass-toggle svg{width:18px;height:18px;display:block;flex:none;}
@@ -266,24 +255,26 @@ input[type=datetime-local]:focus{outline:1px solid var(--amber);}
 .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:14px 18px 18px;}
 .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;-webkit-touch-callout:none;}
 .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.svc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:6px 28px 6px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;flex-wrap:wrap;position:relative;}
+
+/* ─── SVG ROW compacto ─── */
+.svc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 28px 7px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;position:relative;}
 .svc-row:first-of-type{border-top:none;}
-.svc-label{font-size:11.5px;color:var(--text-dim);min-width:80px;}
-.svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:1;min-width:0;}
-.pill{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;max-width:100%;}
-.pill .dot{width:7px;height:7px;flex:none;}
-.os-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);}
-select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:2px 4px;font-family:'Inter',sans-serif;font-size:10px;max-width:140px;touch-action:manipulation;}
+.svc-left{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;}
+.svc-label{font-size:11.5px;color:var(--text);font-weight:500;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.svc-meta{font-size:9.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.svc-meta .sep{color:var(--text-faint);opacity:.5;}
+.svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none;}
+.os-num{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--text-faint);white-space:nowrap;}
+select.stage-select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:2px 4px;font-family:'IBM Plex Mono',monospace;font-size:10px;max-width:110px;touch-action:manipulation;}
 .stage-static{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);padding:2px 6px;border:1px dashed var(--border);border-radius:6px;}
-.os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
-.os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 .svc-row.orc-alto{background:linear-gradient(90deg, rgba(232,169,58,.14), transparent 70%);}
-.badge-orc{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:6px;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);}
+.badge-orc{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;white-space:nowrap;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);}
 .edit-btn{position:absolute;top:4px;right:2px;width:22px;height:22px;padding:0;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s, color .15s, background .15s, transform .12s;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .edit-btn:hover{border-color:var(--amber);color:var(--amber);background:var(--surface);}
 .edit-btn:active{transform:scale(.92);}
 .edit-btn svg{width:12px;height:12px;display:block;}
 .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
+
 .addform{display:none;grid-template-columns:repeat(6, 1fr);gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;align-items:center;}
 .addform.open{display:grid;}
 .addform input, .addform select{width:100%;min-width:0;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:13px;touch-action:manipulation;}
@@ -439,10 +430,24 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .user-meta{font-size:10.5px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
 .user-actions{display:flex;gap:6px;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--border);}
 .user-actions .btn{font-size:12px;padding:7px 12px;flex:1;min-width:0;text-align:center;}
+
+/* ─── REPORT ─── */
 .report-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;width:100%;max-width:1100px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
 .report-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .report-header h2{font-family:'Rajdhani',sans-serif;font-size:22px;margin:0;color:var(--amber);letter-spacing:.02em;}
 .report-header .meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);text-align:right;line-height:1.6;}
+
+/* KPIs do relatório */
+.report-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.report-kpi{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;}
+.report-kpi .kpi-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.report-kpi .kpi-value{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;line-height:1;color:var(--text);}
+.report-kpi.kpi-total .kpi-value{color:var(--amber);}
+.report-kpi.kpi-pend .kpi-value{color:var(--text);}
+.report-kpi.kpi-aprov .kpi-value{color:var(--azul);}
+.report-kpi.kpi-final .kpi-value{color:var(--verde);}
+.report-kpi.kpi-qnt .kpi-value{color:var(--amber);}
+
 .report-filters{font-size:12px;color:var(--text-dim);background:var(--surface-2);border-radius:8px;padding:10px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
 .report-filters b{color:var(--amber);}
 .report-filters select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:6px 10px;font-size:12px;font-family:'Inter',sans-serif;touch-action:manipulation;}
@@ -457,7 +462,9 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .report-table td.status{font-family:'IBM Plex Mono',monospace;font-size:10px;white-space:nowrap;}
 .report-table td.date{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap;}
 .report-table td.dias{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);white-space:nowrap;text-align:right;}
+.report-table td.dias.vazio{color:var(--text-faint);opacity:.5;}
 .report-table td.details{font-size:11px;color:var(--text-dim);max-width:280px;}
+.report-table td.info{font-size:11px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
 .report-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
 .mes-group{margin-bottom:22px;}
 .mes-group:last-child{margin-bottom:0;}
@@ -479,7 +486,6 @@ select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid 
 .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
 .error-box p{margin:5px 0;}
 footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:40px;}
-
 .local-field-wrap{display:flex;flex-direction:column;gap:5px;width:100%;}
 .local-field-wrap input[type=text],
 .local-field-wrap select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:16px;width:100%;min-width:0;-webkit-appearance:none;touch-action:manipulation;}
@@ -497,6 +503,14 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   .report-box{background:#fff;color:#000;box-shadow:none;border:none;max-width:none;max-height:none;padding:0;overflow:visible;}
   .report-header h2{color:#000;}
   .report-header .meta{color:#333;}
+  .report-kpi{background:#f2f2f2;border:1px solid #999;}
+  .report-kpi .kpi-label{color:#555;}
+  .report-kpi .kpi-value{color:#000;}
+  .report-kpi.kpi-total .kpi-value{color:#000;}
+  .report-kpi.kpi-pend .kpi-value{color:#000;}
+  .report-kpi.kpi-aprov .kpi-value{color:#000;}
+  .report-kpi.kpi-final .kpi-value{color:#000;}
+  .report-kpi.kpi-qnt .kpi-value{color:#000;}
   .report-filters{background:#f2f2f2;color:#333;}
   .report-filters b{color:#000;}
   .report-filters select{background:#fff;border:1px solid #999;color:#000;}
@@ -507,6 +521,8 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   .mes-header .mes-count{color:#333;background:#fff;border:1px solid #999;}
   .mes-group .report-table{border:1px solid #999;border-top:none;}
   .report-table tr.total-row td{background:#eee;color:#000;border-top:2px solid #000;}
+  /* Quebra de página entre relatórios */
+  .report-page-break{page-break-before:always;break-before:page;}
 }
 </style>
 </head>
@@ -576,7 +592,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
           <div class="home-card os"><div class="label">Total de OS</div><div class="value" id="h-os-total">—</div></div>
           <div class="home-card os-pend"><div class="label">Pendentes</div><div class="value" id="h-os-pend">—</div></div>
           <div class="home-card os"><div class="label">Aprovadas</div><div class="value" id="h-os-aprov">—</div></div>
-          <div class="home-card os-reav"><div class="label">Reavaliações</div><div class="value" id="h-os-reav">—</div></div>
+          <div class="home-card os-reav" id="h-os-reav-card"><div class="label">Reavaliações</div><div class="value" id="h-os-reav">—</div></div>
         </div>
       </div>
       <div id="homeViatSection">
@@ -863,6 +879,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 <div id="reportModal" class="modal-overlay" style="display:none;">
   <div class="report-box">
     <div class="report-header"><h2>Relatório de OS-BAMEX</h2><div class="meta" id="reportMeta"></div></div>
+    <div class="report-kpis" id="reportKpis"></div>
     <div class="report-filters" id="reportFilters">
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;">
         <span><b>Status:</b></span>
@@ -910,12 +927,20 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
           <b>Período:</b>
           <select id="manutReportMonth"><option value="">Todos os meses</option></select>
         </span>
+        <span><b>Status:</b></span>
+        <select id="manutReportStatus" style="min-width:130px;">
+          <option value="">Todos</option>
+          <option value="Em Manutenção">Em Manutenção</option>
+          <option value="Baixada">Baixada</option>
+          <option value="Reserva">Reserva</option>
+          <option value="Ativa">Ativa</option>
+        </select>
       </div>
       <span id="manutReportFilters" style="font-size:11px;"></span>
     </div>
     <div id="manutReportDetalhado" class="report-table-wrap">
       <table class="report-table">
-        <thead><tr><th>ID</th><th>Viatura</th><th>Entrada</th><th>Saída</th><th>Status</th><th style="text-align:right;">Dias</th><th>Eventos</th><th>Informante</th></tr></thead>
+        <thead><tr><th>ID</th><th>Viatura</th><th>Entrada</th><th>Saída</th><th>Status</th><th style="text-align:right;">Dias</th><th style="text-align:center;">Eventos</th><th>Informante</th></tr></thead>
         <tbody id="manutReportBody"></tbody>
       </table>
     </div>
@@ -1315,6 +1340,9 @@ function renderHome(){
   const osAprov = OS_DATA.filter(r => r.stage==='Aprovada').length;
   const osReav = OS_DATA.filter(r => r.stage==='Reavaliar').length;
   $('h-os-total').textContent = osTotal; $('h-os-pend').textContent = osPend; $('h-os-aprov').textContent = osAprov; $('h-os-reav').textContent = osReav;
+  // Melhoria #8: esconder card "Reavaliações" quando for 0
+  const cardReav = $('h-os-reav-card');
+  if(cardReav) cardReav.style.display = (osReav > 0) ? '' : 'none';
   const vTotal = VIATURAS.length;
   const vNaoBaix = VIATURAS.filter(v => v.origem !== 'baixada').length;
   const vDir = VIATURAS.filter(v => v.origem === 'ativa' && ehDiretoria(v.gbm)).length;
@@ -1458,6 +1486,8 @@ function getDadosFiltradosOS(eventoFiltro){
   if(q) dados = dados.filter(r => matchesSearchOS(r.v, q) || (r.os && r.os.toString().toLowerCase().includes(q)));
   return dados;
 }
+
+/* ═══════ RENDER GERAL — MELHORIA #1 e #2: row compacto, sem pill duplicado ═══════ */
 function renderGeralOS(eventoFiltro){
   const dados = getDadosFiltradosOS(eventoFiltro);
   const podeStatus = temPermissao('os_status'); const podeEditar = temPermissao('os_editar');
@@ -1478,14 +1508,30 @@ function renderGeralOS(eventoFiltro){
       else if(uniqueColors.length > 1){ const stops = uniqueColors.map((color, idx) => `${color} ${Math.round(idx/(uniqueColors.length-1)*100)}%`).join(', '); borderStyle = `linear-gradient(135deg, ${stops})`; }
       const osEntries = osList.map(r => {
         const st = stageInfoOS(r.stage);
-        const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
-        const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+        const qnt = r.orcamentos > 0 ? r.orcamentos : null;
         const destacar = (r.stage === 'Pendente' && r.orcamentos >= 3);
         const orcClass = destacar ? 'orc-alto' : '';
-        const orcBadge = destacar ? `<span class="badge-orc">$ ${r.orcamentos}</span>` : '';
-        const stageControl = podeStatus ? `<select class="stage-select" data-id="${escapeAttr(r.id)}" data-os="${escapeAttr(r.os)}">${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}</select>` : `<span class="stage-static">${st.label}</span>`;
+        const orcBadge = (qnt !== null) ? `<span class="badge-orc">$ ${qnt}</span>` : '';
+        const stageControl = podeStatus
+          ? `<select class="stage-select" data-id="${escapeAttr(r.id)}" data-os="${escapeAttr(r.os)}">${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}</select>`
+          : `<span class="stage-static">${st.label}</span>`;
         const editBtn = podeEditar ? `<button class="edit-btn" data-edit-id="${escapeAttr(r.id)}" title="Editar OS ${escapeAttr(r.os)}">${pencilSvg}</button>` : '';
-        return `<div class="svc-row ${orcClass}" style="border-left-color:${st.color}">${editBtn}<span class="svc-label">${escapeHtml(r.category)}${orcBadge}</span><div class="svc-right"><span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}</span><span class="os-num">OS ${escapeHtml(r.os)}</span>${stageControl}<div class="os-meta"><span>Orçada: ${orcada}</span><span>Qnt: ${qnt}</span></div>${r.empresa ? `<div class="os-note">${escapeHtml(r.empresa)}</div>` : ''}</div></div>`;
+        // Meta compacta: Orçada / Qnt / Empresa em linha única
+        const metaParts = [];
+        metaParts.push(`Orçada: ${r.orcamentos > 0 ? 'Sim' : 'Não'}`);
+        if(qnt !== null) metaParts.push(`Qnt: ${qnt}`);
+        if(r.empresa) metaParts.push(r.empresa);
+        const metaHtml = metaParts.map(escapeHtml).join('<span class="sep">·</span>');
+        return `<div class="svc-row ${orcClass}" style="border-left-color:${st.color}">
+          ${editBtn}
+          <div class="svc-left">
+            <div class="svc-label">${escapeHtml(r.category)}${orcBadge}</div>
+            <div class="svc-meta"><span class="sep">OS</span>${escapeHtml(r.os)}<span class="sep">·</span>${metaHtml}</div>
+          </div>
+          <div class="svc-right">
+            ${stageControl}
+          </div>
+        </div>`;
       }).join('');
       return `<div class="veh-card" style="border: 2px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, ${borderStyle} border-box;"><div class="veh-name">${escapeHtml(v)}</div>${osEntries}</div>`;
     }).join('');
@@ -1545,7 +1591,7 @@ function renderOS(){
   else renderGeralOS(activeTab);
 }
 
-/* ═══════ RELATÓRIO OS — com filtros ═══════ */
+/* ═══════ RELATÓRIO OS — MELHORIA #4 (KPIs) + #6 (dias vazios) ═══════ */
 let repFiltroStatus  = '';
 let repFiltroOficina = '';
 let repFiltroOrcada  = '';
@@ -1584,9 +1630,27 @@ function repAplicarFiltros(dados){
   });
 }
 
+function repRenderKpis(dados){
+  const total = dados.length;
+  const pend = dados.filter(r => r.stage === 'Pendente').length;
+  const aprov = dados.filter(r => r.stage === 'Aprovada').length;
+  const final = dados.filter(r => r.stage === 'Finalizada').length;
+  const qntTotal = dados.reduce((sum, r) => sum + (r.orcamentos > 0 ? r.orcamentos : 0), 0);
+  $('reportKpis').innerHTML = `
+    <div class="report-kpi kpi-total"><div class="kpi-label">Total</div><div class="kpi-value">${total}</div></div>
+    <div class="report-kpi kpi-pend"><div class="kpi-label">Pendentes</div><div class="kpi-value">${pend}</div></div>
+    <div class="report-kpi kpi-aprov"><div class="kpi-label">Aprovadas</div><div class="kpi-value">${aprov}</div></div>
+    <div class="report-kpi kpi-final"><div class="kpi-label">Finalizadas</div><div class="kpi-value">${final}</div></div>
+    <div class="report-kpi kpi-qnt"><div class="kpi-label">Qnt orçada</div><div class="kpi-value">${qntTotal}</div></div>
+  `;
+}
+
 function repRenderTabela(){
   const dadosOriginais = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
   const dados = repAplicarFiltros(dadosOriginais);
+
+  // KPIs refletem os dados FILTRADOS
+  repRenderKpis(dados);
 
   const filtros = [];
   if(activeTab === TAB_GERAL) filtros.push('Visão Geral');
@@ -1934,6 +1998,8 @@ let sidebarMovExpanded = true;
 const DESFAZER_JANELA_MS = 30000;
 const _ultimoEventoAdicionado = {};
 let _desfazerTimer = null;
+// Melhoria #10: filtro de status no relatório de movimentação
+let manutRepStatusFiltro = '';
 
 function setSidebarMovExpanded(v){ sidebarMovExpanded = !!v; const sub = $('sidebarSubMov'); const parent = $('sidebarMovParent'); if(sub) sub.classList.toggle('open', sidebarMovExpanded); if(parent) parent.classList.toggle('expanded', sidebarMovExpanded); }
 function parseDataManut(str){
@@ -2631,6 +2697,7 @@ function fecharSucesso(){
   showManutTab('registros');
 }
 
+/* ═══════ RELATÓRIO DE MOVIMENTAÇÃO — com filtro de status (Melhoria #10) e dias vazios (Melhoria #6) ═══════ */
 function getMesesDisponiveisManut(){
   const set = new Set();
   MANUT_EVENTOS.forEach(e => {
@@ -2645,6 +2712,8 @@ function abrirRelatorioManut(){
   select.innerHTML = '<option value="">Todos os meses</option>' + meses.map(ym => `<option value="${escapeAttr(ym)}">${escapeHtml(formatarMesAno(ym))}</option>`).join('');
   select.value = '';
   $('manutReportMode').value = 'detalhado';
+  const selStatus = $('manutReportStatus'); if(selStatus) selStatus.value = '';
+  manutRepStatusFiltro = '';
   const agora = new Date();
   $('manutReportMeta').innerHTML = 'Emitido em ' + agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR') + '<br>Por: <b style="color:var(--amber);">' + escapeHtml(currentUser || '—') + '</b>';
   renderRelatorioManut();
@@ -2677,6 +2746,12 @@ function renderRelatorioManutDetalhado(){
     });
   }
 
+  // Melhoria #10: filtro de status
+  if(manutRepStatusFiltro){
+    const alvoClasse = statusClasseManut(manutRepStatusFiltro);
+    procs = procs.filter(p => statusClasseManut(p.ultimo ? p.ultimo.status : '') === alvoClasse);
+  }
+
   procs.sort((a, b) => {
     const da = parseDataManut(a.entrada ? a.entrada.data : '');
     const db = parseDataManut(b.entrada ? b.entrada.data : '');
@@ -2684,7 +2759,8 @@ function renderRelatorioManutDetalhado(){
   });
 
   const filtroTxt = mes ? 'Mês: ' + formatarMesAno(mes) : 'Todos os meses';
-  $('manutReportFilters').innerHTML = '<b>' + escapeHtml(filtroTxt) + '</b> · <b>Processos:</b> ' + procs.length;
+  const statusTxt = manutRepStatusFiltro ? ' · Status: ' + escapeHtml(manutRepStatusFiltro) : '';
+  $('manutReportFilters').innerHTML = '<b>' + escapeHtml(filtroTxt) + '</b>' + statusTxt + ' · <b>Processos:</b> ' + procs.length;
 
   $('manutReportBody').innerHTML = procs.length === 0
     ? '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum processo neste período</td></tr>'
@@ -2693,7 +2769,9 @@ function renderRelatorioManutDetalhado(){
         const entrada = p.entrada ? p.entrada.data : '—';
         const saida = p.finalizacao ? p.finalizacao.data : '--';
         const statusL = statusLabelManut(p.ultimo ? p.ultimo.status : '');
-        const dias = p.finalizacao ? p.dias + 'd' : '—';
+        const temDias = p.finalizacao && p.dias > 0;
+        const diasTxt = temDias ? p.dias + 'd' : '—';
+        const diasClass = temDias ? 'dias' : 'dias vazio';
         const inf = p.finalizacao ? p.finalizacao.informante : (p.entrada ? p.entrada.informante : '—');
         return `<tr>
           <td class="id">${escapeHtml(p.id)}</td>
@@ -2701,9 +2779,9 @@ function renderRelatorioManutDetalhado(){
           <td class="date">${escapeHtml(entrada)}</td>
           <td class="date">${escapeHtml(saida)}</td>
           <td class="status" style="color:${cor};">● ${escapeHtml(statusL)}</td>
-          <td class="dias">${escapeHtml(dias)}</td>
+          <td class="${diasClass}">${escapeHtml(diasTxt)}</td>
           <td style="text-align:center;">${p.eventos.length}</td>
-          <td>${escapeHtml(inf)}</td>
+          <td class="info">${escapeHtml(inf)}</td>
         </tr>`;
       }).join('');
 }
@@ -2917,6 +2995,14 @@ $('manutReportPrint').addEventListener('click', () => window.print());
 $('manutReportModal').addEventListener('click', e => { if(e.target.id === 'manutReportModal') $('manutReportModal').style.display='none'; });
 $('manutReportMonth').addEventListener('change', renderRelatorioManut);
 $('manutReportMode').addEventListener('change', renderRelatorioManut);
+// Melhoria #10: listener do filtro de status
+const selStatusManutRep = $('manutReportStatus');
+if(selStatusManutRep){
+  selStatusManutRep.addEventListener('change', () => {
+    manutRepStatusFiltro = selStatusManutRep.value;
+    renderRelatorioManut();
+  });
+}
 $('sucessoVoltar').addEventListener('click', fecharSucesso);
 $('sucessoWhats').addEventListener('click', () => { if(_sucessoMensagemWhats) abrirWhatsApp(_sucessoMensagemWhats); });
 $('sucessoModal').addEventListener('click', e => { if(e.target.id === 'sucessoModal') fecharSucesso(); });
