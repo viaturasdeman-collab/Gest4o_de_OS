@@ -358,6 +358,10 @@ select.stage-select:hover{border-color:var(--amber);}
 .manut-proc-badge.aberto{background:rgba(232,169,58,.12);color:var(--amber);border-color:rgba(232,169,58,.5);}
 .manut-proc-badge.fechado{background:rgba(61,220,132,.12);color:var(--verde);border-color:rgba(61,220,132,.4);}
 .manut-proc-dias{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);}
+.manut-proc-tipo{font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;white-space:nowrap;border:1px solid transparent;}
+.manut-proc-tipo.viatura{background:rgba(0,171,251,.12);color:var(--azul);border-color:rgba(0,171,251,.5);}
+.manut-proc-tipo.outro{background:rgba(177,140,255,.12);color:var(--roxo);border-color:rgba(177,140,255,.5);}
+.manut-proc-tipo.vazio{background:var(--surface-2);color:var(--text-faint);border-color:var(--border);}
 .manut-proc-meta{padding:9px 16px;font-size:11px;color:var(--text-dim);border-bottom:1px solid rgba(48,58,71,.4);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .manut-pill{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;}
 .manut-pill.em-manutencao{background:rgba(232,169,58,.12);border-color:rgba(232,169,58,.5);color:var(--amber);}
@@ -526,7 +530,6 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   .mes-header .mes-count{color:#333;background:#fff;border:1px solid #999;}
   .mes-group .report-table{border:1px solid #999;border-top:none;}
   .report-table tr.total-row td{background:#eee;color:#000;border-top:2px solid #000;}
-  /* Quebra de página entre relatórios */
   .report-page-break{page-break-before:always;break-before:page;}
 }
 </style>
@@ -681,6 +684,11 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <div class="summary" id="manutSummary"></div>
         <div class="toolbar">
           <div class="right-tools">
+            <select id="manutFiltroTipo" style="min-width:150px;">
+              <option value="">Todos os tipos</option>
+              <option value="Viatura">Só Viaturas</option>
+              <option value="Outro">Só Outros</option>
+            </select>
             <input type="text" id="manutSearch" placeholder="Buscar viatura, ID, local, informante">
             <button class="btn ghost" id="manutClearFilterBtn" style="display:none;">Limpar filtro</button>
             <button class="btn report" id="manutReportBtn">📄 Relatório</button>
@@ -696,7 +704,14 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
           <div id="procInfoBox" class="proc-info-box" style="display:none;"></div>
 
           <div class="inline-form-grid" id="formCriar">
-            <label>Viatura<input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters"></label>
+            <label>Tipo *
+              <select id="mm-tipo">
+                <option value="">— Selecione —</option>
+                <option value="Viatura">Viatura</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </label>
+            <label id="mm-viatura-label">Viatura<input type="text" id="mm-viatura" placeholder="ex: ABT-17" autocapitalize="characters"></label>
             <label>Status
               <select id="mm-status">
                 <option value="Em Manutenção">Em Manutenção</option>
@@ -945,7 +960,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     </div>
     <div id="manutReportDetalhado" class="report-table-wrap">
       <table class="report-table">
-        <thead><tr><th>ID</th><th>Viatura</th><th>Entrada</th><th>Saída</th><th>Status</th><th style="text-align:right;">Dias</th><th style="text-align:center;">Eventos</th><th>Informante</th></tr></thead>
+        <thead><tr><th>ID</th><th>Tipo</th><th>Viatura/Item</th><th>Entrada</th><th>Saída</th><th>Status</th><th style="text-align:right;">Dias</th><th style="text-align:center;">Eventos</th><th>Informante</th></tr></thead>
         <tbody id="manutReportBody"></tbody>
       </table>
     </div>
@@ -1231,7 +1246,6 @@ function renderPermissoesNoModal(){
     </div>
   `).join('');
   container.querySelectorAll('.perm-check').forEach(label => {
-    label.addEventListener('click', e => { if(e.target.tagName !== 'INPUT'){ e.preventDefault(); label.querySelector('input').click(); } });
     label.querySelector('input').addEventListener('change', atualizarEstadoCheckboxes);
   });
   atualizarEstadoCheckboxes();
@@ -1346,7 +1360,6 @@ function renderHome(){
   const osAprov = OS_DATA.filter(r => r.stage==='Aprovada').length;
   const osReav = OS_DATA.filter(r => r.stage==='Reavaliar').length;
   $('h-os-total').textContent = osTotal; $('h-os-pend').textContent = osPend; $('h-os-aprov').textContent = osAprov; $('h-os-reav').textContent = osReav;
-  // Melhoria #8: esconder card "Reavaliações" quando for 0
   const cardReav = $('h-os-reav-card');
   if(cardReav) cardReav.style.display = (osReav > 0) ? '' : 'none';
   const vTotal = VIATURAS.length;
@@ -1377,6 +1390,9 @@ document.querySelectorAll('#view-home .home-card').forEach(card => {
 const TAB_GERAL = 'geral';
 const TAB_MANUTENCAO = '__manutencao__';
 const MANUTENCAO_KEYWORDS = ['manuten'];
+const TIPO_VIATURA = 'Viatura';
+const TIPO_OUTRO = 'Outro';
+let MANUT_FILTRO_TIPO = '';
 const STAGES = [
   {key:'Pendente', label:'Pendente', color:'var(--Pendente)'},
   {key:'Aprovada', label:'Aprovada', color:'var(--Aprovada)'},
@@ -1522,7 +1538,6 @@ function renderGeralOS(eventoFiltro){
           ? `<select class="stage-select" data-id="${escapeAttr(r.id)}" data-os="${escapeAttr(r.os)}">${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}</select>`
           : `<span class="stage-static">${st.label}</span>`;
         const editBtn = podeEditar ? `<button class="edit-btn" data-edit-id="${escapeAttr(r.id)}" title="Editar OS ${escapeAttr(r.os)}">${pencilSvg}</button>` : '';
-        // Meta legível: OS destacado, depois "Não orçada" (claro) ou "Orçada · Qnt X", e empresa
         const metaParts = [];
         metaParts.push(`<span class="os-num">OS ${escapeHtml(r.os)}</span>`);
         if(r.orcamentos > 0){
@@ -1601,7 +1616,7 @@ function renderOS(){
   else renderGeralOS(activeTab);
 }
 
-/* ═══════ RELATÓRIO OS — MELHORIA #4 (KPIs) + #6 (dias vazios) ═══════ */
+/* ═══════ RELATÓRIO OS ═══════ */
 let repFiltroStatus  = '';
 let repFiltroOficina = '';
 let repFiltroOrcada  = '';
@@ -1659,7 +1674,6 @@ function repRenderTabela(){
   const dadosOriginais = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
   const dados = repAplicarFiltros(dadosOriginais);
 
-  // KPIs refletem os dados FILTRADOS
   repRenderKpis(dados);
 
   const filtros = [];
@@ -1701,7 +1715,7 @@ function abrirRelatorioOS(){
   repFiltroStatus = '';
   repFiltroOficina = '';
   repFiltroOrcada = '';
-  
+
   const dados = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
   repPopularSelects(dados);
 
@@ -1946,11 +1960,16 @@ function _classeStatusLocal(status, modoEvento){
 }
 function _htmlInputLocal(idCampo, valorAtual, sugestoes){
   const listaId = idCampo + '-list';
-  return `<input type="text" id="${idCampo}" value="${escapeAttr(valorAtual||'')}" placeholder="Ex.: Fix Car, Vidrocar, Arcom…" list="${listaId}" autocomplete="off" autocapitalize="characters">
-    <datalist id="${listaId}">
-      ${sugestoes.map(o => `<option value="${escapeAttr(o)}"></option>`).join('')}
-    </datalist>
-    <span class="local-hint">Digite ou escolha uma sugestão — texto livre permitido.</span>`;
+  const datalist = (sugestoes && sugestoes.length)
+    ? `<datalist id="${listaId}">${sugestoes.map(o => `<option value="${escapeAttr(o)}"></option>`).join('')}</datalist>`
+    : '';
+  const listAttr = (sugestoes && sugestoes.length) ? ` list="${listaId}"` : '';
+  const hint = (sugestoes && sugestoes.length)
+    ? 'Digite ou escolha uma sugestão — texto livre permitido.'
+    : 'Texto livre.';
+  return `<input type="text" id="${idCampo}" value="${escapeAttr(valorAtual||'')}" placeholder="Ex.: Fix Car, Vidrocar, Arcom…"${listAttr} autocomplete="off" autocapitalize="characters">
+    ${datalist}
+    <span class="local-hint">${hint}</span>`;
 }
 function _htmlSelectLocal(idCampo, valorAtual){
   const vAtual = String(valorAtual||'').trim().toUpperCase();
@@ -1970,9 +1989,13 @@ function _htmlSelectLocal(idCampo, valorAtual){
 function _htmlLocalDisabled(idCampo, valor){
   return `<input type="text" id="${idCampo}" value="${escapeAttr(valor)}" disabled><span class="local-hint">Definido automaticamente pelo status.</span>`;
 }
-function montarCampoLocal(wrapId, valorAtual, status, modoEvento){
+function montarCampoLocal(wrapId, valorAtual, status, modoEvento, tipo){
   const wrap = $(wrapId); if(!wrap) return;
   const idCampo = wrapId.replace('-wrap','');
+  if(tipo === TIPO_OUTRO){
+    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, []);
+    return;
+  }
   const classe = _classeStatusLocal(status, !!modoEvento);
   if(classe === 'manutencao' || classe === 'livre'){
     wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, LOCAIS_OFICINA);
@@ -1984,13 +2007,13 @@ function montarCampoLocal(wrapId, valorAtual, status, modoEvento){
     wrap.innerHTML = _htmlSelectLocal(idCampo, valorAtual);
   }
 }
-function trocarCampoLocal(wrapId, statusSelectId, modoEvento){
+function trocarCampoLocal(wrapId, statusSelectId, modoEvento, tipo){
   const sel = $(statusSelectId); const wrap = $(wrapId);
   if(!sel || !wrap) return;
   const inputAtual = wrap.querySelector('input, select');
   const valorAtual = inputAtual && !inputAtual.disabled ? inputAtual.value : (wrap.dataset.valor || '');
   wrap.dataset.valor = valorAtual;
-  montarCampoLocal(wrapId, valorAtual, sel.value, modoEvento);
+  montarCampoLocal(wrapId, valorAtual, sel.value, modoEvento, tipo);
 }
 function lerLocalForm(wrapId){
   const wrap = $(wrapId); if(!wrap) return '';
@@ -2009,7 +2032,6 @@ let sidebarMovExpanded = true;
 const DESFAZER_JANELA_MS = 30000;
 const _ultimoEventoAdicionado = {};
 let _desfazerTimer = null;
-// Melhoria #10: filtro de status no relatório de movimentação
 let manutRepStatusFiltro = '';
 
 function setSidebarMovExpanded(v){ sidebarMovExpanded = !!v; const sub = $('sidebarSubMov'); const parent = $('sidebarMovParent'); if(sub) sub.classList.toggle('open', sidebarMovExpanded); if(parent) parent.classList.toggle('expanded', sidebarMovExpanded); }
@@ -2048,7 +2070,7 @@ function classeEvento(tipo){
 
 async function loadDataManut(){
   const upd = $('manutUpdateStatus');
-  const CACHE_KEY_MANUT = 'deman_cache_manut_v5';
+  const CACHE_KEY_MANUT = 'deman_cache_manut_v6';
   const CACHE_TTL = 15 * 60 * 1000;
   try{
     const raw = sessionStorage.getItem(CACHE_KEY_MANUT);
@@ -2081,8 +2103,9 @@ async function loadDataManut(){
 function agruparPorProcesso(){
   const grupos = {};
   MANUT_EVENTOS.forEach(e => {
-    if(!grupos[e.id]) grupos[e.id] = { id: e.id, viatura: e.viatura, eventos: [] };
+    if(!grupos[e.id]) grupos[e.id] = { id: e.id, viatura: e.viatura, tipo: e.tipo || TIPO_VIATURA, eventos: [] };
     grupos[e.id].eventos.push(e);
+    if(e.tipo && e.tipo !== grupos[e.id].tipo) grupos[e.id].tipo = e.tipo;
   });
   Object.keys(grupos).forEach(id => {
     const g = grupos[id];
@@ -2096,6 +2119,7 @@ function agruparPorProcesso(){
     g.finalizacao = g.eventos.find(e => normalizeStr(e.evento).indexOf('finaliz') !== -1) || null;
     g.ultimo = g.eventos[g.eventos.length - 1];
     g.dias = g.finalizacao ? extrairDiasNumericos(g.finalizacao.dias) : 0;
+    if(g.entrada && g.entrada.tipo) g.tipo = g.entrada.tipo;
   });
   return grupos;
 }
@@ -2136,6 +2160,10 @@ function processosFiltrados(){
   const q = normalizeStr($('manutSearch').value);
   const grupos = agruparPorProcesso();
   let ids = Object.keys(grupos);
+
+  if(MANUT_FILTRO_TIPO){
+    ids = ids.filter(id => (grupos[id].tipo || TIPO_VIATURA) === MANUT_FILTRO_TIPO);
+  }
 
   ids.sort((a, b) => {
     const ga = grupos[a], gb = grupos[b];
@@ -2186,6 +2214,9 @@ function renderManutGrid(){
     const ultimoStatusClasse = statusClasseManut(p.ultimo ? p.ultimo.status : '');
     const statusLabel = statusLabelManut(p.ultimo ? p.ultimo.status : '');
     const localAtual = p.ultimo ? escapeHtml(p.ultimo.local || '—') : '—';
+    const tipoProc = p.tipo || TIPO_VIATURA;
+    const tipoClasse = tipoProc === TIPO_OUTRO ? 'outro' : 'viatura';
+    const badgeTipo = `<span class="manut-proc-tipo ${tipoClasse}">${escapeHtml(tipoProc)}</span>`;
 
     const eventosHtml = p.eventos.map(e => {
       const cls = classeEvento(e.evento);
@@ -2227,7 +2258,10 @@ function renderManutGrid(){
     return `<div class="manut-proc-card ${classe}">
       <div class="manut-proc-head">
         <div class="manut-proc-head-left">
-          <div class="manut-proc-viatura">${escapeHtml(p.viatura)}</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span class="manut-proc-viatura">${escapeHtml(p.viatura)}</span>
+            ${badgeTipo}
+          </div>
           <div class="manut-proc-id">${escapeHtml(p.id)}</div>
         </div>
         <div class="manut-proc-head-right">
@@ -2276,7 +2310,7 @@ function renderManutGrid(){
       abrirWhatsApp(msg);
     });
   });
-     container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
+  container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
       if(!confirm('Desfazer o último evento de ' + p.id + '?')) return;
@@ -2285,7 +2319,7 @@ function renderManutGrid(){
       btn.disabled = false;
       if(!r.ok){ alert('Erro: ' + r.error); return; }
       delete _ultimoEventoAdicionado[p.id];
-      try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+      try{ sessionStorage.removeItem('deman_cache_manut_v6'); }catch(e){}
       await loadDataManut();
     });
   });
@@ -2302,17 +2336,18 @@ function renderManutGrid(){
       const r = await apiManut('removerProcesso', { id: p.id });
       btn.disabled = false;
       if(!r.ok){ alert('Erro: ' + r.error); return; }
-      try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+      try{ sessionStorage.removeItem('deman_cache_manut_v6'); }catch(e){}
       await loadDataManut();
     });
   });
 }
+
 function renderManut(){
   if(activeView !== 'manutencao') return;
   renderSummaryManut();
   renderManutGrid();
   const clearBtn = $('manutClearFilterBtn');
-  if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas') ? 'inline-block' : 'none';
+  if(clearBtn) clearBtn.style.display = (MANUT_FILTRO_STATUS !== 'todas' || MANUT_FILTRO_TIPO) ? 'inline-block' : 'none';
 }
 
 function showManutTab(name){
@@ -2323,7 +2358,7 @@ function showManutTab(name){
   $('manutPanel-registros').classList.toggle('active', name === 'registros');
   $('manutPanel-novo').classList.toggle('active', name === 'novo');
   setSidebarMovExpanded(true);
-  if(name === 'novo' && modoManutForm === 'criar') setTimeout(() => $('mm-viatura').focus(), 60);
+  if(name === 'novo' && modoManutForm === 'criar') setTimeout(() => $('mm-tipo').focus(), 60);
 }
 
 function setFormModo(modo){
@@ -2334,7 +2369,7 @@ function setFormModo(modo){
 
   if(modo === 'criar'){
     $('manutFormTitle').textContent = '🛠 Nova entrada';
-    $('manutFormHelp').innerHTML = 'Ao salvar, um processo com ID único será criado. Depois você pode adicionar eventos e finalizar.';
+    $('manutFormHelp').innerHTML = 'Escolha o tipo (Viatura ou Outro) e preencha os dados. Ao salvar, um processo com ID único será criado.';
     $('procInfoBox').style.display = 'none';
     $('mm-delete').style.display = 'none';
     $('mm-save').textContent = 'Criar processo';
@@ -2354,9 +2389,12 @@ function setFormModo(modo){
 function preencherProcInfoBox(p){
   const inf = p.entrada ? p.entrada.informante : '';
   const det = p.entrada ? p.entrada.detalhes : '';
+  const tipo = p.tipo || TIPO_VIATURA;
+  const labelItem = tipo === TIPO_OUTRO ? 'Item' : 'Viatura';
   $('procInfoBox').innerHTML = `
+    <div class="row"><span>Tipo</span><b>${escapeHtml(tipo)}</b></div>
     <div class="row"><span>Processo</span><b>${escapeHtml(p.id)}</b></div>
-    <div class="row"><span>Viatura</span><b>${escapeHtml(p.viatura)}</b></div>
+    <div class="row"><span>${labelItem}</span><b>${escapeHtml(p.viatura)}</b></div>
     <div class="row"><span>Entrada</span><b>${escapeHtml(p.entrada ? p.entrada.data : '—')}</b></div>
     <div class="row"><span>Local entrada</span><b>${escapeHtml(p.entrada ? p.entrada.local : '—')}</b></div>
     <div class="row"><span>Informante</span><b>${escapeHtml(inf || '—')}</b></div>
@@ -2370,14 +2408,43 @@ function agoraDatetimeLocal(){
   return `${agora.getFullYear()}-${pad(agora.getMonth()+1)}-${pad(agora.getDate())}T${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
 }
 
+function atualizarFormPorTipo(){
+  const tipo = $('mm-tipo').value;
+  const lblV = $('mm-viatura-label');
+  const inpV = $('mm-viatura');
+  const wrapLocal = $('mm-local-wrap');
+  const lblLocal = wrapLocal ? wrapLocal.closest('label') : null;
+
+  if(!tipo){
+    if(lblV) lblV.childNodes[0].nodeValue = 'Viatura';
+    if(inpV) inpV.placeholder = 'ex: ABT-17';
+    if(lblLocal){ lblLocal.childNodes[0].nodeValue = 'Local'; }
+    return;
+  }
+
+  if(tipo === TIPO_OUTRO){
+    if(lblV) lblV.childNodes[0].nodeValue = 'Descrição do item';
+    if(inpV) inpV.placeholder = 'ex: Cilindro de ar, Bomba, Peça X…';
+    montarCampoLocal('mm-local-wrap', lerLocalForm('mm-local-wrap'), $('mm-status').value, false, TIPO_OUTRO);
+  } else {
+    if(lblV) lblV.childNodes[0].nodeValue = 'Viatura';
+    if(inpV) inpV.placeholder = 'ex: ABT-17';
+    if(lblLocal){ lblLocal.childNodes[0].nodeValue = 'Local'; }
+    montarCampoLocal('mm-local-wrap', lerLocalForm('mm-local-wrap'), $('mm-status').value, false);
+  }
+}
+
 function limparFormManut(){
   processoAtual = null;
   setFormModo('criar');
 
+  $('mm-tipo').value = '';
+  $('mm-tipo').disabled = false;
   $('mm-viatura').value = ''; $('mm-viatura').disabled = false;
   $('mm-status').value = 'Em Manutenção'; $('mm-status').disabled = false;
   $('mm-entrada').value = agoraDatetimeLocal(); $('mm-entrada').disabled = false;
   montarCampoLocal('mm-local-wrap', '', $('mm-status').value, false);
+  atualizarFormPorTipo();
   $('mm-informante').value = ''; $('mm-informante').disabled = false;
   $('mm-detalhes').value = ''; $('mm-detalhes').disabled = false;
 
@@ -2403,10 +2470,11 @@ function abrirFormEvento(p){
   processoAtual = p;
   setFormModo('evento');
   preencherProcInfoBox(p);
+  const tipoProc = p.tipo || TIPO_VIATURA;
   $('me-tipo').value = 'Movimentação';
   $('me-data').value = agoraDatetimeLocal();
   $('me-status').value = '';
-  montarCampoLocal('me-local-wrap', p.ultimo ? p.ultimo.local : '', $('me-status').value, true);
+  montarCampoLocal('me-local-wrap', p.ultimo ? p.ultimo.local : '', $('me-status').value, true, tipoProc);
   $('me-informante').value = '';
   $('me-detalhes').value = '';
   $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
@@ -2419,9 +2487,10 @@ function abrirFormFinalizar(p){
   processoAtual = p;
   setFormModo('finalizar');
   preencherProcInfoBox(p);
+  const tipoProc = p.tipo || TIPO_VIATURA;
   $('mf-data').value = agoraDatetimeLocal();
   $('mf-status').value = 'Ativa';
-  montarCampoLocal('mf-local-wrap', '', $('mf-status').value, false);
+  montarCampoLocal('mf-local-wrap', '', $('mf-status').value, false, tipoProc);
   $('mf-informante').value = p.entrada ? p.entrada.informante : '';
   $('mf-detalhes').value = '';
   $('mm-error').style.display = 'none'; $('mm-error').textContent = '';
@@ -2432,7 +2501,7 @@ function abrirFormFinalizar(p){
 function cancelarFormManut(){
   let temDados = false;
   if(modoManutForm === 'criar'){
-    temDados = $('mm-viatura').value.trim() !== '' || lerLocalForm('mm-local-wrap') !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
+    temDados = $('mm-tipo').value !== '' || $('mm-viatura').value.trim() !== '' || lerLocalForm('mm-local-wrap') !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
   } else if(modoManutForm === 'evento'){
     temDados = $('me-detalhes').value.trim() !== '' || $('me-informante').value.trim() !== '';
   } else if(modoManutForm === 'finalizar'){
@@ -2451,17 +2520,22 @@ async function salvarManut(){
 
 async function salvarCriarManut(){
   const err = $('mm-error'); const btn = $('mm-save'); err.style.display = 'none'; err.textContent = '';
+  const tipo       = $('mm-tipo').value;
   const viatura    = $('mm-viatura').value.trim().toUpperCase();
   const status     = $('mm-status').value;
   const entrada    = $('mm-entrada').value;
   const local      = lerLocalForm('mm-local-wrap');
   const informante = $('mm-informante').value.trim();
   const detalhes   = $('mm-detalhes').value.trim();
-  if(!viatura){ err.textContent = 'Informe a viatura.'; err.style.display='block'; return; }
+  if(!tipo){ err.textContent = 'Selecione o tipo (Viatura ou Outro).'; err.style.display='block'; return; }
+  if(!viatura){
+    err.textContent = tipo === TIPO_OUTRO ? 'Informe a descrição do item.' : 'Informe a viatura.';
+    err.style.display='block'; return;
+  }
   if(!entrada){ err.textContent = 'Informe a data de entrada.'; err.style.display='block'; return; }
   if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
   btn.disabled = true; btn.textContent = 'Salvando…';
-  const r = await apiManut('criarProcesso', { viatura, status, entrada, local, informante, detalhes });
+  const r = await apiManut('criarProcesso', { tipo, viatura, status, entrada, local, informante, detalhes });
   btn.disabled = false; btn.textContent = 'Criar processo';
   if(!r.ok){
     err.textContent = r.error || 'Erro ao salvar.';
@@ -2474,22 +2548,23 @@ async function salvarCriarManut(){
     }
     return;
   }
-  try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+  try{ sessionStorage.removeItem('deman_cache_manut_v6'); }catch(e){}
   await loadDataManut();
 
   const grupos = agruparPorProcesso();
   const procCriado = grupos[r.id];
   const mensagem = procCriado
     ? montarMensagemEntrada(procCriado)
-    : montarMensagemEntrada({ id: r.id, viatura, status, entrada, local, informante, detalhes });
+    : montarMensagemEntrada({ id: r.id, viatura, status, entrada, local, informante, detalhes, tipo });
 
   const entradaFmt = toDatetimeLocalManut(entrada);
   const entradaBR = entradaFmt ? entradaFmt.split('T')[0].split('-').reverse().join('/') : '—';
   mostrarSucesso({
     titulo: 'Processo criado!', sub: 'ID: ' + r.id,
     resumo: [
+      ['Tipo', tipo],
       ['ID', r.id],
-      ['Viatura', viatura],
+      [tipo === TIPO_OUTRO ? 'Item' : 'Viatura', viatura],
       ['Status', statusLabelManut(status)],
       ['Local', local || '—'],
       ['Entrada', entradaBR],
@@ -2519,7 +2594,7 @@ async function salvarEventoManut(){
   btn.disabled = false; btn.textContent = 'Salvar evento';
   if(!r.ok){ err.textContent = r.error || 'Erro ao salvar.'; err.style.display = 'block'; return; }
   _ultimoEventoAdicionado[procId] = Date.now();
-  try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+  try{ sessionStorage.removeItem('deman_cache_manut_v6'); }catch(e){}
   await loadDataManut();
   limparFormManut();
   showManutTab('registros');
@@ -2543,7 +2618,7 @@ async function salvarFinalizarManut(){
   });
   btn.disabled = false; btn.textContent = 'Finalizar';
   if(!r.ok){ err.textContent = r.error || 'Erro ao finalizar.'; err.style.display = 'block'; return; }
-  try{ sessionStorage.removeItem('deman_cache_manut_v5'); }catch(e){}
+  try{ sessionStorage.removeItem('deman_cache_manut_v6'); }catch(e){}
   await loadDataManut();
 
   const grupos = agruparPorProcesso();
@@ -2551,7 +2626,7 @@ async function salvarFinalizarManut(){
   const mensagem = procAtualizado
     ? montarMensagemFinalizacao(procAtualizado)
     : montarMensagemFinalizacao({
-        id: procId, viatura: processoAtual.viatura, status: statusFinal,
+        id: procId, viatura: processoAtual.viatura, status: statusFinal, tipo: processoAtual.tipo,
         entrada: processoAtual.entrada ? processoAtual.entrada.data : '',
         informanteEntrada: processoAtual.entrada ? processoAtual.entrada.informante : '',
         saida: dataFim.split('T')[0].split('-').reverse().join('/'),
@@ -2560,7 +2635,6 @@ async function salvarFinalizarManut(){
         eventos: processoAtual.eventos || []
       });
 
-  const entradaData = processoAtual.entrada ? processoAtual.entrada.data : '—';
   const dataFimBR = dataFim.split('T')[0].split('-').reverse().join('/');
   const dias = r.dias != null ? r.dias : 0;
   const localFinal = r.localUsado || local || '—';
@@ -2569,8 +2643,9 @@ async function salvarFinalizarManut(){
   mostrarSucesso({
     titulo: 'Processo finalizado!', sub: 'ID: ' + procId,
     resumo: [
+      ['Tipo', processoAtual.tipo || TIPO_VIATURA],
       ['ID', procId],
-      ['Viatura', processoAtual.viatura],
+      [(processoAtual.tipo === TIPO_OUTRO) ? 'Item' : 'Viatura', processoAtual.viatura],
       ['Status final', statusLabelManut(statusFinal)],
       ['Local', localFinal + origemLocal],
       ['Saída', dataFimBR],
@@ -2642,13 +2717,16 @@ function montarBlocoEvento(ev){
 
 function montarMensagemEntrada(p){
   const proc = normalizarProcessoParaMensagem(p);
+  const tipo = p.tipo || TIPO_VIATURA;
+  const labelItem = tipo === TIPO_OUTRO ? 'Item' : 'Viatura';
   const linhas = [];
 
   if(proc.eventos.length === 1){
     const ev = proc.eventos[0];
     linhas.push('🛠 *NOVA MOVIMENTAÇÃO* · ' + proc.id);
     linhas.push('');
-    linhas.push('*Viatura:* ' + proc.viatura);
+    linhas.push('*Tipo:* ' + tipo);
+    linhas.push('*' + labelItem + ':* ' + proc.viatura);
     linhas.push('*Status:* ' + statusLabelManut(ev.status || proc.status));
     linhas.push('*Local:* ' + (ev.local || '—'));
     linhas.push('*Entrada:* ' + (ev.data || '—'));
@@ -2661,7 +2739,8 @@ function montarMensagemEntrada(p){
   } else {
     linhas.push('🛠 *NOVA MOVIMENTAÇÃO* · ' + proc.id);
     linhas.push('');
-    linhas.push('*Viatura:* ' + proc.viatura);
+    linhas.push('*Tipo:* ' + tipo);
+    linhas.push('*' + labelItem + ':* ' + proc.viatura);
     linhas.push('*Status:* ' + statusLabelManut(proc.status));
     linhas.push('*Local:* ' + (proc.local || '—'));
     linhas.push('*Entrada:* ' + (proc.entrada || '—'));
@@ -2679,10 +2758,13 @@ function montarMensagemEntrada(p){
 
 function montarMensagemFinalizacao(p){
   const proc = normalizarProcessoParaMensagem(p);
+  const tipo = p.tipo || TIPO_VIATURA;
+  const labelItem = tipo === TIPO_OUTRO ? 'Item' : 'Viatura';
   const linhas = [];
   linhas.push('✅ *FINALIZAÇÃO DA MOVIMENTAÇÃO* · ' + proc.id);
   linhas.push('');
-  linhas.push('*Viatura:* ' + proc.viatura);
+  linhas.push('*Tipo:* ' + tipo);
+  linhas.push('*' + labelItem + ':* ' + proc.viatura);
   linhas.push('*Status final:* ' + statusLabelManut(proc.status));
   linhas.push('*Local final:* ' + (proc.local || '—'));
   linhas.push('*Entrada:* ' + (proc.entrada || '—'));
@@ -2714,7 +2796,7 @@ function fecharSucesso(){
   showManutTab('registros');
 }
 
-/* ═══════ RELATÓRIO DE MOVIMENTAÇÃO — com filtro de status (Melhoria #10) e dias vazios (Melhoria #6) ═══════ */
+/* ═══════ RELATÓRIO DE MOVIMENTAÇÃO ═══════ */
 function getMesesDisponiveisManut(){
   const set = new Set();
   MANUT_EVENTOS.forEach(e => {
@@ -2764,7 +2846,6 @@ function renderRelatorioManutDetalhado(){
     });
   }
 
-  // Melhoria #10: filtro de status
   if(manutRepStatusFiltro){
     const alvoClasse = statusClasseManut(manutRepStatusFiltro);
     procs = procs.filter(p => statusClasseManut(p.ultimo ? p.ultimo.status : '') === alvoClasse);
@@ -2781,7 +2862,7 @@ function renderRelatorioManutDetalhado(){
   $('manutReportFilters').innerHTML = '<b>' + escapeHtml(filtroTxt) + '</b>' + statusTxt + ' · <b>Processos:</b> ' + procs.length;
 
   $('manutReportBody').innerHTML = procs.length === 0
-    ? '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum processo neste período</td></tr>'
+    ? '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum processo neste período</td></tr>'
     : procs.map(p => {
         const cor = corStatus(statusClasseManut(p.ultimo ? p.ultimo.status : ''));
         const entrada = p.entrada ? p.entrada.data : '—';
@@ -2791,8 +2872,11 @@ function renderRelatorioManutDetalhado(){
         const diasTxt = temDias ? p.dias + 'd' : '—';
         const diasClass = temDias ? 'dias' : 'dias vazio';
         const inf = p.finalizacao ? p.finalizacao.informante : (p.entrada ? p.entrada.informante : '—');
+        const tipoProc = p.tipo || TIPO_VIATURA;
+        const tipoClass = tipoProc === TIPO_OUTRO ? 'outro' : 'viatura';
         return `<tr>
           <td class="id">${escapeHtml(p.id)}</td>
+          <td><span class="manut-proc-tipo ${tipoClass}">${escapeHtml(tipoProc)}</span></td>
           <td class="v">${escapeHtml(p.viatura)}</td>
           <td class="date">${escapeHtml(entrada)}</td>
           <td class="date">${escapeHtml(saida)}</td>
@@ -3009,12 +3093,14 @@ $('reportModal').addEventListener('click', e => {
 $('viatSearch').addEventListener('input', debounce(() => renderViaturas(), 180));
 $('viatClearFilterBtn').addEventListener('click', () => { activeFilter = 'todas'; renderViaturas(); });
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
-$('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; renderManut(); });
+$('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; MANUT_FILTRO_TIPO = ''; $('manutFiltroTipo').value = ''; renderManut(); });
+$('manutFiltroTipo').addEventListener('change', e => { MANUT_FILTRO_TIPO = e.target.value; renderManut(); });
+$('mm-tipo').addEventListener('change', atualizarFormPorTipo);
 $('mm-save').addEventListener('click', salvarManut);
 $('mm-cancel').addEventListener('click', cancelarFormManut);
 $('mm-status').addEventListener('change', () => trocarCampoLocal('mm-local-wrap','mm-status',false));
-$('me-status').addEventListener('change', () => trocarCampoLocal('me-local-wrap','me-status',true));
-$('mf-status').addEventListener('change', () => trocarCampoLocal('mf-local-wrap','mf-status',false));
+$('me-status').addEventListener('change', () => trocarCampoLocal('me-local-wrap','me-status',true, processoAtual ? processoAtual.tipo : undefined));
+$('mf-status').addEventListener('change', () => trocarCampoLocal('mf-local-wrap','mf-status',false, processoAtual ? processoAtual.tipo : undefined));
 $('manutReportBtn').addEventListener('click', () => { if(!temPermissao('ver_manutencao')){ alert('Sem permissão.'); return; } abrirRelatorioManut(); });
 $('manutReportClose').addEventListener('click', () => {
   document.body.classList.remove('relatorio-aberto');
@@ -3027,7 +3113,6 @@ $('manutReportModal').addEventListener('click', e => {
     $('manutReportModal').style.display = 'none';
   }
 });
-// Melhoria #10: listener do filtro de status
 const selStatusManutRep = $('manutReportStatus');
 if(selStatusManutRep){
   selStatusManutRep.addEventListener('change', () => {
