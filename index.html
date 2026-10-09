@@ -2276,7 +2276,7 @@ function renderManutGrid(){
       abrirWhatsApp(msg);
     });
   });
-   container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
+     container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
       if(!confirm('Desfazer o último evento de ' + p.id + '?')) return;
@@ -2307,7 +2307,6 @@ function renderManutGrid(){
     });
   });
 }
-
 function renderManut(){
   if(activeView !== 'manutencao') return;
   renderSummaryManut();
