@@ -999,7 +999,8 @@ const PERMISSOES_LISTA = [
   { key:'ver_manutencao', label:'Ver Movimentação', grupo:'Movimentação' },
   { key:'manut_editar', label:'Editar movimentação (tudo)', grupo:'Movimentação' },
   { key:'manut_criar', label:'· Criar processo', grupo:'Movimentação' },
-  { key:'manut_excluir', label:'· Excluir processo', grupo:'Movimentação' },
+  { key:'manut_excluir', label:'· Excluir processo (aberto)', grupo:'Movimentação' },
+  { key:'manut_excluir_fechado', label:'· Excluir processo finalizado', grupo:'Movimentação' },
   { key:'admin_usuarios', label:'Gerenciar usuários (tudo)', grupo:'Usuários' },
   { key:'usuarios_criar', label:'· Criar contas', grupo:'Usuários' },
   { key:'usuarios_editar', label:'· Editar contas', grupo:'Usuários' },
@@ -1007,7 +1008,7 @@ const PERMISSOES_LISTA = [
 ];
 const PERM_GRUPOS = {
   viat_mudar:'viat_gerenciar', viat_permutar:'viat_gerenciar', viat_baixar:'viat_gerenciar', viat_reativar:'viat_gerenciar',
-  manut_criar:'manut_editar', manut_excluir:'manut_editar',
+  manut_criar:'manut_editar', manut_excluir:'manut_editar', manut_excluir_fechado:'manut_editar',
   usuarios_criar:'admin_usuarios', usuarios_editar:'admin_usuarios', usuarios_resetar:'admin_usuarios'
 };
 
@@ -2169,7 +2170,8 @@ function renderManutGrid(){
   const container = $('manutContent');
   const procs = processosFiltrados();
   const podeEditar = temPermissao('manut_editar');
-  const podeExcluir = temPermissao('manut_excluir');
+  const podeExcluirAberto   = temPermissao('manut_excluir');
+  const podeExcluirFechado  = temPermissao('manut_excluir_fechado');
   const podeCriar = temPermissao('manut_criar');
 
   if(procs.length === 0){
@@ -2213,8 +2215,9 @@ function renderManutGrid(){
     if(p.aberto && p.eventos.length > 1 && podeEditar && dentroJanela){
       acoes += `<button class="btn ghost" data-action="desfazer" data-id="${escapeAttr(p.id)}" title="Desfazer último evento">↩</button>`;
     }
-    if(podeExcluir){
-      acoes += `<button class="btn danger" data-action="excluir" data-id="${escapeAttr(p.id)}" title="Excluir processo">🗑</button>`;
+    const podeApagarEste = p.aberto ? podeExcluirAberto : podeExcluirFechado;
+    if(podeApagarEste){
+       acoes += `<button class="btn danger" data-action="excluir" data-id="${escapeAttr(p.id)}" title="Excluir processo">🗑</button>`;
     }
 
     const badge = p.aberto ? '<span class="manut-proc-badge aberto">🟡 Aberto</span>' : '<span class="manut-proc-badge fechado">✅ Fechado</span>';
@@ -2286,9 +2289,8 @@ function renderManutGrid(){
       await loadDataManut();
     });
   });
-  container.querySelectorAll('[data-action="excluir"]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
+  const podeAgora = p.aberto ? temPermissao('manut_excluir') : temPermissao('manut_excluir_fechado');
+  if(!podeAgora){ alert('Sem permissão para excluir este processo.'); return; }
       if(!confirm('Excluir o processo ' + p.id + ' (' + p.eventos.length + ' eventos)?')) return;
       btn.disabled = true;
       const r = await apiManut('removerProcesso', { id: p.id });
