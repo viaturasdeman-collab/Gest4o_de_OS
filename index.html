@@ -2276,7 +2276,7 @@ function renderManutGrid(){
       abrirWhatsApp(msg);
     });
   });
-  container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
+   container.querySelectorAll('[data-action="desfazer"]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
       if(!confirm('Desfazer o último evento de ' + p.id + '?')) return;
@@ -2289,9 +2289,15 @@ function renderManutGrid(){
       await loadDataManut();
     });
   });
-  const podeAgora = p.aberto ? temPermissao('manut_excluir') : temPermissao('manut_excluir_fechado');
-  if(!podeAgora){ alert('Sem permissão para excluir este processo.'); return; }
-      if(!confirm('Excluir o processo ' + p.id + ' (' + p.eventos.length + ' eventos)?')) return;
+  container.querySelectorAll('[data-action="excluir"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const p = procs.find(x => x.id === btn.dataset.id); if(!p) return;
+      const podeAgora = p.aberto ? temPermissao('manut_excluir') : temPermissao('manut_excluir_fechado');
+      if(!podeAgora){ alert('Sem permissão para excluir este processo.'); return; }
+      const aviso = p.aberto
+        ? 'Excluir o processo ' + p.id + ' (' + p.eventos.length + ' eventos)?'
+        : 'Excluir o processo FINALIZADO ' + p.id + ' (' + p.eventos.length + ' eventos)?\nEsta ação apaga o histórico.';
+      if(!confirm(aviso)) return;
       btn.disabled = true;
       const r = await apiManut('removerProcesso', { id: p.id });
       btn.disabled = false;
