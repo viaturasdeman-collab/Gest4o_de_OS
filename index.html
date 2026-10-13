@@ -726,6 +726,12 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
         <select id="af-stage"></select>
         <select id="af-orcada"><option value="Não">Não</option><option value="Sim">Sim</option></select>
         <input type="text" id="af-qnt" placeholder="Qnt">
+        <select id="af-distribuida" style="display:none;">
+          <option value="">Distribuída?</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+        <input type="text" id="af-qtd-dist" placeholder="Qtd distribuições" style="display:none;" inputmode="numeric">
         <input type="text" id="af-note" placeholder="Observação">
         <button class="btn primary" id="af-save">Salvar</button>
         <button class="btn ghost" id="af-cancel">Cancelar</button>
@@ -1057,6 +1063,16 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <label>Estágio<select id="ed-stage"></select></label>
       <label>Orçada<select id="ed-orcada"><option value="Não">Não</option><option value="Sim">Sim</option></select></label>
       <label>Qnt<input type="text" id="ed-qnt"></label>
+      <label id="ed-dist-label" style="display:none;">Distribuída?
+        <select id="ed-distribuida">
+          <option value="">— Selecione —</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </label>
+      <label id="ed-qtd-dist-label" style="display:none;">Qtd distribuições
+        <input type="text" id="ed-qtd-dist" inputmode="numeric">
+      </label>
       <label class="full">Observação<input type="text" id="ed-note"></label>
     </div>
     <div class="modal-actions">
@@ -1625,12 +1641,14 @@ function mapRowsToData(rows){
     const empresa = findField(row,['oficina','empresa']) || row['Oficina/Empresa'] || '';
     const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
+    const distribuida = findField(row,['distribuida','distribuída']) || row['Distribuída'] || row['Distribuida'] || '';
+    const qtdDist = findField(row,['qtd distrib','quantidade distrib','distribuicoes','distribuições','qtd dist']) || row['Qtd Distribuições'] || '';
     const alteradoPor = findField(row,['alterado por']) || row['Alterado por'] || '';
     const ultimaAlt = findField(row,['ultima alteracao','última alteração','ultima alteração','última alteracao']) || row['Última alteração'] || '';
     const stage = parseStageOS(status);
     const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
     const flags = (stage==='Pendente') ? extractPendenteFlags(status, note) : {tabela:false, justificativa:false};
-    return { id:'sheet-'+i, v:normalizeViatura(viatura), os:(osField||'').toString().trim(), category:categoriaLabel, catKey, stage, orcamentos, tabela:flags.tabela, justificativa:flags.justificativa, empresa:(empresa||'').toString().trim(), note:(note||'').toString().trim(), alteradoPor:(alteradoPor||'').toString().trim(), ultimaAlt:(ultimaAlt||'').toString().trim() };
+    return { id:'sheet-'+i, v:normalizeViatura(viatura), os:(osField||'').toString().trim(), category:categoriaLabel, catKey, stage, orcamentos, distribuida:(distribuida||'').toString().trim(), qtdDist:(qtdDist||'').toString().trim(), tabela:flags.tabela, justificativa:flags.justificativa, empresa:(empresa||'').toString().trim(), note:(note||'').toString().trim(), alteradoPor:(alteradoPor||'').toString().trim(), ultimaAlt:(ultimaAlt||'').toString().trim() };
   }).filter(r=>r.v);
 }
 async function fetchCsv(url){ const response = await fetch(url); if(!response.ok) throw new Error('HTTP '+response.status); return await response.text(); }
@@ -1731,6 +1749,7 @@ function renderGeralOS(eventoFiltro){
         } else {
           metaParts.push(`<span>Não orçada</span>`);
         }
+        if(r.distribuida) metaParts.push(`<span>Distribuída: ${escapeHtml(r.distribuida)}${r.qtdDist ? ' ('+escapeHtml(r.qtdDist)+')' : ''}</span>`);
         if(r.empresa) metaParts.push(`<span>${escapeHtml(r.empresa)}</span>`);
         const metaHtml = metaParts.join('<span class="sep">·</span>');
         return `<div class="svc-row ${orcClass}" style="border-left-color:${st.color}">
@@ -1943,6 +1962,36 @@ function abrirRelatorioOS(){
 }
 
 const edStageSel = $('ed-stage'); edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+
+/* ─── Cascata: Orçada → Distribuída → Qtd distribuições ─── */
+function atualizarCascataOrcada(prefixo){
+  const selOrc = $(prefixo + '-orcada');
+  if(!selOrc) return;
+  const orcadaSim = selOrc.value === 'Sim';
+
+  const selDist = $(prefixo + '-distribuida');
+  if(selDist){
+    selDist.style.display = orcadaSim ? '' : 'none';
+    if(!orcadaSim) selDist.value = '';
+  }
+  const lblDist = $(prefixo + '-dist-label');
+  if(lblDist) lblDist.style.display = orcadaSim ? '' : 'none';
+
+  const distSim = selDist && selDist.value === 'Sim';
+  const inpQtd = $(prefixo + '-qtd-dist');
+  if(inpQtd){
+    inpQtd.style.display = distSim ? '' : 'none';
+    if(!distSim) inpQtd.value = '';
+  }
+  const lblQtd = $(prefixo + '-qtd-dist-label');
+  if(lblQtd) lblQtd.style.display = distSim ? '' : 'none';
+}
+
+$('af-orcada').addEventListener('change', () => atualizarCascataOrcada('af'));
+$('af-distribuida').addEventListener('change', () => atualizarCascataOrcada('af'));
+$('ed-orcada').addEventListener('change', () => atualizarCascataOrcada('ed'));
+$('ed-distribuida').addEventListener('change', () => atualizarCascataOrcada('ed'));
+
 function openEditModal(recordId){
   if(!temPermissao('os_editar')){ alert('Você não tem permissão para editar.'); return; }
   const rec = OS_DATA.find(r => r.id === recordId); if(!rec) return;
@@ -1950,7 +1999,10 @@ function openEditModal(recordId){
   $('ed-v').value = rec.v; $('ed-os').value = rec.os; $('ed-cat').value = rec.category;
   $('ed-empresa').value = rec.empresa || ''; $('ed-stage').value = rec.stage;
   $('ed-orcada').value = rec.orcamentos > 0 ? 'Sim' : 'Não'; $('ed-qnt').value = rec.orcamentos > 0 ? rec.orcamentos : '';
+  $('ed-distribuida').value = rec.distribuida || '';
+  $('ed-qtd-dist').value = rec.qtdDist || '';
   $('ed-note').value = rec.note || '';
+  atualizarCascataOrcada('ed');
   $('editModal').style.display = 'flex'; $('ed-v').focus();
 }
 function closeEditModal(){ editingRecordId = null; $('editModal').style.display = 'none'; }
@@ -3698,12 +3750,18 @@ $('af-save').addEventListener('click', async () => {
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
   let orcamentos = 0;
   if(orcada === 'Sim'){ orcamentos = parseInt(qntRaw,10); if(isNaN(orcamentos) || orcamentos < 1) orcamentos = 1; if(orcamentos > 5) orcamentos = 5; }
+  const distribuida = (orcada === 'Sim') ? $('af-distribuida').value : '';
+  let qtdDist = '';
+  if(distribuida === 'Sim'){
+    const qd = parseInt($('af-qtd-dist').value.trim(), 10);
+    if(!isNaN(qd) && qd > 0) qtdDist = String(qd);
+  }
   if(OS_DATA.some(r => String(r.os).trim().toLowerCase() === os.toLowerCase())){ alert(`Já existe uma OS com o número ${os}.`); return; }
-  const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey:slugify(catLabel), stage, orcamentos, tabela:false, justificativa:false, empresa, note, alteradoPor:'', ultimaAlt:'' };
+  const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey:slugify(catLabel), stage, orcamentos, distribuida, qtdDist, tabela:false, justificativa:false, empresa, note, alteradoPor:'', ultimaAlt:'' };
   OS_DATA.push(newRecord); renderOS();
-  const ok = await createOSInSheet({ categoria:catLabel, viatura:v, os, status:stage, orcada, qnt:orcamentos>0?String(orcamentos):'', oficina:empresa, observacoes:note });
+  const ok = await createOSInSheet({ categoria:catLabel, viatura:v, os, status:stage, orcada, qnt:orcamentos>0?String(orcamentos):'', distribuida, qtdDist, oficina:empresa, observacoes:note });
   if(!ok){ const idx = OS_DATA.indexOf(newRecord); if(idx > -1) OS_DATA.splice(idx,1); alert('A OS não pôde ser adicionada.'); }
-  else { ['af-v','af-os','af-cat','af-note','af-empresa','af-qnt'].forEach(id => $(id).value = ''); $('af-orcada').value = 'Não'; $('addForm').classList.remove('open'); }
+  else { ['af-v','af-os','af-cat','af-note','af-empresa','af-qnt','af-qtd-dist'].forEach(id => $(id).value = ''); $('af-orcada').value = 'Não'; $('af-distribuida').value = ''; $('addForm').classList.remove('open'); atualizarCascataOrcada('af'); }
   renderOS();
 });
 $('csvFileInput').addEventListener('change', e => {
@@ -3724,12 +3782,19 @@ $('ed-save').addEventListener('click', async () => {
   if(!newV || !newOs){ alert('Preencha a viatura e o número da OS.'); return; }
   let newOrcamentos = 0;
   if(newOrcada === 'Sim'){ newOrcamentos = parseInt(newQntRaw, 10); if(isNaN(newOrcamentos) || newOrcamentos < 1) newOrcamentos = 1; if(newOrcamentos > 5) newOrcamentos = 5; }
-  const backup = { v:rec.v, os:rec.os, category:rec.category, catKey:rec.catKey, empresa:rec.empresa, stage:rec.stage, orcamentos:rec.orcamentos, note:rec.note };
+  const newDistribuida = (newOrcada === 'Sim') ? ($('ed-distribuida').value || '') : '';
+  let newQtdDist = '';
+  if(newDistribuida === 'Sim'){
+    const qd = parseInt($('ed-qtd-dist').value.trim(), 10);
+    if(!isNaN(qd) && qd > 0) newQtdDist = String(qd);
+  }
+  const backup = { v:rec.v, os:rec.os, category:rec.category, catKey:rec.catKey, empresa:rec.empresa, stage:rec.stage, orcamentos:rec.orcamentos, distribuida:rec.distribuida, qtdDist:rec.qtdDist, note:rec.note };
   const originalOs = rec.os; const originalViatura = rec.v;
   rec.v = newV; rec.os = newOs; rec.category = newCat; rec.catKey = slugify(newCat);
   rec.empresa = newEmpresa; rec.stage = newStage; rec.orcamentos = newOrcamentos; rec.note = newNote;
+  rec.distribuida = newDistribuida; rec.qtdDist = newQtdDist;
   closeEditModal(); renderOS();
-  const ok = await editOSInSheet(originalOs, originalViatura, { viatura:newV, os:newOs, categoria:newCat, oficina:newEmpresa, status:newStage, orcada:newOrcada, qnt:newOrcamentos>0?String(newOrcamentos):'', observacoes:newNote });
+  const ok = await editOSInSheet(originalOs, originalViatura, { viatura:newV, os:newOs, categoria:newCat, oficina:newEmpresa, status:newStage, orcada:newOrcada, qnt:newOrcamentos>0?String(newOrcamentos):'', distribuida:newDistribuida, qtdDist:newQtdDist, observacoes:newNote });
   if(!ok){ Object.assign(rec, backup); alert('A edição não pôde ser salva. Revertida.'); renderOS(); }
 });
 $('reportBtn').addEventListener('click', () => { if(!temPermissao('os_relatorio')){ alert('Sem permissão.'); return; } abrirRelatorioOS(); });
