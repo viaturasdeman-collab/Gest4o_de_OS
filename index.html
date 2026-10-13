@@ -712,7 +712,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div class="toolbar">
         <div class="tabs" id="tabsContainer"></div>
         <div class="right-tools">
-          <input type="text" id="osSearch" placeholder="Buscar viatura ou OS">
+          <input type="text" id="osSearch" placeholder="Buscar viatura, OS ou categoria">
           <button class="btn ghost" id="clearFilterBtn" style="display:none;">Limpar filtro</button>
           <button class="btn report" id="reportBtn">📄 Relatório</button>
           <button class="btn" id="addBtn" data-perm="os_criar">+ Nova OS</button>
@@ -1687,7 +1687,11 @@ function getDadosFiltradosOS(eventoFiltro){
   else dados = dados.filter(r => r.stage !== 'Finalizada' && r.stage !== 'Cancelada');
   if(eventoFiltro === TAB_MANUTENCAO) dados = dados.filter(r => isManutencaoNote(r.note));
   else if(eventoFiltro) dados = dados.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
-  if(q) dados = dados.filter(r => matchesSearchOS(r.v, q) || (r.os && r.os.toString().toLowerCase().includes(q)));
+  if(q) dados = dados.filter(r =>
+    matchesSearchOS(r.v, q) ||
+    (r.os && r.os.toString().toLowerCase().includes(q)) ||
+    normalizeStr(r.category).includes(normalizeStr(q))
+  );
   return dados;
 }
 
@@ -2984,6 +2988,8 @@ function mostrarSucesso({ titulo, sub, resumo, mensagemWhats }){
   $('sucessoTitulo').textContent = titulo; $('sucessoSub').textContent = sub;
   $('sucessoResumo').innerHTML = resumo.map(([k, v]) => `<div class="resumo-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('');
   _sucessoMensagemWhats = mensagemWhats || '';
+  const btnWhats = $('sucessoWhats');
+  if(btnWhats) btnWhats.style.display = _sucessoMensagemWhats ? '' : 'none';
   $('sucessoModal').style.display = 'flex';
 }
 function fecharSucesso(){
