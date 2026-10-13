@@ -453,6 +453,7 @@ select.stage-select:hover{border-color:var(--amber);}
 .report-kpi.kpi-aprov .kpi-value{color:var(--azul);}
 .report-kpi.kpi-final .kpi-value{color:var(--verde);}
 .report-kpi.kpi-qnt .kpi-value{color:var(--amber);}
+.report-kpi.kpi-dist .kpi-value{color:var(--verde);}
 
 .report-filters{font-size:12px;color:var(--text-dim);background:var(--surface-2);border-radius:8px;padding:10px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
 .report-filters b{color:var(--amber);}
@@ -592,6 +593,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   .report-kpi.kpi-aprov .kpi-value{color:#000;}
   .report-kpi.kpi-final .kpi-value{color:#000;}
   .report-kpi.kpi-qnt .kpi-value{color:#000;}
+  .report-kpi.kpi-dist .kpi-value{color:#000;}
   .report-filters{background:#f2f2f2;color:#333;}
   .report-filters b{color:#000;}
   .report-filters select{background:#fff;border:1px solid #999;color:#000;}
@@ -1102,13 +1104,19 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
           <option value="Sim">Sim</option>
           <option value="Não">Não</option>
         </select>
+        <span><b>Distribuída:</b></span>
+        <select id="repFilterDistribuida" style="min-width:100px;">
+          <option value="">Todas</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
         <button class="btn ghost" id="repFilterLimpar" style="margin-left:auto;font-size:11px;padding:5px 10px;">Limpar filtros</button>
       </div>
       <span id="repFilterResumo" style="font-size:11px;color:var(--text-dim);padding-top:6px;display:block;width:100%;"></span>
     </div>
     <div class="report-table-wrap">
       <table class="report-table">
-        <thead><tr><th>Viatura</th><th>Nº OS</th><th>Categoria</th><th>Status</th><th>Orçada</th><th>Qnt</th><th>Oficina/Empresa</th></tr></thead>
+        <thead><tr><th>Viatura</th><th>Nº OS</th><th>Categoria</th><th>Status</th><th>Orçada</th><th>Qnt</th><th>Distribuída</th><th>Qtd Dist.</th><th>Oficina/Empresa</th></tr></thead>
         <tbody id="reportBody"></tbody>
       </table>
     </div>
@@ -1822,9 +1830,10 @@ function renderOS(){
 }
 
 /* ═══════ RELATÓRIO OS ═══════ */
-let repFiltroStatus  = '';
-let repFiltroOficina = '';
-let repFiltroOrcada  = '';
+let repFiltroStatus       = '';
+let repFiltroOficina      = '';
+let repFiltroOrcada       = '';
+let repFiltroDistribuida  = '';
 
 function repPopularSelects(dados){
   const status = Array.from(new Set(dados.map(r => r.stage).filter(Boolean))).sort();
@@ -1856,6 +1865,8 @@ function repAplicarFiltros(dados){
     if(repFiltroOficina && (r.empresa||'').trim() !== repFiltroOficina) return false;
     if(repFiltroOrcada === 'Sim' && !(r.orcamentos > 0)) return false;
     if(repFiltroOrcada === 'Não' && (r.orcamentos > 0)) return false;
+    if(repFiltroDistribuida === 'Sim' && r.distribuida !== 'Sim') return false;
+    if(repFiltroDistribuida === 'Não' && r.distribuida === 'Sim') return false;
     return true;
   });
 }
@@ -1866,12 +1877,19 @@ function repRenderKpis(dados){
   const aprov = dados.filter(r => r.stage === 'Aprovada').length;
   const final = dados.filter(r => r.stage === 'Finalizada').length;
   const qntTotal = dados.reduce((sum, r) => sum + (r.orcamentos > 0 ? r.orcamentos : 0), 0);
+  const distribuidas = dados.filter(r => r.distribuida === 'Sim').length;
+  const qtdDistTotal = dados.reduce((sum, r) => {
+    if(r.distribuida !== 'Sim') return sum;
+    const n = parseInt(r.qtdDist, 10);
+    return sum + (isNaN(n) ? 0 : n);
+  }, 0);
   $('reportKpis').innerHTML = `
     <div class="report-kpi kpi-total"><div class="kpi-label">Total</div><div class="kpi-value">${total}</div></div>
     <div class="report-kpi kpi-pend"><div class="kpi-label">Pendentes</div><div class="kpi-value">${pend}</div></div>
     <div class="report-kpi kpi-aprov"><div class="kpi-label">Aprovadas</div><div class="kpi-value">${aprov}</div></div>
     <div class="report-kpi kpi-final"><div class="kpi-label">Finalizadas</div><div class="kpi-value">${final}</div></div>
     <div class="report-kpi kpi-qnt"><div class="kpi-label">Qnt orçada</div><div class="kpi-value">${qntTotal}</div></div>
+    <div class="report-kpi kpi-dist"><div class="kpi-label">Distribuídas</div><div class="kpi-value">${distribuidas}${qtdDistTotal > 0 ? ' <span style="font-size:14px;color:var(--text-dim);">/ '+qtdDistTotal+'</span>' : ''}</div></div>
   `;
 }
 
@@ -1892,6 +1910,7 @@ function repRenderTabela(){
   if(repFiltroStatus) partes.push('Status: ' + ((STAGES.find(x => x.key === repFiltroStatus)||{}).label || repFiltroStatus));
   if(repFiltroOficina) partes.push('Oficina: ' + repFiltroOficina);
   if(repFiltroOrcada) partes.push('Orçada: ' + repFiltroOrcada);
+  if(repFiltroDistribuida) partes.push('Distribuída: ' + repFiltroDistribuida);
 
   $('repFilterResumo').innerHTML =
     '<b>Base:</b> ' + filtros.map(escapeHtml).join(' · ') +
@@ -1900,9 +1919,11 @@ function repRenderTabela(){
 
   const ordenado = dados.slice().sort((a,b) => a.v.localeCompare(b.v) || a.os.localeCompare(b.os));
   $('reportBody').innerHTML = ordenado.length === 0
-    ? '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado com os filtros atuais</td></tr>'
+    ? '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-faint);">Nenhum registro encontrado com os filtros atuais</td></tr>'
     : ordenado.map(r => {
         const st = stageInfoOS(r.stage);
+        const distTxt = r.distribuida === 'Sim' ? 'Sim' : (r.distribuida === 'Não' ? 'Não' : '—');
+        const qtdTxt = (r.distribuida === 'Sim' && r.qtdDist) ? r.qtdDist : '—';
         return `<tr>
           <td class="v">${escapeHtml(r.v)}</td>
           <td class="os">${escapeHtml(r.os)}</td>
@@ -1910,6 +1931,8 @@ function repRenderTabela(){
           <td class="status" style="color:${st.color};">● ${st.label}</td>
           <td>${r.orcamentos > 0 ? 'Sim' : 'Não'}</td>
           <td>${r.orcamentos > 0 ? r.orcamentos : '—'}</td>
+          <td>${escapeHtml(distTxt)}</td>
+          <td style="text-align:center;">${escapeHtml(qtdTxt)}</td>
           <td>${escapeHtml(r.empresa || '—')}</td>
         </tr>`;
       }).join('');
@@ -1920,6 +1943,7 @@ function abrirRelatorioOS(){
   repFiltroStatus = '';
   repFiltroOficina = '';
   repFiltroOrcada = '';
+  repFiltroDistribuida = '';
 
   const dados = getDadosFiltradosOS(activeTab === TAB_GERAL ? null : activeTab);
   repPopularSelects(dados);
@@ -1927,6 +1951,7 @@ function abrirRelatorioOS(){
   const selS = $('repFilterStatus');
   const selO = $('repFilterOficina');
   const selOrc = $('repFilterOrcada');
+  const selDist = $('repFilterDistribuida');
   const btnLimpar = $('repFilterLimpar');
 
   if(selS && !selS.dataset.bound){
@@ -1941,15 +1966,21 @@ function abrirRelatorioOS(){
     selOrc.dataset.bound = '1';
     selOrc.addEventListener('change', () => { repFiltroOrcada = selOrc.value; repRenderTabela(); });
   }
+  if(selDist && !selDist.dataset.bound){
+    selDist.dataset.bound = '1';
+    selDist.addEventListener('change', () => { repFiltroDistribuida = selDist.value; repRenderTabela(); });
+  }
   if(btnLimpar && !btnLimpar.dataset.bound){
     btnLimpar.dataset.bound = '1';
     btnLimpar.addEventListener('click', () => {
       repFiltroStatus = '';
       repFiltroOficina = '';
       repFiltroOrcada = '';
+      repFiltroDistribuida = '';
       if(selS) selS.value = '';
       if(selO) selO.value = '';
       if(selOrc) selOrc.value = '';
+      if(selDist) selDist.value = '';
       repRenderTabela();
     });
   }
