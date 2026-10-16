@@ -269,7 +269,6 @@ select.stage-select{background:var(--surface-2);border:1px solid var(--border);c
 select.stage-select:hover{border-color:var(--amber);}
 .stage-static{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);padding:3px 8px;border:1px dashed var(--border);border-radius:6px;}
 .svc-row.orc-alto{background:linear-gradient(90deg, rgba(232,169,58,.14), transparent 70%);}
-.badge-orc{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);}
 .badge-orc{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;white-space:nowrap;background:rgba(232,169,58,.18);color:var(--amber);border:1px solid rgba(232,169,58,.55);}
 .edit-btn{position:absolute;top:4px;right:2px;width:22px;height:22px;padding:0;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s, color .15s, background .15s, transform .12s;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .edit-btn:hover{border-color:var(--amber);color:var(--amber);background:var(--surface);}
@@ -501,7 +500,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 .local-field-wrap input:disabled{opacity:.55;cursor:not-allowed;background:var(--surface);}
 .local-hint{font-size:10px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;}
 
-/* ─── Dropdown customizado de viaturas (substitui datalist — funciona no iOS) ─── */
+/* ─── Dropdown customizado de viaturas ─── */
 .pf-dropdown-wrap{position:relative;width:100%;}
 .pf-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:60;display:none;box-shadow:0 12px 32px rgba(0,0,0,.55);}
 .pf-dropdown.open{display:block;}
@@ -1178,13 +1177,11 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 </div>
 
 <script>
-/* ═══════ CONFIG ═══════ */
 const OS_APPS_SCRIPT_URL       = 'https://script.google.com/macros/s/AKfycbzMVSQtq7RSHFRnzRPFQgV-_YQ-TCWId3XrXiynaZ6gajqwKhaMZxe7ISRqAM8PTqyP3g/exec';
 const VIATURAS_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTBLYK1DGYKjndJZYt2mm03aLiuwyamzc4s2dDsYY_YJpj3fh0CaptQGG1hMReJhqG/exec';
 const MANUT_APPS_SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbySCsyvti0wJQdkt1IxoSBOmi3sHpFF6uPwOF9smssIihF7rb3GFlpFXfjh7EN2gf8m/exec';
 const PREVENTIVA_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmZzTwytFmLHQLS0v3k6w9JluLS7sQ91sOnuxK-3BDSuBTOe5kEHsx1XMXcUCcdiPnFA/exec';
 const DIRECT_SHEET_CSV_URL     = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
-const MANUT_CSV_URL            = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQIRgIpd5ZsU5gkfE933LQD7vBYbqC9bbJESZqWWNEHKJPljLxNSVS78LTF8sH9zO_KzGvPe4W2mV1F/pub?output=csv';
 const STORAGE_KEY_OS    = 'deman_data_os_v1';
 const STORAGE_KEY_VIAT  = 'deman_cache_viaturas_v1';
 const POLLING_INTERVAL  = 180000;
@@ -1592,7 +1589,6 @@ document.querySelectorAll('#view-home .home-card').forEach(card => {
   });
 });
 
-/* ═══════ OS-BAMEX ═══════ */
 const TAB_GERAL = 'geral';
 const TAB_MANUTENCAO = '__manutencao__';
 const MANUTENCAO_KEYWORDS = ['manuten'];
@@ -1721,7 +1717,6 @@ function getDadosFiltradosOS(eventoFiltro){
   return dados;
 }
 
-/* ═══════ RENDER GERAL ═══════ */
 function renderGeralOS(eventoFiltro){
   const dados = getDadosFiltradosOS(eventoFiltro);
   const podeStatus = temPermissao('os_status'); const podeEditar = temPermissao('os_editar');
@@ -1829,7 +1824,6 @@ function renderOS(){
   else renderGeralOS(activeTab);
 }
 
-/* ═══════ RELATÓRIO OS ═══════ */
 let repFiltroStatus       = '';
 let repFiltroOficina      = '';
 let repFiltroOrcada       = '';
@@ -1994,7 +1988,6 @@ function abrirRelatorioOS(){
 
 const edStageSel = $('ed-stage'); edStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 
-/* ─── Cascata: Orçada → Distribuída → Qtd distribuições ─── */
 function atualizarCascataOrcada(prefixo){
   const selOrc = $(prefixo + '-orcada');
   if(!selOrc) return;
@@ -2038,13 +2031,11 @@ function openEditModal(recordId){
 }
 function closeEditModal(){ editingRecordId = null; $('editModal').style.display = 'none'; }
 
-/* ═══════ VIATURAS ═══════ */
 const MOTIVOS_BAIXA = ['Sinistro','Manutenção'];
 const CACHE_KEY = 'deman_cache_viaturas_v1';
-const CACHE_META_KEY = 'deman_cache_viaturas_meta';
 let VIATURAS = []; let LOCAIS = []; let LOCAIS_DIRETORIAS = []; let activeFilter = 'todas';
 function ehDiretoria(local){ if(!local) return false; const l = normalizeStr(local); return LOCAIS_DIRETORIAS.some(d => normalizeStr(d) === l); }
-function salvarCache(){ try{ sessionStorage.setItem(CACHE_KEY, JSON.stringify({ viaturas: VIATURAS, locais: LOCAIS, locaisDiretorias: LOCAIS_DIRETORIAS })); sessionStorage.setItem(CACHE_META_KEY, String(Date.now())); }catch(e){} }
+function salvarCache(){ try{ sessionStorage.setItem(CACHE_KEY, JSON.stringify({ viaturas: VIATURAS, locais: LOCAIS, locaisDiretorias: LOCAIS_DIRETORIAS })); }catch(e){} }
 function carregarCache(){ try{ const raw = sessionStorage.getItem(CACHE_KEY); if(!raw) return false; const d = JSON.parse(raw); if(!d || !Array.isArray(d.viaturas)) return false; VIATURAS = d.viaturas; LOCAIS = Array.isArray(d.locais) ? d.locais : []; LOCAIS_DIRETORIAS = Array.isArray(d.locaisDiretorias) ? d.locaisDiretorias : []; return true; }catch(e){ return false; } }
 async function loadDataViaturas(){
   const upd = $('viatUpdateStatus');
@@ -2218,7 +2209,6 @@ function abrirModalMoverReserva(prefixo){
   }, 'viat_permutar');
 }
 
-/* ═══════ CAMPO LOCAL DINÂMICO ═══════ */
 function _classeStatusLocal(status, modoEvento){
   const s = normalizeStr(status || '');
   if(!s && modoEvento) return 'livre';
@@ -2227,18 +2217,9 @@ function _classeStatusLocal(status, modoEvento){
   if(s.includes('baixa') || s.includes('inoper')) return 'baixada';
   return 'ativa';
 }
-function _htmlInputLocal(idCampo, valorAtual, sugestoes){
-  const listaId = idCampo + '-list';
-  const datalist = (sugestoes && sugestoes.length)
-    ? `<datalist id="${listaId}">${sugestoes.map(o => `<option value="${escapeAttr(o)}"></option>`).join('')}</datalist>`
-    : '';
-  const listAttr = (sugestoes && sugestoes.length) ? ` list="${listaId}"` : '';
-  const hint = (sugestoes && sugestoes.length)
-    ? 'Digite ou escolha uma sugestão — texto livre permitido.'
-    : 'Texto livre.';
-  return `<input type="text" id="${idCampo}" value="${escapeAttr(valorAtual||'')}" placeholder="Ex.: Fix Car, Vidrocar, Arcom…"${listAttr} autocomplete="off" autocapitalize="characters">
-    ${datalist}
-    <span class="local-hint">${hint}</span>`;
+function _htmlInputLocal(idCampo, valorAtual){
+  return `<input type="text" id="${idCampo}" value="${escapeAttr(valorAtual||'')}" placeholder="Ex.: Fix Car, Vidrocar, Arcom…" autocomplete="off" autocapitalize="characters">
+    <span class="local-hint">Texto livre.</span>`;
 }
 function _htmlSelectLocal(idCampo, valorAtual){
   const vAtual = String(valorAtual||'').trim().toUpperCase();
@@ -2262,16 +2243,16 @@ function montarCampoLocal(wrapId, valorAtual, status, modoEvento, tipo){
   const wrap = $(wrapId); if(!wrap) return;
   const idCampo = wrapId.replace('-wrap','');
   if(tipo === TIPO_OUTRO){
-    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, []);
+    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual);
     return;
   }
   const classe = _classeStatusLocal(status, !!modoEvento);
   if(classe === 'manutencao' || classe === 'livre'){
-    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, LOCAIS_OFICINA);
+    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual);
   } else if(classe === 'reserva'){
     wrap.innerHTML = _htmlLocalDisabled(idCampo, LOCAL_RESERVA);
   } else if(classe === 'baixada'){
-    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual, LOCAIS_BAIXADA);
+    wrap.innerHTML = _htmlInputLocal(idCampo, valorAtual);
   } else {
     wrap.innerHTML = _htmlSelectLocal(idCampo, valorAtual);
   }
@@ -2291,7 +2272,6 @@ function lerLocalForm(wrapId){
   return String(input.value || '').trim().toUpperCase();
 }
 
-/* ═══════ MOVIMENTAÇÃO ═══════ */
 let MANUT_EVENTOS = [];
 let MANUT_FILTRO_STATUS = 'todas';
 let activeManutTab = 'registros';
@@ -3082,7 +3062,6 @@ function fecharSucesso(){
   showManutTab('registros');
 }
 
-/* ═══════ RELATÓRIO DE MOVIMENTAÇÃO ═══════ */
 function getMesesDisponiveisManut(){
   const set = new Set();
   MANUT_EVENTOS.forEach(e => {
@@ -3217,7 +3196,6 @@ function renderRelatorioManutPorMes(){
   }).join('');
 }
 
-/* ═══════ MANUTENÇÃO PREVENTIVA ═══════ */
 const STORAGE_KEY_PREV = 'deman_cache_preventiva_v1';
 const PREV_CACHE_TTL   = 15 * 60 * 1000;
 let PREV_VIATURAS = [];
@@ -3391,7 +3369,6 @@ function renderPreventiva(){
   if(cb) cb.style.display = (PREV_FILTRO_SITUACAO || PREV_FILTRO_OLEO || q) ? 'inline-block' : 'none';
 }
 
-/* ═══════ ATUALIZAR PREVENTIVA ═══════ */
 let PREV_TAB_ATUAL = 'painel';
 let PREV_LISTA_COMPLETA = [];
 let PREV_VIATURA_SELECIONADA = null;
@@ -3577,7 +3554,6 @@ async function salvarPreventivaForm(){
   });
 }
 
-/* ═══════ DROPDOWN CUSTOMIZADO DE VIATURAS (substitui datalist) ═══════ */
 function _normalizaBusca(s){
   return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
 }
@@ -3647,7 +3623,6 @@ function _handlePfBuscaInput(){
   renderDropdownViaturas();
 }
 
-/* ═══════ USUÁRIOS ═══════ */
 let USUARIOS_CACHE = [];
 async function carregarUsuarios(){
   if(!podeVerUsuarios()) return;
@@ -3695,7 +3670,6 @@ function renderUsuarios(){
   });
 }
 
-/* ═══════ POLLING ═══════ */
 let _pollHandle = null;
 function iniciarPolling(){
   if(_pollHandle) clearInterval(_pollHandle);
@@ -3728,7 +3702,6 @@ if(IS_IOS){
   });
 }
 
-/* ═══════ EVENT LISTENERS ═══════ */
 $('menuToggle').addEventListener('click', () => {
   const app = $('app');
   if(isMobile()){ app.classList.toggle('sidebar-open'); }
@@ -3923,7 +3896,6 @@ document.addEventListener('keydown', e => {
   ['editModal','reportModal','manutReportModal','actionModal','userModal'].forEach(id => { const el = $(id); if(el && el.style.display === 'flex') el.style.display = 'none'; });
 });
 
-/* ═══════ INIT ═══════ */
 function startApp(){
   hideLogin(); $('app').classList.add('is-ready');
   currentUser = sessionStorage.getItem('deman_user_nome') || '';
