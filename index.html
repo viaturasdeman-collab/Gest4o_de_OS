@@ -3176,6 +3176,10 @@ function renderRelatorioManutDetalhado(){
 function renderRelatorioManutPorMes(){
   const grupos = {};
   MANUT_EVENTOS.forEach(e => {
+    if(manutRepStatusFiltro){
+      const alvoClasse = statusClasseManut(manutRepStatusFiltro);
+      if(statusClasseManut(e.status) !== alvoClasse) return;
+    }
     const d = parseDataManut(e.data);
     if(!d) return;
     const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
@@ -3191,7 +3195,8 @@ function renderRelatorioManutPorMes(){
   let totalGeralEventos = 0;
   Object.keys(grupos).forEach(ym => { Object.keys(grupos[ym]).forEach(pfx => { totalGeralEventos += grupos[ym][pfx].eventos; }); });
 
-  $('manutReportFilters').innerHTML = '<b>Modo:</b> Por mês (agrupado) · <b>Meses:</b> ' + meses.length + ' · <b>Eventos totais:</b> ' + totalGeralEventos;
+  const statusTxt = manutRepStatusFiltro ? ' · Status: ' + escapeHtml(manutRepStatusFiltro) : '';
+  $('manutReportFilters').innerHTML = '<b>Modo:</b> Por mês (agrupado)' + statusTxt + ' · <b>Meses:</b> ' + meses.length + ' · <b>Eventos totais:</b> ' + totalGeralEventos;
   const container = $('manutReportMesContent');
 
   if(meses.length === 0){
@@ -3896,6 +3901,14 @@ if(selStatusManutRep){
     manutRepStatusFiltro = selStatusManutRep.value;
     renderRelatorioManut();
   });
+}
+const selModeManutRep = $('manutReportMode');
+if(selModeManutRep){
+  selModeManutRep.addEventListener('change', () => renderRelatorioManut());
+}
+const selMesManutRep = $('manutReportMonth');
+if(selMesManutRep){
+  selMesManutRep.addEventListener('change', () => renderRelatorioManut());
 }
 $('sucessoVoltar').addEventListener('click', fecharSucesso);
 $('sucessoWhats').addEventListener('click', () => { if(_sucessoMensagemWhats) abrirWhatsApp(_sucessoMensagemWhats); });
